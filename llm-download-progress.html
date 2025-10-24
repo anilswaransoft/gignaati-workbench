@@ -1,0 +1,397 @@
+<!-- LLM Download Progress Modal -->
+<style>
+  .llm-download-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    max-height: 600px;
+    background: white;
+    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.2);
+    z-index: 99999;
+    display: none;
+    flex-direction: column;
+    border-radius: 15px 0 0 15px;
+    overflow: hidden;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .llm-download-modal.active {
+    display: flex;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  .llm-download-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .llm-download-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .llm-download-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .llm-download-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .llm-download-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .llm-download-item {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-left: 4px solid #667eea;
+  }
+
+  .llm-download-item.completed {
+    border-left-color: #10b981;
+    background: #f0fdf4;
+  }
+
+  .llm-download-item.error {
+    border-left-color: #ef4444;
+    background: #fef2f2;
+  }
+
+  .llm-model-name {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .llm-model-icon {
+    font-size: 1.5rem;
+  }
+
+  .llm-progress-bar-container {
+    background: #e5e7eb;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .llm-progress-bar {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .llm-progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .llm-progress-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 5px;
+  }
+
+  .llm-progress-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .llm-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .llm-stat-label {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .llm-stat-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .llm-status-message {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  .llm-download-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #9ca3af;
+  }
+
+  .llm-download-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    opacity: 0.5;
+  }
+
+  .llm-success-icon {
+    color: #10b981;
+    font-size: 1.2rem;
+  }
+
+  .llm-error-icon {
+    color: #ef4444;
+    font-size: 1.2rem;
+  }
+
+  .llm-downloading-icon {
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
+<div id="llm-download-modal" class="llm-download-modal">
+  <div class="llm-download-header">
+    <h3>🤖 AI Model Downloads</h3>
+    <button class="llm-download-close" onclick="closeLLMDownloadModal()">×</button>
+  </div>
+  <div class="llm-download-body" id="llm-download-list">
+    <div class="llm-download-empty">
+      <div class="llm-download-empty-icon">📦</div>
+      <div>No active downloads</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // LLM Download Progress Manager
+  const llmDownloads = new Map();
+
+  function showLLMDownloadModal() {
+    const modal = document.getElementById('llm-download-modal');
+    if (modal) {
+      modal.classList.add('active');
+    }
+  }
+
+  function closeLLMDownloadModal() {
+    const modal = document.getElementById('llm-download-modal');
+    if (modal) {
+      modal.classList.remove('active');
+    }
+  }
+
+  function updateLLMDownloadProgress(data) {
+    const { model, progress, message, downloaded, total, speed, eta, stage } = data;
+    
+    // Show modal if not visible
+    showLLMDownloadModal();
+    
+    // Update or create download item
+    if (!llmDownloads.has(model)) {
+      llmDownloads.set(model, {
+        model,
+        progress: 0,
+        message: '',
+        downloaded: '',
+        total: '',
+        speed: '',
+        eta: '',
+        stage: 'starting',
+        status: 'downloading'
+      });
+    }
+    
+    const download = llmDownloads.get(model);
+    download.progress = progress || 0;
+    download.message = message || '';
+    download.downloaded = downloaded || '';
+    download.total = total || '';
+    download.speed = speed || '';
+    download.eta = eta || '';
+    download.stage = stage || 'downloading';
+    
+    if (progress >= 100 || stage === 'complete') {
+      download.status = 'completed';
+    }
+    
+    renderLLMDownloads();
+  }
+
+  function setLLMDownloadError(model, errorMessage) {
+    if (llmDownloads.has(model)) {
+      const download = llmDownloads.get(model);
+      download.status = 'error';
+      download.message = errorMessage;
+      renderLLMDownloads();
+    }
+  }
+
+  function renderLLMDownloads() {
+    const container = document.getElementById('llm-download-list');
+    if (!container) return;
+    
+    if (llmDownloads.size === 0) {
+      container.innerHTML = `
+        <div class="llm-download-empty">
+          <div class="llm-download-empty-icon">📦</div>
+          <div>No active downloads</div>
+        </div>
+      `;
+      return;
+    }
+    
+    container.innerHTML = '';
+    
+    llmDownloads.forEach((download, model) => {
+      const item = document.createElement('div');
+      item.className = `llm-download-item ${download.status}`;
+      
+      let icon = '⏳';
+      if (download.status === 'completed') {
+        icon = '<span class="llm-success-icon">✓</span>';
+      } else if (download.status === 'error') {
+        icon = '<span class="llm-error-icon">✗</span>';
+      } else if (download.stage === 'downloading') {
+        icon = '<span class="llm-downloading-icon">⚡</span>';
+      }
+      
+      item.innerHTML = `
+        <div class="llm-model-name">
+          <span class="llm-model-icon">${icon}</span>
+          <span>${model}</span>
+        </div>
+        
+        <div class="llm-progress-details">
+          <span>${download.progress}%</span>
+          ${download.downloaded && download.total ? `<span>${download.downloaded} / ${download.total}</span>` : ''}
+        </div>
+        
+        <div class="llm-progress-bar-container">
+          <div class="llm-progress-bar" style="width: ${download.progress}%"></div>
+        </div>
+        
+        ${download.speed || download.eta ? `
+          <div class="llm-progress-stats">
+            ${download.speed ? `
+              <div class="llm-stat">
+                <div class="llm-stat-label">Speed</div>
+                <div class="llm-stat-value">${download.speed}</div>
+              </div>
+            ` : ''}
+            ${download.eta ? `
+              <div class="llm-stat">
+                <div class="llm-stat-label">Time Left</div>
+                <div class="llm-stat-value">${download.eta}</div>
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+        
+        ${download.message ? `
+          <div class="llm-status-message">${download.message}</div>
+        ` : ''}
+      `;
+      
+      container.appendChild(item);
+    });
+  }
+
+  // Listen for progress updates from main process
+  if (window.electronAPI && window.electronAPI.onProgressUpdate) {
+    window.electronAPI.onProgressUpdate((data) => {
+      if (data.step === 'model-download') {
+        updateLLMDownloadProgress(data);
+      }
+    });
+  }
+
+  // Auto-close completed downloads after 5 seconds
+  setInterval(() => {
+    let hasActive = false;
+    llmDownloads.forEach((download) => {
+      if (download.status === 'downloading' || download.status === 'starting') {
+        hasActive = true;
+      }
+    });
+    
+    if (!hasActive && llmDownloads.size > 0) {
+      // All downloads complete, auto-close after delay
+      setTimeout(() => {
+        llmDownloads.clear();
+        renderLLMDownloads();
+        closeLLMDownloadModal();
+      }, 5000);
+    }
+  }, 1000);
+</script>
+

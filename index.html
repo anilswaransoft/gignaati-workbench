@@ -1,0 +1,3723 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Razorpay Checkout script -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gignaati Workbench</title>
+  <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet" />
+ <style>
+    * {
+      box-sizing: border-box;
+      padding: 0px;
+      margin: 0px;
+    }
+
+    :root {
+      --border-color: #e5e5e5;
+      --light-gray: #737373;
+      --very-light-gray: #fafafa;
+      --gradient-card: linear-gradient(135deg,
+          hsl(0 0% 100%),
+          hsl(0 0% 96.1%));
+      --mute-color: #f5f5f5;
+    }
+
+    body {
+      font-size: 16px;
+      font-family: "Poppins", sans-serif;
+    }
+
+    .title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .sec-des {
+      color: var(--light-gray);
+      font-size: 0.9rem;
+      text-align: center;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .form-control {
+      padding: 14px;
+      font-size: 1rem;
+      border-radius: 10px;
+    }
+
+    .form-control:focus {
+      /* background-color: #000; */
+      border-color: #000;
+      outline: 0;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0);
+    }
+
+    .custom-btn {
+      padding: 8px;
+      background-color: #000;
+      border-color: #000;
+      border-radius: 10px;
+    }
+
+    .custom-btn-white {
+      background-color: #fff;
+      border-color: #fff;
+      color: #000;
+      border-color: var(--border-color);
+    }
+
+    .custom-btn:focus,
+    .custom-btn:active,
+    .custom-btn:hover {
+      background-color: #000 !important;
+      border-color: #000 !important;
+    }
+
+    .custom-btn-white:focus,
+    .custom-btn-white:active,
+    .custom-btn-white:hover {
+      background: var(--gradient-card) !important;
+      border-color: var(--border-color) !important;
+      color: #000 !important;
+    }
+
+    .btn.disabled,
+    .btn:disabled,
+    fieldset:disabled .btn {
+      pointer-events: none !important;
+      background-color: #000 !important;
+      border-color: var(--border-color) !important;
+      opacity: var(--bs-btn-disabled-opacity) !important;
+    }
+
+    /* ------------ header-box  ----------------- */
+    header {
+      border-top: 1px solid var(--border-color) !important;
+      border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .header-cover {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 20px;
+    }
+
+    .header-cover .logo {
+      max-width: 100px;
+    }
+
+    .header-cover .logo img {
+      /* width: 100%; */
+      width: 40%;
+    }
+
+    .header-cover .nav ul {
+      display: flex;
+      align-items: center;
+      padding-left: 0px;
+      margin-bottom: 0px;
+    }
+
+    .header-cover .nav ul li {
+      list-style: none;
+    }
+
+    .header-cover .nav ul li button {
+      background-color: unset;
+      border: unset;
+      font-size: 0.9rem;
+      padding: 6px 26px;
+    }
+
+    .header-cover .nav ul li button.active {
+      background: #000 !important;
+      color: #fff;
+      padding: 6px 26px;
+      border-radius: 10px;
+    }
+
+    .header-cover .remaining-days {
+      font-size: 0.8rem;
+    }
+
+    /* ------------ header-box  ----------------- */
+    /* ------------ brand-box  ----------------- */
+    .brand-box {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 16px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .brand-box .brand-img {
+      height: 100px;
+    }
+
+    .brand-box .brand-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+    }
+
+    .brand-box .brand-name {
+      font-size: 0.9rem;
+      margin-bottom: 0px;
+      margin-top: 10px;
+    }
+
+    /* ------------ brand-box  ----------------- */
+    /* ------------ email-box-container ----------------- */
+    .email-box-container {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      /* height: 100%; */
+    }
+
+    .email-box-container .title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .email-box-container p {
+      font-size: 0.8rem;
+      color: var(--light-gray);
+    }
+
+    /* ------------ email-box-container ----------------- */
+    /* ------------ Offering-box ----------------- */
+    .Offering-box {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 16px;
+      border-radius: 10px;
+      text-align: center;
+      height: 100%;
+    }
+
+    .Offering-box .offer-icon {
+      height: 40px;
+      width: 40px;
+      text-align: center;
+      margin: auto;
+      margin-bottom: 10px;
+    }
+
+    .Offering-box .offer-icon svg {
+      width: 100%;
+      height: 100%;
+      color: #000;
+    }
+
+    .Offering-box .offer-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .Offering-box .offer-des {
+      font-size: 0.8rem;
+      margin-bottom: 0px;
+    }
+
+    /* ------------ Offering-box ----------------- */
+    /* ------------ action-box ----------------- */
+    .action-box {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      border-radius: 10px;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .action-box .action-img {
+      height: 200px;
+    }
+
+    .action-box .action-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .action-box .action-info {
+      padding: 16px;
+    }
+
+    .action-box .action-info h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .action-box .action-info p {
+      font-size: 0.76rem;
+      margin-bottom: 0px;
+      color: var(--light-gray);
+    }
+
+    /* ------------ action-box ----------------- */
+    .offer-img {
+      border-radius: 10px;
+      overflow: hidden;
+      height: 132px;
+    }
+
+    .offer-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ------------ features-box ----------------- */
+    .features-box {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 16px;
+      border-radius: 10px;
+      height: 100%;
+      display: flex;
+      column-gap: 10px;
+    }
+
+    .features-box .icon {
+      height: 24px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .features-box .icon svg {
+      width: 100%;
+      height: 100%;
+      color: #000;
+    }
+
+    .features-box .feature-info h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .features-box .feature-info p {
+      font-size: 0.76rem;
+      margin-bottom: 0px;
+      color: var(--light-gray);
+    }
+
+    /* ------------ features-box ----------------- */
+    /* ------------ setup-box ----------------- */
+    .setup-box {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 16px;
+      border-radius: 10px;
+      height: 100%;
+    }
+
+    .setup-box .setup-info h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0px;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .setup-box .setup-info h3 .count {
+      height: 20px;
+      width: 20px;
+      background-color: #000;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      padding: 0px;
+      margin: 0px;
+      padding-top: px;
+    }
+
+    .setup-box .setup-info .command {
+      font-size: 0.76rem;
+      background-color: var(--mute-color);
+      color: var(--light-gray);
+      padding: 8px 8px;
+      border-radius: 10px;
+    }
+
+    .setup-box .setup-info p {
+      font-size: 0.76rem;
+      margin-bottom: 0px;
+      color: var(--light-gray);
+      margin-top: 10px;
+    }
+
+    /* ------------ setup-box ----------------- */
+    /* --------------- dash-board-build-llm-container ------------ */
+    .dashboard-container .title {
+      text-align: left;
+    }
+
+    .dashboard-container .cover {
+      max-width: 500px;
+    }
+
+    .dashboard-container .cover img {
+      width: 100%;
+    }
+
+    /* --------------- llm-container ------------ */
+    .llm-container .title {
+      text-align: left;
+    }
+
+    .llm-container .llm-box {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 16px;
+      border-radius: 10px;
+      height: 100%;
+      position: relative;
+      padding-bottom: 180px !important;
+    }
+
+    .llm-container .llm-box button.btn.btn-primary.custom-btn.custom-btn-white {
+      position: absolute;
+      bottom: 20px;
+          background: #e8e8e8 !important;
+  border: 1px solid #b5b5b5;
+    }
+
+    .llm-container .llm-box h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .llm-container .llm-box div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .llm-container .llm-box div p {
+      margin-bottom: 0px;
+      font-size: 0.9rem;
+      color: var(--light-gray);
+    }
+
+    .llm-container .llm-box div button {
+      font-size: 0.8rem;
+    }
+
+    /* --------------- llm-container ------------ */
+    /* --------------- tamplate-container ------------ */
+    .tamplate-container .title {
+      text-align: left;
+    }
+
+    .tamplate-container .tamplate-box {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 16px;
+      border-radius: 10px;
+      height: 100%;
+      position: relative;
+      padding-bottom: 74px;
+    }
+ .tamplate-container .tamplate-box button.btn.btn-primary.custom-btn.custom-btn-white {
+          position: absolute;
+    bottom: 20px;
+    left: 16px;
+    background: #e8e8e8 !important;
+  border: 1px solid #b5b5b5;
+    }
+    .tamplate-container .tamplate-box button.btn.btn-primary.custom-btn.custom-btn-white.copy-json-btn {
+        position: absolute;
+    bottom: 20px;
+        left: 94px;
+        background: #e8e8e8 !important;
+  border: 1px solid #b5b5b5;
+    }
+
+    .tamplate-container .tamplate-box h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .tamplate-container .tamplate-box p {
+      margin-bottom: 0px;
+      font-size: 0.9rem;
+      color: var(--light-gray);
+      margin-bottom: 12px;
+    }
+
+    .tamplate-container .tamplate-box button {
+      font-size: 0.8rem;
+    }
+
+    /* /////////////////////////////////// */
+
+    .llm-container .llm-box {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 16px;
+      border-radius: 10px;
+      height: 100%;
+    }
+
+    .llm-container .llm-box h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .llm-container .llm-box p {
+      margin-bottom: 0px;
+      font-size: 0.9rem;
+      color: var(--light-gray);
+      margin-bottom: 12px;
+    }
+
+    .llm-container .llm-box button {
+      font-size: 0.8rem;
+    }
+
+    /* --------------- tamplate-container ------------ */
+    /* --------------- notifications-box ------------ */
+    .notifications-box {
+      background-color: var(--very-light-gray);
+      padding: 20px;
+      height: 100%;
+    }
+
+    .notifications-box .title-notifications {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .notifications-box .notifications {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 16px;
+      border-radius: 10px;
+    }
+
+    .notifications-box .notifications h3 {
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-bottom: 0px;
+    }
+
+    .notifications-box .notifications p.time {
+      font-size: 0.76rem;
+      color: var(--light-gray);
+      margin-bottom: 0px;
+      margin-top: 6px;
+    }
+
+    .btn-grp button.custom-btn {
+      color: #fff;
+      min-width: 104px;
+    }
+
+    .btn-grp button.custom-btn:hover {
+      background-color: #fff !important;
+      color: #000;
+      border: 1px solid #000;
+    }
+
+    /* --------------- notifications-box ------------ */
+    /* --------------- dash-board-build-llm-container ------------ */
+
+    @media (max-width: 992px) {
+      body {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      body {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 575px) {
+      body {
+        font-size: 12px;
+      }
+    }
+  </style>
+  <style>
+    .sidenav {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      right: 0;
+      background-color: #111;
+      overflow-x: hidden;
+      transition: 0.5s;
+      padding-top: 60px;
+      border-left: 1px solid var(--border-color) !important;
+    }
+
+    .sidenav a {
+      padding: 8px 8px 8px 32px;
+      text-decoration: none;
+      font-size: 25px;
+      color: #818181;
+      display: block;
+      transition: 0.3s;
+    }
+
+    .sidenav .closebtn {
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 28px;
+      margin-left: 50px;
+    }
+
+    @media screen and (max-height: 450px) {
+      .sidenav {
+        padding-top: 15px;
+      }
+
+      .sidenav a {
+        font-size: 18px;
+      }
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      column-gap: 20px;
+    }
+
+    .profile img {
+      width: 20px;
+      cursor: pointer;
+    }
+  </style>
+
+  <style>
+    .contactus .modal-header {
+      border-bottom: unset !important;
+      padding: 20px;
+      padding-bottom: 0px !important;
+    }
+
+    .contactus .modal-header .btn-close {
+      font-size: 0.9rem !important;
+    }
+
+    .contactus .modal-content {
+      border-radius: 10px !important;
+    }
+
+    .contactus .modal-body {
+      padding: 32px;
+      padding-top: 0px !important;
+    }
+
+    .contactus h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .contactus .contact-us {
+      display: flex;
+      align-items: center;
+      column-gap: 20px;
+      border: 1px solid #000;
+      border-radius: 10px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .contactus .contact-us .icon.mail {
+      width: 60px;
+      height: 60px;
+      margin-left: -8px;
+    }
+
+    .contactus .contact-us .icon.phone {
+      width: 50px;
+      height: 50px;
+    }
+
+    .contactus .contact-us img {
+      height: 100%;
+      width: 100%;
+    }
+
+    .contactus .contact-us p {
+      margin-bottom: 0px;
+      font-weight: 600;
+    }
+  </style>
+  <style>
+    .footer {
+      background-color: #000;
+      padding: 10px;
+      margin-top: 40px;
+    }
+
+    .footer.active {
+      position: absolute;
+      bottom: 0px;
+      width: 100%;
+      margin-top: 0px;
+    }
+
+    .footer .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      column-gap: 20px;
+    }
+
+    .footer .footer-row .Offering-box {
+      min-width: 145px;
+      padding: 8px;
+      background: #fff !important;
+      color: #000 !important;
+      cursor: pointer;
+    }
+
+    .footer .footer-row .Offering-box h3 {
+      font-size: 0.9rem !important;
+      font-weight: 400 !important;
+    }
+
+    .footer .footer-row .offer-img {
+      display: none;
+    }
+
+    .footer .footer-row h3 {
+      margin-top: 0px !important;
+    }
+
+    .top-heading-sec {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .top-heading-sec h1 {
+      margin-bottom: 0px;
+    }
+
+    /* .system-monitoring {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 10px;
+        padding: 20px;
+        background-color: var(--neutral-light-gray);
+        border-radius: 10px;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+      } */
+    .system-info {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 16px;
+      border-radius: 10px;
+    }
+
+    .monitor-item {
+      text-align: center;
+      color: var(--neutral-dark-gray);
+    }
+
+    .monitor-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 5px solid;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1em;
+      font-weight: 500;
+      margin-bottom: 5px;
+      text-align: center;
+      overflow: hidden;
+      word-break: break-word;
+      flex-direction: column;
+      margin: auto;
+    }
+
+    .monitor-circle.cpu {
+      border-color: #64b5f6;
+      color: #2196f3;
+    }
+
+    .monitor-circle.ram {
+      border-color: #81c784;
+      color: #4caf50;
+    }
+
+    .monitor-circle.gpu {
+      border-color: #ffb74d;
+      color: #ff9800;
+    }
+
+    .monitor-circle.npu {
+      border-color: #b39ddb;
+      color: #9c27b0;
+    }
+
+    .monitor-item span {
+      font-size: 0.8em;
+    }
+
+    .box-2 {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 20px;
+      border-radius: 10px;
+      height: 100%;
+    }
+
+    .box-2 .box-2-img {
+      border-radius: 10px;
+      overflow: hidden;
+      height: 200px;
+    }
+
+    .box-2 img {
+      width: 100%;
+      height: 100%;
+      /* object-fit: cover; */
+    }
+
+    .box-2 h2 {
+      font-size: 1.1rem;
+      margin-top: 10px;
+      font-weight: 700;
+    }
+
+    .box-2 p {
+      font-size: .8rem;
+      font-weight: 500;
+      color: #404040;
+      margin-bottom: 0px;
+
+    }
+
+    #llm-btn-grp .llm-btn {
+      border: 1px solid #000 !important;
+      background-color: #fff !important;
+      color: #000 !important;
+    }
+
+    #llm-btn-grp .llm-btn.active {
+      border: 1px solid #000 !important;
+      background-color: #000 !important;
+      color: #fff !important;
+    }
+
+    #tamplate-btn-grp .tamplate-btn {
+      border: 1px solid #000 !important;
+      background-color: #fff !important;
+      color: #000 !important;
+    }
+
+    #tamplate-btn-grp .tamplate-btn.active {
+      border: 1px solid #000 !important;
+      background-color: #000 !important;
+      color: #fff !important;
+    }
+
+    .share-idea {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 30px;
+      border-radius: 10px;
+    }
+
+    .share-idea .title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .box-cover-2 {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 30px;
+      border-radius: 10px;
+    }
+
+    .box-cover-3 {
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #c7c7c7;
+      padding-bottom: 0px;
+    }
+
+
+    .create-new-template {
+      text-align: center;
+      border-style: dashed !important;
+      border-color: #808080;
+      display: flex;
+      height: 100%;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-width: 2px;
+    }
+
+    .create-new-template h2 {
+      text-align: center;
+      font-size: 1.3rem;
+      margin-bottom: 0px;
+    }
+
+    .create-new-template .plus {
+      height: 40px;
+      width: 40px;
+      background: #a3a3a3ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 2rem;
+      border-radius: 8px;
+      margin: auto;
+      margin-bottom: 10px;
+      margin-top: 0px;
+    }
+
+    .economic-box {
+      text-align: center;
+    }
+
+    .economic-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 0px;
+    }
+
+    .Financial-Impact span {
+      color: hsl(120, 74.5%, 30.8%);
+      font-size: 1.1rem;
+      font-weight: 500;
+
+    }
+
+    .benefits-list {
+      padding-left: 18px;
+    }
+
+    .benefits-list li {
+      padding: 8px 0px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .benefits-list li span {
+      display: inline-block;
+      height: 8px;
+      width: 8px;
+      border-radius: 50%;
+      background-color: hsl(120, 74.5%, 30.8%);
+    }
+
+    .drop-down-btn {
+      width: 230px;
+      position: relative;
+      padding: 0px;
+    }
+
+    .drop-down-btn-text {
+      position: relative;
+    }
+
+    .drop-down-btn-text::after {
+      content: "▼";
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      font-size: 12px;
+      color: #fff;
+      margin-left: 8px;
+      z-index: 99999999;
+      vertical-align: middle;
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .drop-down-btn .drop-down {
+      position: absolute;
+      width: 100%;
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 10px;
+      border-radius: 10px;
+      /* top: 44px; */
+      display: none;
+      z-index: 10;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .drop-down-btn:hover .drop-down {
+      display: block;
+    }
+
+    .drop-down-btn .drop-down-btn-text {
+      border: 1px solid #000 !important;
+      background-color: #000 !important;
+      color: #fff !important;
+      padding: 8px;
+      border-radius: 10px;
+      text-align: left;
+      padding-left: 22px;
+    }
+
+    .drop-down-btn .drop-down #tamplate-btn-grp {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drop-down-btn .drop-down #tamplate-btn-grp .tamplate-btn {
+      color: #000 !important;
+      background: unset !important;
+      border: unset !important;
+      padding: 2px;
+      margin-right: 0px !important;
+      background: #dfdfdf !important;
+      margin-bottom: 6px;
+    }
+
+    .filter-box {
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+    }
+
+
+    /* Added By Anil */
+
+    .drop-down-btn {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .drop-down-btn-text {
+      padding: 8px 12px;
+      background-color: #f5f5f5;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .drop-down {
+      display: none;
+      position: absolute;
+      background: white;
+      border: 1px solid #ccc;
+      min-width: 180px;
+      z-index: 10;
+    }
+
+    .drop-down-item {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .drop-down-item:hover {
+      background-color: #f0f0f0;
+    }
+
+    .drop-down-btn:hover .drop-down {
+      display: block;
+    }
+  </style>
+
+  <style>
+    .chat-bot {
+      height: 90px;
+      width: 90px;
+      position: fixed;
+      z-index: 999;
+      bottom: 14px;
+      right: 14px;
+    }
+
+    .chat-bot .chat-icon {
+      width: 90px;
+      height: 90px;
+      cursor: pointer;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .chat-bot .chat-icon img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .chat-bot .chat-area {
+      height: 400px;
+      border: 1px solid;
+      box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+      width: 300px;
+      right: 204px;
+      top: -305px;
+      padding: 10px;
+      border-radius: 8px;
+      position: relative;
+      display: none;
+      background: #fff;
+      border: 1px solid var(--border-color);
+      /* background: var(--gradient-card); */
+    }
+
+    .chat-bot .chat-area .chat-input {
+      display: flex;
+      column-gap: 2px;
+      position: absolute;
+      bottom: 0px;
+      width: 100%;
+      left: 0px;
+      padding: 10px;
+    }
+
+    .chat-bot .chat-area .chat-input input {
+      padding: 8px 8px;
+      font-size: 0.9rem;
+    }
+
+    .chat-bot .chat-area .chat-input button {
+      background-color: transparent;
+      border: 1px solid #dee2e6;
+      width: 45px;
+      border-radius: 10px;
+    }
+
+    .chat-bot .chat-area .chat-input button img {
+      width: 20px;
+    }
+
+    .chat-bot .chat-area .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #d1d1d1;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    .chat-bot .chat-area .top h3 {
+      margin-bottom: 0px;
+      font-size: 1rem;
+        color: #0062cb;
+    }
+
+    .close-chat {
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .chat-bot .chat-area .chat-messages {
+      height: 76%;
+      position: relative;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      /* justify-content: end;/ */
+    }
+
+    .chat-bot .chat-area .message-content {
+      font-size: 0.9rem;
+    }
+
+    .chat-bot .chat-area .message-ans {
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      max-width: 200px;
+      padding: 10px;
+      background: #e3e3e3;
+    }
+
+    .chat-bot .chat-area .message-ans ul {
+      padding: 0px;
+      margin-bottom: 0px;
+    }
+
+    .chat-bot .chat-area .message-qus {
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      max-width: 200px;
+      margin: 0px 0px 0px auto;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      background-color: #000;
+      color: #fff;
+    }
+  </style>
+  <style>
+    .cap-list {
+      margin-bottom: 12px;
+    }
+
+    .cap-list ul {
+      padding-left: 0px;
+      margin-bottom: 0px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .cap-list ul li {
+      list-style: none;
+      font-size: .7rem;
+      background: #bb67e4;
+      color: #fff;
+      padding: 1px 10px;
+      border-radius: 35px;
+      font-weight: 400;
+    }
+
+    .picup-line {
+      font-size: .8rem !important;
+      color: blue !important;
+      font-weight: 500;
+      background: #e8e8e8;
+      padding: 10px 10px;
+      border-radius: 9px;
+      line-height: 16px;
+    }
+
+    .disable-click {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+  </style>
+
+  <style>
+    .preview .preview-top h5 {
+      margin-bottom: 4px;
+      font-weight: 700;
+      font-size: 1.4rem;
+    }
+
+    .preview .preview-top p {
+      color: #4747eb;
+      font-weight: 500;
+      font-size: .96rem;
+    }
+
+    .preview .modal-header {
+      padding: 0px;
+      border-bottom: 0px;
+    }
+
+    .preview .btn-close {
+      font-size: 12px;
+    }
+
+    .modal-box {
+      border: 1px solid #e3e3e8;
+      padding: 20px;
+      border-radius: 10px;
+      background: #faf7fe;
+    }
+
+    .modal-box h3 {
+      font-size: 1.25rem;
+      line-height: 1.75rem;
+      color: #17171c;
+    }
+
+    .modal-box ul {
+      padding-left: 0px;
+      margin-bottom: 0px;
+    }
+
+    .modal-box ul li {
+      font-size: 0.9rem;
+      color: #6d6d78;
+      list-style: none;
+      /* display: inline-flex;
+        align-items: baseline; */
+    }
+
+    .modal-box ul li strong {
+      color: #4747eb;
+      margin-right: 0px;
+      font-weight: 900;
+    }
+
+    /* .modal-box .box-modal {} */
+
+    .modal-box .box-modal .count {
+      font-size: 1.875rem;
+      line-height: 2.25rem;
+      font-weight: 700;
+    }
+
+    .box-modal-list {
+      display: flex;
+      justify-content: space-around;
+      margin: 21px 0px;
+      margin-bottom: 0px;
+    }
+
+    .modal-box .box-modal .des {
+      color: #6d6d78;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    .time-list {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      margin: 10px 0px;
+    }
+
+    /* .time-list .titles {} */
+
+    .time-list .time {
+      font-weight: 600;
+      color: #17171c;
+    }
+
+    .big-heading {
+      margin: 0px;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-top: 20px;
+    }
+
+    .why{
+      font-size: .8rem !important;
+    color: blue !important;
+    font-weight: 500;
+    background: #e8e8e8;
+    padding: 10px 10px;
+    border-radius: 9px;
+    line-height: 16px;
+    }
+.why div{
+  margin-bottom: 10px !important;
+}
+    
+    .why p{
+      font-size: .8rem !important;
+    color: blue !important;
+    font-style: italic;
+    }
+   .system-info-2 {
+    width: 92%;
+     position: absolute;
+    bottom: 79px;
+}
+
+
+
+
+  </style>
+
+
+<!-- ChatBot Style -->
+  <style>
+
+.chat-container {
+  width: 360px;
+  height: 520px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.chat-header {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  text-align: center;
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  /* background: #f8f9fc; */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+}
+
+.bot-message .message-content {
+  align-self: flex-start;
+  /* background: #e9f2ff; */
+  color: #333;
+  border-radius: 14px 14px 14px 4px;
+  /* padding: 10px 14px; */
+  max-width: 85%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.3s ease;
+}
+
+.user-message .message-content {
+  align-self: flex-end;
+  /* background: #007bff; */
+  color: white;
+  border-radius: 14px 14px 4px 14px;
+  /* padding: 10px 14px; */
+  max-width: 85%;
+  /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); */
+  animation: fadeIn 0.3s ease;
+}
+
+.option-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  margin: 4px 4px 0 0;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.option-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #0056b3, #004099);
+}
+
+.chat-input {
+  display: flex;
+  border-top: 1px solid #ddd;
+  background: white;
+  padding: 8px;
+}
+
+.chat-input input {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  background: #f2f4f8;
+}
+
+.chat-input button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.chat-input button:hover {
+  background: #0056b3;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+  </style>
+
+<style>
+  /* --- Button Size Fix for "Click to Launch" and "Start Building AI Agent" --- */
+  .setup-box .custom-btn {
+    width: 100%;
+    max-width: 250px;
+    padding: 12px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    text-align: center;
+    display: block;
+    margin: 10px auto;
+  }
+
+  .setup-box .custom-btn.btn-primary {
+    background-color: #000;
+    border: 1px solid #000;
+    color: #fff;
+  }
+
+  .setup-box .custom-btn.btn-primary:hover {
+    background-color: #333 !important;
+  }
+</style>
+
+</head>
+
+<body>
+  <header>
+    <div class="container-fluid">
+      <div class="header-cover">
+        <div class="logo">
+          <!-- <img src="Gignaati.jpg" alt="" /> -->
+          <img src="gig.ico" alt="" />
+        </div>
+        <div class="nav" id="nav" style="display: none">
+          <ul>
+            <li>
+              <button type="button" class="active" id="Dashboard-btn" onclick='handleTabbutton("Dashboard")'>
+                Dashboard
+              </button>
+            </li>
+
+            <li>
+              <button type="button" class="" id="LLM-btn" onclick='handleTabbutton("LLM")'>
+                Models
+              </button>
+            </li>
+            <li>
+              <!-- <button type="button" class="" id="Template-btn" onclick='handleTabbutton("Template")'>
+                Templates
+              </button> -->
+
+              <button type="button" class="" id="Template-btn" onclick='reloadTemplateData()'>
+                Templates
+              </button>
+            </li>
+            <li>
+              <!-- <button type="button" class="" id="Build-btn" onclick='handleTabbutton("Build")'> -->
+              <button type="button" class="" id="Build-btn" onclick='openN8NInApp()'>
+                Make AI Agent
+              </button>
+              <!-- <button type="button" class="" onclick="handleMakeAIAgentClick()">
+                Make AI Agent
+              </button> -->
+              <!-- Subscription Expired Modal -->
+              <div class="modal fade" id="subscriptionModal" tabindex="-1" aria-labelledby="subscriptionModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content"
+                    style="border-radius:18px; box-shadow:0 4px 32px #0008; border: none; background:#fff;">
+                    <div class="modal-header"
+                      style="border-bottom:none; justify-content:center; background: #fff; border-radius:18px 18px 0 0;">
+                      <div style="width:100%; text-align:center;">
+                        <span style="font-size:2.5rem; color:#fff; display:inline-block; margin-bottom:8px;">
+                          <svg width="48" height="48" fill="none" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="12" fill="#fff" />
+                            <path d="M12 7v4" stroke="#111" stroke-width="2" stroke-linecap="round" />
+                            <circle cx="12" cy="15.5" r="1" fill="#111" />
+                            <circle cx="12" cy="12" r="9" stroke="#111" stroke-width="2" />
+                          </svg>
+                        </span>
+                        <h5 class="modal-title" id="subscriptionModalLabel"
+                          style="font-weight:700; color:#111; font-size:1.4rem;">Subscription Required</h5>
+                      </div>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="position:absolute; right:18px; top:18px; 
+           background: transparent url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\' fill=\'black\'><path d=\'M2.146 2.146a.5.5 0 0 1 .708 0L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854a.5.5 0 0 1 0-.708z\'/></svg>') center/1em auto no-repeat; 
+           filter:none; width:1em; height:1em; border:0;">
+                      </button>
+
+                      <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="position:absolute; right:18px; top:18px; color:#111; filter:invert(1);"></button> -->
+                    </div>
+                    <div class="modal-body" style="padding:32px 24px 16px 24px; text-align:center;">
+                      <p style="font-size:1.1rem; color:#111; font-weight:600; margin-bottom:18px;">Your free trial has
+                        expired.</p>
+                      <p style="color:#444; font-size:1rem; margin-bottom:24px;">To continue building AI Agents, please
+                        renew your plan for just ₹34 per day. Get unlimited access, premium support, and more features.
+                      </p>
+                      <a onclick="openSubscription('basic')" class="btn btn-lg"
+                        style="background:#111; color:#fff; font-weight:600; border-radius:10px; padding:12px 32px; font-size:1.1rem; box-shadow:0 2px 8px #0002; border:none;">Get
+                        Subscription</a>
+                    </div>
+                    <!-- <div class="modal-footer" style="border-top:none; justify-content:center; background:#f5f5f5; border-radius:0 0 18px 18px;">
+          <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal" style="border-radius:8px; padding:8px 28px;">Close</button>
+        </div> -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Subscribe Now Modal -->
+              <div class="modal fade" id="subscribeNowModel" tabindex="-1" aria-labelledby="subscriptionModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content"
+                    style="border-radius:18px; box-shadow:0 4px 32px #0008; border: none; background:#fff;">
+                    <div class="modal-header"
+                      style="border-bottom:none; justify-content:center; background: #fff; border-radius:18px 18px 0 0;">
+                      <div style="width:100%; text-align:center;">
+                        <span style="font-size:2.5rem; color:#fff; display:inline-block; margin-bottom:8px;">
+                          <svg width="48" height="48" fill="none" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="12" fill="#fff" />
+                            <path d="M12 7v4" stroke="#111" stroke-width="2" stroke-linecap="round" />
+                            <circle cx="12" cy="15.5" r="1" fill="#111" />
+                            <circle cx="12" cy="12" r="9" stroke="#111" stroke-width="2" />
+                          </svg>
+                        </span>
+                        <h5 class="modal-title" id="subscriptionModalLabel"
+                          style="font-weight:700; color:#111; font-size:1.4rem;">Subscribe Now</h5>
+                      </div>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="position:absolute; right:18px; top:18px; 
+           background: transparent url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\' fill=\'black\'><path d=\'M2.146 2.146a.5.5 0 0 1 .708 0L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854a.5.5 0 0 1 0-.708z\'/></svg>') center/1em auto no-repeat; 
+           filter:none; width:1em; height:1em; border:0;">
+                      </button>
+
+                      <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="position:absolute; right:18px; top:18px; color:#111; filter:invert(1);"></button> -->
+                    </div>
+                    <div class="modal-body" style="padding:32px 24px 16px 24px; text-align:center;">
+                      <p style="font-size:1.1rem; color:#111; font-weight:600; margin-bottom:18px;">Get exclusive
+                        updates, offers, and more!</p>
+                      <p style="color:#444; font-size:1rem; margin-bottom:24px;">Subscribe for just ₹34 per day to
+                        continue building AI Agents. Get unlimited access, premium support, and more.
+                      </p>
+                      <a onclick="openSubscription('basic')" class="btn btn-lg"
+                        style="background:#111; color:#fff; font-weight:600; border-radius:10px; padding:12px 32px; font-size:1.1rem; box-shadow:0 2px 8px #0002; border:none;">Get
+                        Subscription</a>
+                    </div>
+                    <!-- <div class="modal-footer" style="border-top:none; justify-content:center; background:#f5f5f5; border-radius:0 0 18px 18px;">
+          <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal" style="border-radius:8px; padding:8px 28px;">Close</button>
+        </div> -->
+                  </div>
+                </div>
+              </div>
+
+            </li>
+          </ul>
+        </div>
+        <div class="profile" id="profile" style="display:none ;">
+          <div style="display: flex; column-gap: 10px; align-items: center">
+            <div class="remaining-days" id="remaining-days">
+              <span id="remaining-days-text">
+                Free trial remaining :
+                <strong id="remaining-days-count">07</strong> Days
+              </span>
+              <!-- <img src="clock.png" onclick="toggleRemainingDays()" /> -->
+            </div>
+            <img src="notification1.png" title="Notification" onclick="openNav()" />
+            <img src="subscribe.png" id="SubscribeIcon" title="Subscribe Now" style="cursor:pointer;width: 30px;"
+              onclick="showSubscribeNowModal()" />
+            <img src="help1.png" title="Help" style="cursor:pointer;width: 30px" onclick="showContactUsModal()" />
+            <img src="logout.png" title="Logout" style="cursor:pointer;width: 22px" onclick="triggerCtrlR()" />
+          </div>
+        </div>
+      </div>
+  </header>
+
+  <div class=" gignaati-workBench-container mt-5 px-5" id="gignaati-workBench-container">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+          <div class="brands-area">
+            <h1 class="title">Trusted by Leading Brands</h1>
+            <div class="row">
+              <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 mb-4">
+                <div class="brand-box">
+                  <div class="brand-img">
+                    <img src="intelNew.png" alt="Intel" />
+                  </div>
+                  <!-- <h2 class="brand-name">Intel</h2> -->
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 mb-4">
+                <div class="brand-box">
+                  <div class="brand-img">
+                    <img src="logo-with-tagline.webp" alt="" />
+                  </div>
+                  <!-- <h2 class="brand-name">Dell</h2> -->
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 mb-4">
+                <div class="brand-box">
+                  <div class="brand-img">
+                    <img src="NATS-Logo.png" alt="" />
+                  </div>
+                  <!-- <h2 class="brand-name">AWS</h2> -->
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 mb-4">
+                <div class="brand-box">
+                  <div class="brand-img">
+                    <img src="nsdj.jpg" alt="" />
+                  </div>
+                  <!-- <h2 class="brand-name">Google</h2> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+          <div class="email-box-container">
+            <div class="email-box" id="email-box">
+              <h2 class="title">Enter Email to Begin Your Journey</h2>
+              <form>
+                <input type="text" class="form-control mb-3" placeholder="Enter Your Email" />
+                <input type="checkbox" class="form-check-input mb-2" style="float:left; margin-right: 5px;"
+                  id="cloudTermsCheckbox" required />
+                <label class="form-check-label" for="cloudTermsCheckbox mb-2" style="float:left">
+                  I agree to the
+                  <a href="https://workbench.gignaati.com//Terms&Conditions.html" target="_blank">Terms & Conditions</a>
+                </label>
+                <button type="button" class="btn btn-primary custom-btn w-100" onclick="ShowSystemRequirementsModel()">
+                  Get Started
+                </button>
+                <p>
+                  <!-- Seamless 7-Day Trial – Zero Cost, Zero Application, Zero Obligation.-->
+                  7 Days of Free Access—Dive into Our Platform & Discover What You’ve Been Missing!
+                </p>
+                <!-- <button onclick="triggerCtrlR()">Refresh Page</button> -->
+              </form>
+            </div>
+            <div class="otp-box" id="otp-box" style="display: none">
+              <!-- <h2 class="title">Enter OTP to Verify</h2> -->
+              <h2 class="title">Enter Your License Key</h2>
+              <p class="">
+                <!-- We've sent a verification code to your email id. -->
+                <span style="display: none" id="">shekhat@gmail.com</span>
+              </p>
+              <form>
+                <!-- <input type="text" class="form-control mb-3" placeholder="Enter 6 digit OTP here" /> -->
+                <input type="text" class="form-control mb-3" placeholder="License Key" />
+                <!-- <button type="button" class="btn btn-primary custom-btn w-100 mb-2" onclick="OTPVerify()"> -->
+                <button type="button" class="btn btn-primary custom-btn w-100 mb-2" onclick="VerifyLicenseKey()">
+                  Verify & Continue
+                </button>
+
+                <button type="button" class="btn btn-primary custom-btn custom-btn-white w-100"
+                  onclick="backToVerify()">
+                  Back To Email
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <h1 class="title mt-5 ">Platform Components</h1>
+          <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 mt-3">
+            <div class="box-2">
+              <div class="box-2-img">
+                <img src="Two-click-setup.png" alt="">
+              </div>
+              <h2>Two click setup</h2>
+              <p>Set up your workspace faster than ever. With our streamlined installation, you’ll go from download to
+                running environment in just a few clicks.</p>
+            </div>
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 mt-3">
+            <div class="box-2">
+              <div class="box-2-img">
+                <img src="Earn.png" alt="">
+              </div>
+              <h2>Learn & grow</h2>
+              <p>Turn every new skill into opportunity. Deploy AI agents for real-world tasks and start monetizing as
+                you grow.</p>
+            </div>
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 mt-3">
+            <div class="box-2">
+              <div class="box-2-img">
+                <img src="Templatess.png" alt="">
+              </div>
+              <h2>Rich Template Library</h2>
+              <p>Accelerate your workflow through our extensive collection of pre-built agents tailored and crafted for
+                different business needs across sectors.</p>
+            </div>
+          </div>
+          <!-- <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-12 mt-3">
+            <div class="box-2">
+              <div class="box-2-img">
+                <img src="AI-COACH.png" alt="">
+              </div>
+              <h2>AI Coach</h2>
+              <p>Embark on your path to success.
+                With AI guidance made just for you.
+                It's a journey of empowerment.</p>
+            </div>
+          </div> -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div class="action-features-setup mt-5 px-5" style="display: none" id="action-features-setup">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+          <div class="action-container">
+            <h1 class="title">See It In Action</h1>
+            <div class="action-box">
+              <div class="action-img">
+                <img src="m2-res_480p.gif" alt="" />
+              </div>
+              <div class="action-info">
+                <h3>Interactive Demo</h3>
+                <p>
+                  Watch how easy it is to build, deploy, and manage AI
+                  applications with our platform.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-8 col-lg-8 col-md-6 col-sm-12 col-12">
+          <div class="features-container">
+            <h1 class="title">Benefits</h1>
+            <div class="row">
+              <div class="col-xl-6 col-lg-6 col-12 mb-3">
+                <div class="features-box mb-3">
+                  <div class="icon">
+                    <svg data-lov-id="src\components\screens\DemoScreen.tsx:101:22" data-lov-name="FontAwesomeIcon"
+                      data-component-path="src\components\screens\DemoScreen.tsx" data-component-line="101"
+                      data-component-file="DemoScreen.tsx" data-component-name="FontAwesomeIcon"
+                      data-component-content="%7B%22className%22%3A%22text-primary%22%7D" data-prefix="fas"
+                      data-icon="wrench" class="svg-inline--fa fa-wrench" role="img" viewBox="0 0 576 512"
+                      aria-hidden="true">
+                      <path fill="currentColor"
+                        d="M509.4 98.6c7.6-7.6 20.3-5.7 24.1 4.3 6.8 17.7 10.5 37 10.5 57.1 0 88.4-71.6 160-160 160-17.5 0-34.4-2.8-50.2-8L146.9 498.9c-28.1 28.1-73.7 28.1-101.8 0s-28.1-73.7 0-101.8L232 210.2c-5.2-15.8-8-32.6-8-50.2 0-88.4 71.6-160 160-160 20.1 0 39.4 3.7 57.1 10.5 10 3.8 11.8 16.5 4.3 24.1l-88.7 88.7c-3 3-4.7 7.1-4.7 11.3l0 41.4c0 8.8 7.2 16 16 16l41.4 0c4.2 0 8.3-1.7 11.3-4.7l88.7-88.7z">
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="feature-info">
+                    <h3>From setup to action: Agentic Platform in two clicks</h3>
+                    <p>
+                      Get your Agentic workspace running instantly. Say goodbye to complex installations and
+                      hello to a seamless setup process.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-12 mb-3">
+                <div class="features-box mb-3">
+                  <div class="icon">
+                    <svg data-lov-id="src\components\screens\DemoScreen.tsx:101:22" data-lov-name="FontAwesomeIcon"
+                      data-component-path="src\components\screens\DemoScreen.tsx" data-component-line="101"
+                      data-component-file="DemoScreen.tsx" data-component-name="FontAwesomeIcon"
+                      data-component-content="%7B%22className%22%3A%22text-primary%22%7D" data-prefix="fas"
+                      data-icon="chart-bar" class="svg-inline--fa fa-chart-bar" role="img" viewBox="0 0 512 512"
+                      aria-hidden="true">
+                      <path fill="currentColor"
+                        d="M32 32c17.7 0 32 14.3 32 32l0 336c0 8.8 7.2 16 16 16l400 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L80 480c-44.2 0-80-35.8-80-80L0 64C0 46.3 14.3 32 32 32zm96 64c0-17.7 14.3-32 32-32l192 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-192 0c-17.7 0-32-14.3-32-32zm32 80l128 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32s14.3-32 32-32zm0 112l256 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-256 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z">
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="feature-info">
+                    <h3>A Library of Pre-Built Templates</h3>
+                    <p>
+                      Dive into our rich library of pre-built templates and use cases.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-12 mb-3">
+                <div class="features-box mb-3">
+                  <div class="icon">
+                    <svg data-lov-id="src\components\screens\DemoScreen.tsx:101:22" data-lov-name="FontAwesomeIcon"
+                      data-component-path="src\components\screens\DemoScreen.tsx" data-component-line="101"
+                      data-component-file="DemoScreen.tsx" data-component-name="FontAwesomeIcon"
+                      data-component-content="%7B%22className%22%3A%22text-primary%22%7D" data-prefix="fas"
+                      data-icon="rocket" class="svg-inline--fa fa-rocket" role="img" viewBox="0 0 512 512"
+                      aria-hidden="true">
+                      <path fill="currentColor"
+                        d="M128 320L24.5 320c-24.9 0-40.2-27.1-27.4-48.5L50 183.3C58.7 168.8 74.3 160 91.2 160l95 0c76.1-128.9 189.6-135.4 265.5-124.3 12.8 1.9 22.8 11.9 24.6 24.6 11.1 75.9 4.6 189.4-124.3 265.5l0 95c0 16.9-8.8 32.5-23.3 41.2l-88.2 52.9c-21.3 12.8-48.5-2.6-48.5-27.4L192 384c0-35.3-28.7-64-64-64l-.1 0zM400 160a48 48 0 1 0 -96 0 48 48 0 1 0 96 0z">
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="feature-info">
+                    <h3>Choose the Perfect LLM Model</h3>
+                    <p>Select from our curated list of Large Language Models (LLMs) tailored for your specific
+                      needs. Find the perfect model for your goals.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-12 mb-3">
+                <div class="features-box mb-3">
+                  <div class="icon">
+                    <svg data-lov-id="src\components\screens\DemoScreen.tsx:101:22" data-lov-name="FontAwesomeIcon"
+                      data-component-path="src\components\screens\DemoScreen.tsx" data-component-line="101"
+                      data-component-file="DemoScreen.tsx" data-component-name="FontAwesomeIcon"
+                      data-component-content="%7B%22className%22%3A%22text-primary%22%7D" data-prefix="fas"
+                      data-icon="users" class="svg-inline--fa fa-users" role="img" viewBox="0 0 640 512"
+                      aria-hidden="true">
+                      <path fill="currentColor"
+                        d="M320 16a104 104 0 1 1 0 208 104 104 0 1 1 0-208zM96 88a72 72 0 1 1 0 144 72 72 0 1 1 0-144zM0 416c0-70.7 57.3-128 128-128 12.8 0 25.2 1.9 36.9 5.4-32.9 36.8-52.9 85.4-52.9 138.6l0 16c0 11.4 2.4 22.2 6.7 32L32 480c-17.7 0-32-14.3-32-32l0-32zm521.3 64c4.3-9.8 6.7-20.6 6.7-32l0-16c0-53.2-20-101.8-52.9-138.6 11.7-3.5 24.1-5.4 36.9-5.4 70.7 0 128 57.3 128 128l0 32c0 17.7-14.3 32-32 32l-86.7 0zM472 160a72 72 0 1 1 144 0 72 72 0 1 1 -144 0zM160 432c0-88.4 71.6-160 160-160s160 71.6 160 160l0 16c0 17.7-14.3 32-32 32l-256 0c-17.7 0-32-14.3-32-32l0-16z">
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="feature-info">
+                    <h3>No Cloud Dependencies</h3>
+                    <p>Fully local — your data stays secure on your machine.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+          <div class="setup-container">
+            <h1 class="title">2-Easy Steps</h1>
+            <div class="row">
+              
+               <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="setup-box mb-3 disable-click1" id="n8n-setup-box" style="cursor: pointer">
+                  <div class="setup-info">
+                    <h3>
+                      Launch Agentic Platform <span class="count">1</span>
+                    </h3>
+                    
+                    <button type="button" class="btn btn-primary custom-btn w-100 install-btn" onclick="clickToLaunchInstall()">
+                      Click to Launch
+                    </button>
+
+                    <div id="launch-progress-panel" style="display:none; margin-top:12px;">
+                      <div style="margin-bottom:8px;">
+                        <div class="progress" style="height:14px;">
+                          <div id="launch-progress-bar" class="progress-bar" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                        </div>
+                      </div>
+                      <div id="launch-progress-text" style="font-size:0.9rem; color:#333; margin-bottom:6px;">Waiting...</div>
+                      <div id="launch-console" style="background:#111; color:#0f0; padding:8px; border-radius:6px; max-height:160px; overflow:auto; font-family: monospace; font-size:12px;"></div>
+                    </div>
+
+                    <!-- Inline progress panel for Click to Launch (download progress + console) -->
+                    <div id="launch-progress-panel" style="display:none; margin-top:12px;">
+                      <div style="margin-bottom:8px;">
+                        <div class="progress" style="height:14px;">
+                          <div id="launch-progress-bar" class="progress-bar" role="progressbar" style="width:0%">0%</div>
+                        </div>
+                      </div>
+                      <div id="launch-progress-text" style="font-size:0.9rem; color:#333; margin-bottom:6px;">Waiting...</div>
+                      <div id="launch-console" style="background:#111; color:#0f0; padding:8px; border-radius:6px; max-height:160px; overflow:auto; font-family: monospace; font-size:12px;"></div>
+                    </div>
+
+                    <div id="n8n-loader" style="display: none; margin-top: 10px">
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      Checking...
+                    </div>
+                    <div id="n8n-result" style="display: none; margin-top: 10px"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 disable-click" id="startJourney">
+                <div class="setup-box mb-3" id="">
+                  <div class="setup-info">
+                    <h3>
+                      Ready to Build the Future.<span class="count">2</span>
+                    </h3>
+                    <button type="button" class="btn btn-primary custom-btn w-100 " onclick="validateAndStartJourney()">
+                      Start Building AI Agent
+                    </button>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+
+          </div>
+        </div>
+
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-4" id="system-info" style="display: none;">
+          <div class="features-container">
+            <h1 class="title">System Information</h1>
+            <div id="system-monitoring">
+              <div class="system-monitoring system-info">
+                <div class="row">
+                  <div class="col-3">
+                    <div class="monitor-item">
+                      <div class="monitor-circle cpu" id="cpu-usage">0%</div>
+                      <span>CPU</span>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="monitor-item">
+                      <div class="monitor-circle ram" id="ram-usage">0%</div>
+                      <span>RAM</span>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="monitor-item">
+                      <div class="monitor-circle gpu" id="gpu-usage">0%</div>
+                      <span>GPU</span>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="monitor-item">
+                      <div class="monitor-circle npu" id="npu-usage">0%</div>
+                      <span>NPU</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="dash-board-build-llm-container" style="display: none;" id="dash-board-build-llm-container">
+    <div class="notifications-icon"></div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="filter-area-container">
+            <!-- <div class="dashboard-container" id="dashboard-container">
+                <div class="cover" style="background:#fff;padding:18px 18px 8px 18px;border-radius:16px;box-shadow:0 2px 8px #0002;display:inline-block;max-width:100%;margin-bottom:20px;">
+                  <img src="dashboard-demo.jpg" alt="" srcset="" style="max-width:100%;border-radius:12px;box-shadow:none;display:block;" />
+                </div>
+              </div> -->
+            <div class="dashboard-container cover pt-4" id="dashboard-container">
+              <!-- <h1 class="title">build-container</h1> -->
+              <!-- <div style="
+                    position: relative;
+                    display: inline-block;
+                    text-align: center;
+                    width: 100%;
+                  ">
+                <img src="build.jpg" alt="200+ Automations - Ultimate n8n Workflow Templates Collection" style="
+                      width: 100%;
+                      border-radius: 12px;
+                      box-shadow: 0 2px 8px #0002;
+                      margin-bottom: 20px;
+                    " />
+              </div> -->
+              <div class="share-idea-container px-5" id="idea-container">
+                <div class="share-idea">
+                  <h2 class="title">Transform your idea into reality</h2>
+                  <form action="">
+                    <textarea id="idea-input" class="form-control mb-1" placeholder="What do you want to build today"
+                      rows="5" name="" maxlength="250"></textarea>
+<p style="font-size: .8rem; padding-left: 10px;">Max 250 Characters</p>
+                    <div id="idea-error" style="color:red; font-size:0.9em; margin-bottom:10px;"></div>
+
+                    <div class="text-end"><button type="button" class="btn btn-primary custom-btn"
+                        onclick="DashboardEconomics()">
+                        Build Agent
+                      </button></div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="Economics-container px-5" id="economics-container" style="display: none;">
+                <div class="Economics box-cover-2">
+                  <!-- <h1 class="title text-center" id="agentEconomic">Your Agent Economics</h1> -->
+                  <h1 class="title text-center" id="agentEconomic">AI Agent</h1>
+                  <p class="sec-des">Cost analysis and return on investment</p>
+                  <div class="row">
+                    <div class="col-lg-4 col-md-6 col-12 mb-3">
+                      <div class="economic-box">
+                        <h3 class="economic-img"><img src="" alt=""></h3>
+                        <p class="economic-value" id="token-cost">124</p>
+                        <p class="economic-des">
+                          Token Cost Per Request
+                        </p>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12 mb-3">
+                      <div class="economic-box">
+                        <h3 class="economic-img"><img src="" alt=""></h3>
+                        <p class="economic-value" id="roi-value">255%</p>
+                        <p class="economic-des">
+                          Expected ROI
+                        </p>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12 mb-3">
+                      <div class="economic-box">
+                        <h3 class="economic-img"><img src="" alt=""></h3>
+                        <p class="economic-value" id="hours-saved">15h</p>
+                        <p class="economic-des">
+                          Time Saved per week
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="row">
+                    <div class="small-heading title text-center mb-3">
+                      Financial Impact
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12 mb-3">
+                      <div class="Financial-Impact text-center">
+                        Monthly Savings
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12 mb-3">
+                      <div class="Financial-Impact text-center">
+                        <span>₹81340</span>
+                        Yearly Revenue Impact
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12 mb-3">
+                      <div class="Financial-Impact text-center">
+                        <span>₹81340</span>
+
+                      </div>
+                    </div>
+                  </div> -->
+                </div>
+                <div class="Benefits-container box-cover-2 mt-4">
+                  <h1 class="title">Key Benefits</h1>
+                  <ul class="benefits-list" id="benefits-list">
+                    <li><span></span>Save 10-15 hours per week on repetitive tasks</li>
+                    <li><span></span>Reduce operational costs by 40-60%</li>
+                    <li><span></span>Improve response time by 80%</li>
+                    <li><span></span>24/7 availability without human intervention</li>
+
+                  </ul>
+                  <div class="box-cover-3">
+                    <p><Strong>Note:</Strong> This analysis is based on industry averages. Your actual results may vary
+                      based on implementation and usage patterns.</p>
+                  </div>
+                </div>
+
+                <div class="text-end"><button type="button" class="btn btn-primary custom-btn mt-3"
+                    onclick='reloadTemplateData()'>
+                    View Templates
+                  </button></div>
+              </div>
+
+
+            </div>
+            <div class="build-container pt-4" id="build-container" style="display: none">
+              <!-- <h1 class="title">build-container</h1> -->
+              <div style="
+                    position: relative;
+                    display: inline-block;
+                    text-align: center;
+                    width: 100%;
+                    max-width: 900px;
+                  ">
+                <img src="build.jpg" alt="200+ Automations - Ultimate n8n Workflow Templates Collection" style="
+                      max-width: 100%;
+                      border-radius: 12px;
+                      box-shadow: 0 2px 8px #0002;
+                      margin-bottom: 20px;
+                    " />
+                <button type="button" class="btn build-gradient-btn" style="
+                      position: absolute;
+                      top: 18px;
+                      right: 18px;
+                      min-width: 120px;
+                      z-index: 2;
+                    " onclick="openN8NInApp()">
+                  Build Now
+                </button>
+                <style>
+                  .build-gradient-btn {
+                    background: linear-gradient(90deg,
+                        #e9498c 0%,
+                        #ff758c 100%) !important;
+                    border: none !important;
+                    color: #fff !important;
+                    font-weight: 600;
+                    box-shadow: 0 2px 8px #ff7eb344;
+                    transition: background 0.2s;
+                  }
+
+                  .build-gradient-btn:hover,
+                  .build-gradient-btn:focus {
+                    background: linear-gradient(90deg,
+                        #ff758c 0%,
+                        #ff7eb3 100%) !important;
+                    color: #fff !important;
+                  }
+                </style>
+              </div>
+              <iframe src="https://n8n.io/" width="600" height="450" style="border: 0; margin-top: 30px"
+                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+              </iframe>
+            </div>
+            <div class="llm-container pt-4" style="display: none" id="llm-container">
+              <div class="top-heading-sec mb-3">
+                <h1 class="title">Models</h1>
+                <div class="btn-grp" id="llm-btn-grp"></div>
+                <div class="Search-box" style="width: 19em;">
+                  <input type="text" id="llm-search-bar" class="form-control" placeholder="Search" style="
+                        max-width: 500px;
+                        margin: 0 auto;
+                        border: 1px solid #000;
+                        border-radius: 12px;
+                        font-size: 0.9rem;
+                        box-shadow: 0 2px 8px #0001;
+                        padding: 10px;
+                      " />
+                </div>
+              </div>
+
+              <div class="row" id="llm-list-container">
+                <!-- LLM models will be injected here by JS -->
+              </div>
+            </div>
+            <div class="tamplate-container pt-4" style="display: none" id="tamplate-container">
+              <div class="top-heading-sec mb-3 ">
+                <h1 class="title" id="templateCount">Templates</h1>
+                <div class="filter-box">
+                  <div class="drop-down-btn">
+                    <div class="drop-down-btn-text" id="drop-down-btn-text">Select Category</div>
+                    <div class="drop-down">
+                      <div id="tamplate-btn-grp"></div>
+                    </div>
+                  </div>
+
+                  <div class="Search-box" style="width: 19em;">
+                    <input type="text" id="template-search-bar" class="form-control" placeholder="Search" style="
+                        max-width: 500px;
+                        margin: 0 auto;
+                        border: 1px solid #000;
+                        border-radius: 12px;
+                        font-size: 0.9rem;
+                        box-shadow: 0 2px 8px #0001;
+                        padding: 10px;
+                      " />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row" id="template-list-container">
+
+                <!-- Templates will be injected here by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="mySidenav" class="sidenav" style="padding: 0px">
+          <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+          <div class="notifications-box">
+            <h3 class="title-notifications">Notifications</h3>
+            <div class="notifications-list" id="notifications-list-container"></div>
+          </div>
+        </div>
+        <!-- <div class="col-lg-3">
+            <div class="notifications-box">
+              <h3 class="title-notifications">Notifications</h3>
+              <div
+                class="notifications-list"
+                id="notifications-list-container"
+              ></div>
+            </div>
+          </div> -->
+      </div>
+    </div>
+  </div>
+
+  <div class="footer" id="footer">
+    <div class="container-fluid">
+      <div class="footer-row">
+        <div class="footer-box" onclick="openAcademy()">
+          <div class="Offering-box">
+            <!-- <div class="offer-icon"></div> -->
+            <div class="offer-img">
+              <img src="ai-academy-icon-D2xONIWL.jpg" alt="" />
+            </div>
+            <h3 class="offer-title mb-0 mt-3">AI Academy</h3>
+          </div>
+        </div>
+        <div class="footer-box" onclick="openMarketPlace()">
+          <div class="Offering-box">
+            <!-- <div class="offer-icon"></div> -->
+            <div class="offer-img">
+              <img src="ai-marketplace-icon-Gip8ZonJ.jpg" alt="" />
+            </div>
+            <h3 class="offer-title mb-0 mt-3">AI MarketPlace</h3>
+          </div>
+        </div>
+        <!-- <div class="footer-box" onclick="openCoach()">
+          <div class="Offering-box">
+            
+            <div class="offer-img">
+              <img src="ai-coach-icon-D8JqMM6f.jpg" alt="" />
+            </div>
+            <h3 class="offer-title mb-0 mt-3">AI Coach</h3>
+          </div>
+        </div> -->
+
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered contactus">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h2>Contact Us</h2>
+          <div class="contact-us">
+            <div class="icon mail">
+              <img src="mail-icon.jpg" alt="" />
+            </div>
+            <p>pmo@gignaati.com</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Subscribe Now Modal -->
+  <div class="modal fade" id="SystemRequirementsModel" tabindex="-1" aria-labelledby="SystemRequirementsModel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content"
+        style="border-radius:18px; box-shadow:0 4px 32px #0008; border: none; background:#fff;">
+        <div class="modal-header"
+          style="border-bottom:none; justify-content:center; background: #fff; border-radius:18px 18px 0 0;">
+          <div style="width:100%; text-align:center;">
+
+            <h5 class="modal-title" id="SystemRequirementsModel" style="font-weight:700; color:#111; font-size:1.4rem;">
+              System Requirements</h5>
+            <p style=" color:#444; font-size:.9rem; margin-bottom: 0px;">Minimum requirements to run this workbench:</p>
+
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="position:absolute; right:18px; top:18px; 
+           background: transparent url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\' fill=\'black\'><path d=\'M2.146 2.146a.5.5 0 0 1 .708 0L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854a.5.5 0 0 1 0-.708z\'/></svg>') center/1em auto no-repeat; 
+           filter:none; width:1em; height:1em; border:0;">
+          </button>
+
+
+        </div>
+        <div class="modal-body" style="padding:0px 24px 16px 24px; text-align:center;">
+          <!-- <p style="font-size:1.1rem; color:#111; font-weight:600; margin-bottom:18px;">Get exclusive
+            updates, offers, and more!</p>
+          <p style="color:#444; font-size:1rem; margin-bottom:24px;">Subscribe for just ₹34 per day to
+            continue building AI Agents. Get unlimited access, premium support, and more.
+          </p>
+          <a onclick="openSubscription('basic')" class="btn btn-lg"
+            style="background:#111; color:#fff; font-weight:600; border-radius:10px; padding:12px 32px; font-size:1.1rem; box-shadow:0 2px 8px #0002; border:none;">Get
+            Subscription</a> -->
+          <ul id="system-requirements-list" style="list-style-type: disc; text-align: left; padding-left: 20px; color:#444; font-size:1rem;">
+            <li><strong style="display: block;">Memory</strong><span id="sys-req-memory">Detecting...</span></li>
+            <li><strong style="display: block;">Processor</strong><span id="sys-req-cpu">Detecting...</span></li>
+            <li><strong style="display: block;">Graphics</strong><span id="sys-req-gpu">Detecting...</span></li>
+          </ul>
+          
+          <!-- Performance Tier Badge -->
+          <div id="performance-tier-badge" style="display:none; margin: 15px 0; padding: 12px; border-radius: 10px; text-align: center;">
+            <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">Your System Performance</div>
+            <div id="tier-name" style="font-size: 1.3rem; font-weight: 700;"></div>
+            <div id="tier-description" style="font-size: 0.9rem; color: #666; margin-top: 5px;"></div>
+          </div>
+          <div class="radio" style="display: flex; align-items: baseline; margin-bottom: 14px; background: #e7f3ff; padding: 10px; border-radius: 8px; column-gap: 4px; font-size: .86rem;">
+            <input type="checkbox" name="termsCheckbox" class="form-check-input" id="termsCheckbox" required />
+            <label for="termsCheckbox" style="color: #004085; text-align: left;">
+              I acknowledge that my system may not meet the recommended requirements and agree to proceed at my own discretion.
+            </label>
+          </div>
+          <div class="btn-grps" style="    display: flex
+;
+    column-gap: 10px;">
+            <button type="button" class="btn btn-primary custom-btn custom-btn-white  w-50"
+              onclick="closeSystemRequirementsModal()">Cancel</button>
+            <button type="button" class="btn btn-primary custom-btn w-50" onclick="verify();">Proceed</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="chat-bot" id="chatBotDiv" style="display: none;">
+    <div class="chat-bot-area">
+      <div class="chat-icon">
+        <img src="icon-chat.jpg" alt="" />
+      </div>
+      <div class="chat-area">
+        <div class="top">
+          <h3>Chat with us</h3>
+          <div class="close-chat">X</div>
+        </div>
+        <div class="chat-messages">
+          <!-- <div class="message bot-message">
+              <div class="message-content">
+                <div class="message-ans">
+                  <ul>
+                    <li>Restart Your PC</li>
+                  </ul>
+                </div>
+                <div class="message-qus">
+                  Hello! How can we assist you today?
+                </div>
+              </div>
+            </div> -->
+          <!-- User messages will be appended here -->
+        </div>
+        <div class="chat-input">
+          <input type="text" class="form-control" placeholder="Type a message..." />
+          <button type="button"><img src="send-iocn.webp" alt="" /></button>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+
+  <!-- Button trigger modal -->
+  <!-- <button
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#previewModal"
+    >
+      Launch demo modal
+    </button> -->
+
+  <!-- Modal -->
+  <!-- <div class="modal fade preview" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="text-end">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="preview-top">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Proposal Generator Preview
+                </h5>
+                <p>
+                  <i>"Business Proposals can now be made at fingertips"</i>
+                </p>
+              </div>
+
+              <div style="padding:65.03% 0 0 0;position:relative;"><iframe
+                  src="https://player.vimeo.com/video/1124200950?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                  frameborder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  style="position:absolute;top:0;left:0;width:100%;height:100%;" title="What is an API"></iframe></div>
+            </div>
+            <div class="col-lg-6">
+              <div class="modal-box mb-3">
+                <h3>Key Benefits</h3>
+                <ul>
+                  <li>
+                    <strong>.</strong>
+                    Automate repetitive tasks and save hours daily
+                  </li>
+                  <li>
+                    <strong>.</strong>
+                    Integrate seamlessly with your existing workflow
+                  </li>
+                  <li>
+                    <strong>.</strong>
+                    Scale operations without additional headcount
+                  </li>
+                  <li>
+                    <strong>.</strong>
+                    Reduce human error with AI-powered accuracy
+                  </li>
+                  <li>
+                    <strong>.</strong>
+                    24/7 availability for instant responses
+                  </li>
+                </ul>
+              </div>
+              <div class="modal-box mb-3">
+                <h3>Return on Investment</h3>
+                <div class="box-modal-list">
+                  <div class="box-modal">
+                    <div class="count">340%</div>
+                    <div class="des">ROI in Year 1</div>
+                  </div>
+                  <div class="box-modal">
+                    <div class="count">$125K</div>
+                    <div class="des">Annual Savings</div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-box">
+                <h3>Time Saved</h3>
+                <div class="time-list">
+                  <div class="titles">Daily Tasks</div>
+                  <div class="time">8 hours/week</div>
+                </div>
+                <div class="time-list">
+                  <div class="titles">Monthly Reports</div>
+                  <div class="time">12 hours/month</div>
+                </div>
+                <div class="time-list">
+                  <div class="titles">Customer Support</div>
+                  <div class="time">20 hours/week</div>
+                </div>
+                <h2 class="big-heading">500+ hours saved annually</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+
+  <!-- Modal -->
+  <div class="modal fade preview" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="text-end">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="row">
+            <!-- Left Column: Video -->
+            <div class="col-lg-6">
+              <div class="preview-top">
+                <h5 class="modal-title" id="previewTemplateName">
+                  <!-- JS will insert template name here -->
+                </h5>
+                <p><i id="previewTemplateTagline"></i></p>
+              </div>
+
+              <div style="padding:65.03% 0 0 0;position:relative;">
+                <iframe id="previewVideo" src="" frameborder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Template Preview">
+                </iframe>
+              </div>
+            </div>
+
+            <!-- Right Column: Details -->
+            <div class="col-lg-6">
+              <!-- Key Benefits -->
+              <div class="modal-box mb-3">
+                <h3>Key Benefits</h3>
+                <ul id="benefitsList">
+                  <!-- Dynamically populated by JS -->
+                </ul>
+              </div>
+
+              <!-- Return on Investment -->
+              <div class="modal-box mb-3">
+                <h3>Return on Investment</h3>
+                <div class="box-modal-list">
+                  <div class="box-modal">
+                    <div class="count" id="roi"></div>
+                    <div class="des">ROI in Year 1</div>
+                  </div>
+                  <div class="box-modal">
+                    <div class="count" id="annualSavings"></div>
+                    <div class="des">Annual Savings</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Time Saved -->
+              <div class="modal-box">
+                <h3>Time Saved</h3>
+                <div class="time-list">
+                  <div class="titles">Daily Tasks</div>
+                  <div class="time" id="dailyTasksHours"></div>
+                </div>
+                <div class="time-list">
+                  <div class="titles">Monthly Reports</div>
+                  <div class="time" id="monthlyReportsHours"></div>
+                </div>
+                <div class="time-list">
+                  <div class="titles">Customer Support</div>
+                  <div class="time" id="customerSupportHours"></div>
+                </div>
+                <h2 class="big-heading" id="totalHoursSaved"></h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="node_modules/bootstrap/dist/js//bootstrap.bundle.min.js"></script>
+  <script src="electron-main.js"></script>
+  <script src="task.js"></script>
+  <script src="download-manager-improved.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // openN8NInApp method - Opens N8N in embedded webview
+    async function openN8NInApp() {
+      // Show loading overlay
+      showN8NLoadingOverlay();
+      
+      try {
+        // Check if N8N is running
+        const response = await fetch('http://localhost:5678/healthz', { timeout: 2000 });
+        
+        if (response.ok) {
+          // N8N is ready, show it in webview
+          showN8NWebview();
+        } else {
+          throw new Error('Agentic Platform not ready');
+        }
+      } catch (error) {
+        // N8N not running, show friendly message
+        hideN8NLoadingOverlay();
+        showToast(
+          "Agentic Platform is initializing. Please wait a moment and try again.",
+          false
+        );
+      }
+    }
+    
+    // Show loading overlay with AI quotes while N8N loads
+    function showN8NLoadingOverlay() {
+      const overlay = document.createElement('iframe');
+      overlay.id = 'n8n-loading-overlay';
+      overlay.src = 'ai-quotes-loader.html';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        z-index: 99999;
+      `;
+      
+      document.body.appendChild(overlay);
+      
+      // Poll N8N health and hide overlay when ready
+      const checkInterval = setInterval(async () => {
+        try {
+          const response = await fetch('http://localhost:5678/healthz');
+          if (response.ok) {
+            clearInterval(checkInterval);
+            // Send ready message to loader
+            overlay.contentWindow.postMessage('n8n-ready', '*');
+            // Hide overlay after animation
+            setTimeout(() => {
+              hideN8NLoadingOverlay();
+            }, 1000);
+          }
+        } catch (error) {
+          // Still loading, continue checking
+        }
+      }, 1000); // Check every second
+    }
+    
+    // Hide loading overlay
+    function hideN8NLoadingOverlay() {
+      const overlay = document.getElementById('n8n-loading-overlay');
+      if (overlay) {
+        overlay.remove();
+      }
+    }
+    
+    // Show N8N in embedded webview
+    function showN8NWebview() {
+      // Create fullscreen webview container
+      const container = document.createElement('div');
+      container.id = 'n8n-webview-container';
+      container.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        z-index: 99998;
+        display: flex;
+        flex-direction: column;
+      `;
+      
+      // Create header with close button
+      const header = document.createElement('div');
+      header.style.cssText = `
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      `;
+      
+      header.innerHTML = `
+        <div style="font-size: 1.2rem; font-weight: 600;">🤖 Agentic Platform</div>
+        <button onclick="closeN8NWebview()" style="
+          background: rgba(255,255,255,0.2);
+          border: none;
+          color: white;
+          padding: 8px 20px;
+          border-radius: 5px;
+          cursor: pointer;
+          font-weight: 500;
+          transition: all 0.3s;
+        " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+          ← Back to Dashboard
+        </button>
+      `;
+      
+      // Create iframe for N8N
+      const iframe = document.createElement('iframe');
+      iframe.src = 'http://localhost:5678';
+      iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads');
+      iframe.style.cssText = `
+        flex: 1;
+        width: 100%;
+        border: none;
+      `;
+      
+      container.appendChild(header);
+      container.appendChild(iframe);
+      
+      // Hide loading, show webview
+      hideN8NLoadingOverlay();
+      document.body.appendChild(container);
+    }
+    
+    // Close N8N webview
+    function closeN8NWebview() {
+      const container = document.getElementById('n8n-webview-container');
+      if (container) {
+        container.remove();
+      }
+    }
+
+    // Start Your Journey button handler
+    async function verify() {
+
+      const Checked = document.getElementById("termsCheckbox").checked;
+      if (!Checked) {
+        showToast("Please acknowledge the system requirement disclaimer before proceeding.", false);
+        return;
+      }
+
+      closeSystemRequirementsModal();
+
+
+      const emailInput = document.querySelector(".email-box input");
+      const email = emailInput ? emailInput.value.trim() : "";
+      if (!email) {
+        showToast("Please enter your email.", false);
+        return;
+      }
+      const termsChecked = document.getElementById("cloudTermsCheckbox").checked;
+      if (!termsChecked) {
+        showToast("Please agree to the Terms & Conditions.", false);
+        return;
+      }
+
+
+      try {
+        const res = await fetch(
+          `https://api.gignaati.com/api/User/VerifyUser?email=${encodeURIComponent(
+            email
+          )}`
+        );
+        //const res = await fetch(`https://localhost:7029/api/User/VerifyUser?email=${encodeURIComponent(email)}`);
+        const data = await res.json();
+        if (data && data.data === false) {
+          document.getElementById("email-box").style.display = "none";
+          document.getElementById("otp-box").style.display = "block";
+          // Only show Verify & Continue button
+          const otpBox = document.getElementById("otp-box");
+          if (otpBox) {
+            const btns = otpBox.querySelectorAll("button");
+            btns.forEach((btn) => {
+              if (btn.textContent.trim().toLowerCase().includes("verify")) {
+                btn.style.display = "";
+              } else {
+                btn.style.display = "none";
+              }
+            });
+          }
+          // Set email in OTP box for later use
+          const otpEmailSpan = document.querySelector("#otp-box span");
+          if (otpEmailSpan) otpEmailSpan.textContent = email;
+        }
+        else {
+
+          //Bypass otp
+          ByPassLicenseKey();
+          // showToast(
+          //   data && data.message ? data.message : "Verification failed.",
+          //   false
+          // );
+        }
+
+        //ValidateSubscription();
+
+      } catch (e) {
+        showToast("Error verifying email.", false);
+      }
+    }
+
+
+    //OTPVerify Duplicate method
+    async function ValidateSubscription() {
+      const otpInput = document.querySelector("#otp-box input");
+      const otp = otpInput ? otpInput.value.trim() : "";
+      const emailInput = document.querySelector(".email-box input");
+      const email = emailInput ? emailInput.value.trim() : "";
+
+      try {
+
+        const res = await fetch(
+          `https://api.gignaati.com/api/User/VerifyOtp?email=${encodeURIComponent(
+            email
+          )}&otp=123456`
+        );
+        const data = await res.json();
+        if (data && data.data === true) {
+          document.getElementById("chatBotDiv").style.display = "block";
+
+          const checkSubscription = await fetch(`https://api.gignaati.com/api/User/checkSubscription?email=${encodeURIComponent(email)}`);
+          const IsSubscribed = await checkSubscription.json();
+          if (IsSubscribed && IsSubscribed.data === true) {
+
+            document.getElementById("profile").style.display = "none";
+            document.getElementById("SubscribeIcon").style.display = "none";
+            //document.getElementById("remaining-days").style.display = "none";
+            if (data.totalRecords !== undefined) {
+              // document.getElementById("remaining-days-count").innerText = data.totalRecords;
+              document.getElementById("remaining-days-text").innerText = "Subscription remaining :" + " " + data.totalRecords + " " + "days";
+            }
+          }
+          else {
+
+            if (data.totalRecords !== undefined) {
+              document.getElementById("remaining-days-count").innerText =
+                data.totalRecords;
+            }
+          }
+          if (data.totalRecords !== undefined && data.totalRecords <= 7) {
+            document.getElementById("SubscribeIcon").style.display = "block";
+          }
+
+          try {
+            const deviceinfoRes = await fetch(`http://localhost:5000/api/DeviceInfo`);
+            const deviceinfo = await deviceinfoRes.json();
+            if (deviceinfo) {
+              await fetch(`https://api.gignaati.com/api/DeviceInfo/deviceInfo?email=${encodeURIComponent(email)}`,
+                {
+                  method: 'POST',
+                  headers: {
+                    'accept': 'text/plain',
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    macAddress: deviceinfo.macAddress || null,
+                    ipAddress: deviceinfo.ipAddress || null,
+                    serialNumber: deviceinfo.serialNumber || null,
+                    operatingSystem: deviceinfo.operatingSystem || null,
+                    processor: deviceinfo.processor || null,
+                    deviceId: deviceinfo.deviceId || null,
+                    ram: deviceinfo.ram || null,
+                    gpUs: deviceinfo.gpUs || null,
+                    npUs: deviceinfo.npUs || null,
+                  })
+                }
+              );
+            }
+          } catch (e) {
+
+          }
+          OTPVerify1();
+        }
+
+      }
+      catch (e) {
+        //showToast("Invalid License Key.", false);
+      }
+    }
+
+
+
+
+    // OTP Verify button handler with toast notification
+    async function OTPVerify() {
+      const otpInput = document.querySelector("#otp-box input");
+      const otp = otpInput ? otpInput.value.trim() : "";
+      const email = document.querySelector("#otp-box span")
+        ? document.querySelector("#otp-box span").textContent.trim()
+        : "";
+      if (!otp) {
+        // showToast("Please enter the OTP.", false);
+        showToast("Please Enter Your License Key.", false);
+        return;
+      }
+      try {
+
+
+        // const res = await fetch(
+        //   `https://api.gignaati.com/api/User/VerifyOtp?email=${encodeURIComponent(
+        //     email
+        //   )}&otp=${encodeURIComponent(otp)}`
+        // );
+
+        // const data = await res.json();
+        const data = {
+          data: true,
+          totalRecords: 21
+        };
+
+        if (data && data.data === true) {
+          //alert("Please update this code");
+          document.getElementById("chatBotDiv").style.display = "block";
+
+          const checkSubscription = await fetch(`https://api.gignaati.com/api/User/checkSubscription?email=${encodeURIComponent(email)}`);
+          const IsSubscribed = await checkSubscription.json();
+          if (IsSubscribed && IsSubscribed.data === true) {
+
+            document.getElementById("profile").style.display = "none";
+            document.getElementById("SubscribeIcon").style.display = "none";
+            //document.getElementById("remaining-days").style.display = "none";
+            if (data.totalRecords !== undefined) {
+              // document.getElementById("remaining-days-count").innerText = data.totalRecords;
+              document.getElementById("remaining-days-text").innerText = "Subscription remaining :" + " " + data.totalRecords + " " + "days";
+            }
+          }
+          else {
+
+            if (data.totalRecords !== undefined) {
+              document.getElementById("remaining-days-count").innerText =
+                data.totalRecords;
+            }
+          }
+          if (data.totalRecords !== undefined && data.totalRecords <= 7) {
+            document.getElementById("SubscribeIcon").style.display = "block";
+          }
+
+          // Fire and forget DeviceInfo API call
+          try {
+            const deviceinfoRes = await fetch(`http://localhost:5000/api/DeviceInfo`);
+            const deviceinfo = await deviceinfoRes.json();
+            if (deviceinfo) {
+              await fetch(`https://api.gignaati.com/api/DeviceInfo/deviceInfo?email=${encodeURIComponent(email)}`,
+                {
+                  method: 'POST',
+                  headers: {
+                    'accept': 'text/plain',
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    macAddress: deviceinfo.macAddress || null,
+                    ipAddress: deviceinfo.ipAddress || null,
+                    serialNumber: deviceinfo.serialNumber || null,
+                    operatingSystem: deviceinfo.operatingSystem || null,
+                    processor: deviceinfo.processor || null,
+                    deviceId: deviceinfo.deviceId || null,
+                    ram: deviceinfo.ram || null,
+                    gpUs: deviceinfo.gpUs || null,
+                    npUs: deviceinfo.npUs || null,
+                  })
+                }
+              );
+            }
+          } catch (e) {
+
+          }
+          OTPVerify1();
+        } else {
+          showToast(
+            // data && data.message ? data.message : "OTP verification failed.",
+            data && data.message ? data.message : "Invalid License Key.",
+            false
+          );
+        }
+      } catch (e) {
+        // showToast("Error verifying OTP.", false);
+        showToast("Invalid License Key.", false);
+      }
+    }
+
+
+    async function VerifyLicenseKey() {
+      const otpInput = document.querySelector("#otp-box input");
+      const otp = otpInput ? otpInput.value.trim() : "";
+      const email = document.querySelector("#otp-box span")
+        ? document.querySelector("#otp-box span").textContent.trim()
+        : "";
+      if (!otp) {
+        showToast("Please Enter Your License Key.", false);
+        return;
+      }
+      try {
+
+        const res = await fetch(
+          `https://api.gignaati.com/api/User/insertLicenseKey?email=${encodeURIComponent(
+            email
+          )}&licenseKey=${encodeURIComponent(otp)}`,
+          { method: "GET" }
+        );
+        const data = await res.json();
+
+
+        if (data && data.data === true) {
+
+          document.getElementById("chatBotDiv").style.display = "block";
+
+          ValidateSubscription();
+          // data.totalRecords = 21; // For testing purpose only, remove this line in production
+
+          // const checkSubscription = await fetch(`https://api.gignaati.com/api/User/checkSubscription?email=${encodeURIComponent(email)}`);
+          // const IsSubscribed = await checkSubscription.json();
+          // if (IsSubscribed && IsSubscribed.data === true) {
+
+          //   document.getElementById("profile").style.display = "none";
+          //   document.getElementById("SubscribeIcon").style.display = "none";
+          //   if (data.totalRecords !== undefined) {
+          //     document.getElementById("remaining-days-text").innerText = "Subscription remaining :" + " " + data.totalRecords + " " + "days";
+          //   }
+          // }
+          // else {
+
+          //   if (data.totalRecords !== undefined) {
+          //     document.getElementById("remaining-days-count").innerText =
+          //       data.totalRecords;
+          //   }
+          // }
+          // if (data.totalRecords !== undefined && data.totalRecords <= 7) {
+          //   document.getElementById("SubscribeIcon").style.display = "block";
+          // }
+
+          // try {
+          //   const deviceinfoRes = await fetch(`http://localhost:5000/api/DeviceInfo`);
+          //   const deviceinfo = await deviceinfoRes.json();
+          //   if (deviceinfo) {
+          //     await fetch(`https://api.gignaati.com/api/DeviceInfo/deviceInfo?email=${encodeURIComponent(email)}`,
+          //       {
+          //         method: 'POST',
+          //         headers: {
+          //           'accept': 'text/plain',
+          //           'Content-Type': 'application/json'
+          //         },
+          //         body: JSON.stringify({
+          //           macAddress: deviceinfo.macAddress || null,
+          //           ipAddress: deviceinfo.ipAddress || null,
+          //           serialNumber: deviceinfo.serialNumber || null,
+          //           operatingSystem: deviceinfo.operatingSystem || null,
+          //           processor: deviceinfo.processor || null,
+          //           deviceId: deviceinfo.deviceId || null,
+          //           ram: deviceinfo.ram || null,
+          //           gpUs: deviceinfo.gpUs || null,
+          //           npUs: deviceinfo.npUs || null,
+          //         })
+          //       }
+          //     );
+          //   }
+          // } catch (e) {
+
+          // }
+          // OTPVerify1();
+
+
+
+        } else {
+          showToast(
+            data && data.message ? data.message : "Invalid License Key.",
+            false
+          );
+        }
+      } catch (e) {
+        showToast("Invalid License Key.", false);
+      }
+    }
+
+    async function ByPassLicenseKey() {
+
+      try {
+        const email = document.querySelector("#otp-box span")
+          ? document.querySelector("#otp-box span").textContent.trim()
+          : "";
+        ValidateSubscription();
+        // const data = {
+        //   data: true,
+        //   totalRecords: 21
+        // };
+
+        // if (data && data.data === true) {
+
+        //   document.getElementById("chatBotDiv").style.display = "block";
+
+        //   const checkSubscription = await fetch(`https://api.gignaati.com/api/User/checkSubscription?email=${encodeURIComponent(email)}`);
+        //   const IsSubscribed = await checkSubscription.json();
+        //   if (IsSubscribed && IsSubscribed.data === true) {
+
+        //     document.getElementById("profile").style.display = "none";
+        //     document.getElementById("SubscribeIcon").style.display = "none";
+        //     if (data.totalRecords !== undefined) {
+        //       document.getElementById("remaining-days-text").innerText = "Subscription remaining :" + " " + data.totalRecords + " " + "days";
+        //     }
+        //   }
+        //   else {
+
+        //     if (data.totalRecords !== undefined) {
+        //       document.getElementById("remaining-days-count").innerText =
+        //         data.totalRecords;
+        //     }
+        //   }
+        //   if (data.totalRecords !== undefined && data.totalRecords <= 7) {
+        //     document.getElementById("SubscribeIcon").style.display = "block";
+        //   }
+
+        //   try {
+        //     const deviceinfoRes = await fetch(`http://localhost:5000/api/DeviceInfo`);
+        //     const deviceinfo = await deviceinfoRes.json();
+        //     if (deviceinfo) {
+        //       await fetch(`https://api.gignaati.com/api/DeviceInfo/deviceInfo?email=${encodeURIComponent(email)}`,
+        //         {
+        //           method: 'POST',
+        //           headers: {
+        //             'accept': 'text/plain',
+        //             'Content-Type': 'application/json'
+        //           },
+        //           body: JSON.stringify({
+        //             macAddress: deviceinfo.macAddress || null,
+        //             ipAddress: deviceinfo.ipAddress || null,
+        //             serialNumber: deviceinfo.serialNumber || null,
+        //             operatingSystem: deviceinfo.operatingSystem || null,
+        //             processor: deviceinfo.processor || null,
+        //             deviceId: deviceinfo.deviceId || null,
+        //             ram: deviceinfo.ram || null,
+        //             gpUs: deviceinfo.gpUs || null,
+        //             npUs: deviceinfo.npUs || null,
+        //           })
+        //         }
+        //       );
+        //     }
+        //   } catch (e) {
+
+        //   }
+        //   OTPVerify1();
+        // } else {
+        //   showToast(
+        //     data && data.message ? data.message : "Invalid License Key.",
+        //     false
+        //   );
+        // }
+      } catch (e) {
+        showToast("Invalid License Key6.", false);
+      }
+    }
+
+
+
+    // Toast notification function
+    function showToast(message, isSuccess) {
+      let toast = document.getElementById("custom-toast");
+      if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "custom-toast";
+        toast.style.position = "fixed";
+        toast.style.top = "30px";
+        toast.style.right = "30px";
+        toast.style.zIndex = "9999";
+        toast.style.minWidth = "220px";
+        toast.style.padding = "16px 24px";
+        toast.style.borderRadius = "10px";
+        toast.style.fontSize = "1rem";
+        toast.style.boxShadow = "0 2px 12px #0002";
+        toast.style.transition = "opacity 0.3s";
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      toast.style.background = isSuccess
+        ? "linear-gradient(90deg,#4caf50,#81c784)"
+        : "linear-gradient(90deg,#e53935,#ffb199)";
+      toast.style.color = "#fff";
+      toast.style.opacity = "1";
+      setTimeout(() => {
+        toast.style.opacity = "0";
+      }, 2500);
+    }
+
+    function showSubscribeNowModal() {
+      var modal = new bootstrap.Modal(document.getElementById('subscribeNowModel'));
+      modal.show();
+    }
+
+    function showContactUsModal() {
+      var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+      // var modal = new bootstrap.Modal(document.getElementById('SystemRequirementsModel'));
+      modal.show();
+    }
+
+    function ShowSystemRequirementsModel() {
+      const emailInput = document.querySelector(".email-box input");
+      const email = emailInput ? emailInput.value.trim() : "";
+      if (!email) {
+        showToast("Please enter your email.", false);
+        return;
+      }
+      const termsChecked = document.getElementById("cloudTermsCheckbox").checked;
+      if (!termsChecked) {
+        showToast("Please agree to the Terms & Conditions.", false);
+        return;
+      }
+      var modal = new bootstrap.Modal(document.getElementById('SystemRequirementsModel'));
+      modal.show();
+    }
+
+    function closeSystemRequirementsModal() {
+      var modalElement = document.getElementById('SystemRequirementsModel');
+      var modalInstance = bootstrap.Modal.getInstance(modalElement);
+      modalInstance.hide();
+    }
+  </script>
+
+  <script>
+    // openN8NInApp method - Opens N8N in embedded webview
+    async function openN8NInApp() {
+      // Show loading overlay
+      showN8NLoadingOverlay();
+      
+      try {
+        // Check if N8N is running
+        const response = await fetch('http://localhost:5678/healthz', { timeout: 2000 });
+        
+        if (response.ok) {
+          // N8N is ready, show it in webview
+          showN8NWebview();
+        } else {
+          throw new Error('Agentic Platform not ready');
+        }
+      } catch (error) {
+        // N8N not running, show friendly message
+        hideN8NLoadingOverlay();
+        showToast(
+          "Agentic Platform is initializing. Please wait a moment and try again.",
+          false
+        );
+      }
+    }
+    
+    // Show loading overlay with AI quotes while N8N loads
+    function showN8NLoadingOverlay() {
+      const overlay = document.createElement('iframe');
+      overlay.id = 'n8n-loading-overlay';
+      overlay.src = 'ai-quotes-loader.html';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        z-index: 99999;
+      `;
+      
+      document.body.appendChild(overlay);
+      
+      // Poll N8N health and hide overlay when ready
+      const checkInterval = setInterval(async () => {
+        try {
+          const response = await fetch('http://localhost:5678/healthz');
+          if (response.ok) {
+            clearInterval(checkInterval);
+            // Send ready message to loader
+            overlay.contentWindow.postMessage('n8n-ready', '*');
+            // Hide overlay after animation
+            setTimeout(() => {
+              hideN8NLoadingOverlay();
+            }, 1000);
+          }
+        } catch (error) {
+          // Still loading, continue checking
+        }
+      }, 1000); // Check every second
+    }
+    
+    // Hide loading overlay
+    function hideN8NLoadingOverlay() {
+      const overlay = document.getElementById('n8n-loading-overlay');
+      if (overlay) {
+        overlay.remove();
+      }
+    }
+    
+    // Show N8N in embedded webview
+    function showN8NWebview() {
+      // Create fullscreen webview container
+      const container = document.createElement('div');
+      container.id = 'n8n-webview-container';
+      container.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        z-index: 99998;
+        display: flex;
+        flex-direction: column;
+      `;
+      
+      // Create header with close button
+      const header = document.createElement('div');
+      header.style.cssText = `
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      `;
+      
+      header.innerHTML = `
+        <div style="font-size: 1.2rem; font-weight: 600;">🤖 Agentic Platform</div>
+        <button onclick="closeN8NWebview()" style="
+          background: rgba(255,255,255,0.2);
+          border: none;
+          color: white;
+          padding: 8px 20px;
+          border-radius: 5px;
+          cursor: pointer;
+          font-weight: 500;
+          transition: all 0.3s;
+        " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+          ← Back to Dashboard
+        </button>
+      `;
+      
+      // Create iframe for N8N
+      const iframe = document.createElement('iframe');
+      iframe.src = 'http://localhost:5678';
+      iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads');
+      iframe.style.cssText = `
+        flex: 1;
+        width: 100%;
+        border: none;
+      `;
+      
+      container.appendChild(header);
+      container.appendChild(iframe);
+      
+      // Hide loading, show webview
+      hideN8NLoadingOverlay();
+      document.body.appendChild(container);
+    }
+    
+    // Close N8N webview
+    function closeN8NWebview() {
+      const container = document.getElementById('n8n-webview-container');
+      if (container) {
+        container.remove();
+      }
+    }
+  </script>
+
+  <script>
+    function openNav() {
+      document.getElementById("mySidenav").style.width = "300px";
+    }
+
+    function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+      // document.getElementById("mySidenav").style.left = "-34px";
+    }
+  </script>
+
+  <script>
+    function toggleRemainingDays() {
+      const span = document.getElementById("remaining-days-text");
+      // Toggle between show/hide
+      if (span.style.display === "none" || span.style.display === "") {
+        span.style.display = "inline";
+      } else {
+        span.style.display = "none";
+      }
+    }
+  </script>
+
+  <script>
+    function openMarketPlace() {
+      if (window.electronAPI && window.electronAPI.openExternalLink) {
+        window.electronAPI.openExternalLink(
+          "https://marketplace.gignaati.com/ai-gigs/"
+        );
+      } else {
+        window.open("https://marketplace.gignaati.com/ai-gigs/", "_blank");
+      }
+    }
+  </script>
+
+  <script>
+    function openAcademy() {
+      if (window.electronAPI && window.electronAPI.openExternalLink) {
+        window.electronAPI.openExternalLink("https://academy.gignaati.com/");
+      } else {
+        window.open("https://academy.gignaati.com/", "_blank");
+      }
+    }
+
+
+    function openDockerManually() {
+      // if (window.electronAPI && window.electronAPI.openExternalLink) {
+      //   alert(1)
+      //   window.electronAPI.openExternalLink("https://docker-wingman.lovable.app/");
+      // } else {
+      //   alert(2)
+      //   window.open("https://docker-wingman.lovable.app/", "_blank");
+      // }
+      window.open("https://preview--docker-wingman-04271.lovable.app/");
+
+      var dockerManualButton = document.getElementById("dockerManualButton");
+      dockerManualButton.style.display = "none";
+
+    }
+
+  </script>
+  <script>
+    function openCoach() {
+      if (window.electronAPI && window.electronAPI.openExternalLink) {
+        window.electronAPI.openExternalLink(
+          "https://preview--agent-scribe-journey-64.lovable.app/"
+        );
+      } else {
+        window.open("https://preview--agent-scribe-journey-64.lovable.app/", "_blank");
+      }
+    }
+
+    function openSubscription(planId) {
+      // Step 1: Get user email (from OTP box or email input)
+      var email = "";
+      var otpEmailSpan = document.querySelector("#otp-box span");
+      if (otpEmailSpan && otpEmailSpan.textContent) {
+        email = otpEmailSpan.textContent.trim();
+      } else {
+        var emailInput = document.querySelector(".email-box input");
+        if (emailInput && emailInput.value) {
+          email = emailInput.value.trim();
+        }
+      }
+      if (!email) {
+        showToast("Please verify your email before subscribing.", false);
+        return;
+      }
+      // Step 2: Call backend to create order for the plan, passing emailId as query param (and planId if needed)
+      fetch(`https://api.gignaati.com/api/payments/create-order?emailId=${encodeURIComponent(email)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}) // empty body, not needed by backend
+      })
+        .then(res => res.json())
+        .then(order => {
+          if (!order || !order.orderId) {
+            showToast("Failed to create order", false);
+            return;
+          }
+
+          // Step 3: Open Razorpay Checkout
+          var options = {
+            key: "rzp_live_O7E9ATH2PjdyNf",
+            amount: order.amount,
+            currency: order.currency,
+            name: "Gignaati",
+            description: `${planId} Subscription Payment`,
+            order_id: order.orderId,
+            handler: function (response) {
+              // Step 4: Verify payment via backend using query parameters and email
+              const params = new URLSearchParams({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                email: email
+              });
+
+              fetch(`https://api.gignaati.com/api/payments/verify?${params.toString()}`, { method: "POST" })
+                .then(res => res.json())
+                .then(result => {
+                  if (result.success) {
+                    showToast("✅ Payment Verified Successfully!", true);
+
+                    /////////////////////////////////////
+                    const IsSubscribed = true;
+                    if (IsSubscribed === true) {
+                      document.getElementById("SubscribeIcon").style.display = "none";
+                      document.getElementById("remaining-days-text").innerText = "Subscription remaining : 90 days";
+
+                    }
+
+                    ////////////////////////////////////
+
+                    // Close both subscribe modals if open
+                    var subscribeModal = document.getElementById('subscribeNowModel');
+                    var subscribeModal2 = document.getElementById('subscriptionModal');
+                    if (subscribeModal) {
+                      var modalInstance = bootstrap.Modal.getInstance(subscribeModal);
+                      if (modalInstance) modalInstance.hide();
+                    }
+                    if (subscribeModal2) {
+                      var modalInstance2 = bootstrap.Modal.getInstance(subscribeModal2);
+                      if (modalInstance2) modalInstance2.hide();
+                    }
+                  } else {
+                    showToast("❌ Payment Verification Failed!", false);
+                  }
+                });
+            },
+            prefill: {
+              email: email
+            },
+            theme: { color: "#3399cc" }
+          };
+
+          var rzp1 = new Razorpay(options);
+          rzp1.open();
+          //alert(5);
+        })
+        .catch(err => showToast("Error: " + err.message, false));
+    }
+
+  </script>
+
+  <script>
+    // Dynamic system resource usage updater
+    async function updateSystemMonitoring() {
+      if (window.electronAPI && window.electronAPI.getSystemStats) {
+        try {
+          const stats = await window.electronAPI.getSystemStats(); // CPU
+          document.getElementById("cpu-usage").textContent =
+            (stats.cpu !== undefined ? stats.cpu : 0) + "%"; // RAM
+          document.getElementById("ram-usage").textContent =
+            (stats.ram !== undefined ? stats.ram : 0) + "%";
+          document.getElementById("gpu-usage").textContent =
+            (stats.gpu !== undefined ? stats.gpu : 0) + "%"; // GPU
+          document.getElementById("npu-usage").textContent =
+            (stats.npu !== undefined ? stats.npu : 0) + "%"; // NPU
+        } catch (err) {
+          // Optionally log error
+        }
+      }
+    }
+
+    setInterval(updateSystemMonitoring, 1000);
+    updateSystemMonitoring();
+  </script>
+
+
+  <script>
+    // Wait until the DOM is fully loaded
+    document.addEventListener("DOMContentLoaded", function () {
+      const chatIcon = document.querySelector(".chat-icon");
+      const chatArea = document.querySelector(".chat-area");
+      const closeChat = document.querySelector(".close-chat");
+
+      // Initially hide the chat area
+      chatArea.style.display = "none";
+
+      // When chat icon is clicked → show chat area & hide icon
+      chatIcon.addEventListener("click", function () {
+        chatIcon.style.display = "none";
+        chatArea.style.display = "block";
+      });
+
+      // When close button is clicked → hide chat area & show icon
+      closeChat.addEventListener("click", function () {
+        chatArea.style.display = "none";
+        chatIcon.style.display = "block";
+      });
+    });
+  </script>
+
+  <script>
+   
+
+document.addEventListener("DOMContentLoaded", function () {
+  const inputField = document.querySelector(".chat-input input");
+  const sendButton = document.querySelector(".chat-input button");
+  const chatMessages = document.querySelector(".chat-messages");
+
+  // ✅ Show default welcome message with buttons
+  const welcomeMessageDiv = document.createElement("div");
+  welcomeMessageDiv.classList.add("message", "bot-message");
+  welcomeMessageDiv.innerHTML = `
+    <div class="message-content">
+      <div class="message-ans text-start">
+        <strong>Hi! Welcome to the Workbench Helper Chatbot.</strong><br>
+        Please select the type of issue you’re experiencing from the options below: <br><br>
+        <button class="option-btn w-100" data-option="Launch Docker">Launch Docker</button>
+        <button class="option-btn w-100" data-option="Agentic Platform">Agentic Platform</button>
+        <button class="option-btn w-100" data-option="Any Other Issue">Any Other Issue</button>
+      </div>
+    </div>
+  `;
+  chatMessages.appendChild(welcomeMessageDiv);
+
+  // ✅ Smooth scroll helper
+  function smoothScroll() {
+    chatMessages.scrollTo({
+      top: chatMessages.scrollHeight,
+      behavior: "smooth",
+    });
+  }
+
+  // ✅ Handle option button clicks
+  chatMessages.addEventListener("click", function (e) {
+    if (e.target.classList.contains("option-btn")) {
+      const selectedOption = e.target.getAttribute("data-option");
+      sendMessage(selectedOption);
+    }
+  });
+
+  // ✅ Handle manual input
+  sendButton.addEventListener("click", async function () {
+    const userMessage = inputField.value.trim();
+    if (userMessage === "") return;
+
+    let optionText = userMessage;
+    // Convert number to corresponding option text
+    if (userMessage === "1") optionText = "Launch Docker";
+    if (userMessage === "2") optionText = "Agentic Platform";
+
+    sendMessage(optionText);
+    inputField.value = "";
+  });
+
+  // ✅ Send message and get response
+  async function sendMessage(messageText) {
+    // Show user message
+    const userMessageDiv = document.createElement("div");
+    userMessageDiv.classList.add("message", "user-message");
+    userMessageDiv.innerHTML = `
+      <div class="message-content">
+        <div class="message-qus text-start">${messageText}</div>
+      </div>
+    `;
+    chatMessages.appendChild(userMessageDiv);
+    smoothScroll();
+
+    // Show typing indicator
+    const typingDiv = document.createElement("div");
+    typingDiv.classList.add("message", "bot-message");
+    typingDiv.innerHTML = `
+      <div class="message-content">
+        <div class="message-ans text-start"><em>🤖 Bot is typing...</em></div>
+      </div>
+    `;
+    chatMessages.appendChild(typingDiv);
+    smoothScroll();
+
+    try {
+      const res = await fetch("https://api.gignaati.com/api/Chat/WorkbenchHelperChatAgent", {
+        method: "POST",
+        headers: {
+          "accept": "text/plain",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userQuery: messageText,
+          outputFormat: "string"
+        }),
+      });
+
+      const data = await res.json();
+      const botResponse = data.Response || "I'm sorry, I couldn't get a response.";
+
+      // Remove typing indicator
+      typingDiv.remove();
+
+      const botMessageDiv = document.createElement("div");
+      botMessageDiv.classList.add("message", "bot-message");
+      botMessageDiv.innerHTML = `
+        <div class="message-content">
+          <div class="message-ans text-start">${botResponse}</div>
+        </div>
+      `;
+      chatMessages.appendChild(botMessageDiv);
+      smoothScroll();
+
+    } catch (error) {
+      console.error("API Error:", error);
+      typingDiv.remove();
+
+      const errorDiv = document.createElement("div");
+      errorDiv.classList.add("message", "bot-message");
+      errorDiv.innerHTML = `
+        <div class="message-content">
+          <div class="message-ans text-start text-danger">
+            ⚠️ Unable to connect. Please check your internet and try again.
+          </div>
+        </div>
+      `;
+      chatMessages.appendChild(errorDiv);
+      smoothScroll();
+    }
+  }
+});
+
+  </script>
+
+
+  <!-- LLM Download Progress Modal -->
+  <script>
+    // Include the LLM download progress modal HTML
+    fetch('llm-download-progress.html')
+      .then(response => response.text())
+      .then(html => {
+        const container = document.createElement('div');
+        container.innerHTML = html;
+        document.body.appendChild(container);
+      });
+  </script>
+
+  <!-- System Detection and Smart Recommendations -->
+  <script src="system-detection-ui.js"></script>
+  <script src="smart-model-recommendations.js"></script>
+</body>
+</html>>

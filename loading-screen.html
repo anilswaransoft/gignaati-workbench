@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading - Gignaati Workbench</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-attachment: fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      height: 100%;
+      width: 100%;
+      overflow: auto;
+      position: relative;
+    }
+
+    .loading-container {
+      text-align: center;
+      color: white;
+      max-width: 600px;
+      width: 90%;
+      padding: 40px 20px;
+      position: relative;
+    }
+
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 30px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+
+    .magic-text {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, #fff, #f0f0f0, #fff);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s linear infinite;
+    }
+
+    @keyframes shimmer {
+      to {
+        background-position: 200% center;
+      }
+    }
+
+    .status-text {
+      font-size: 1rem;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      border-radius: 10px;
+      width: 0%;
+      transition: width 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      animation: loading-shimmer 2s infinite;
+    }
+
+    @keyframes loading-shimmer {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    .progress-percentage {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 10px;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      margin: 30px auto;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .sparkles {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      animation: sparkle-float 4s infinite;
+      opacity: 0;
+    }
+
+    @keyframes sparkle-float {
+      0%, 100% {
+        opacity: 0;
+        transform: translateY(0) scale(0);
+      }
+      50% {
+        opacity: 1;
+        transform: translateY(-100px) scale(1);
+      }
+    }
+
+    .step-indicator {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    .step-list {
+      list-style: none;
+      text-align: left;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .step-list li {
+      padding: 5px 0;
+      position: relative;
+      padding-left: 25px;
+    }
+
+    .step-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      opacity: 0.3;
+    }
+
+    .step-list li.active {
+      font-weight: 600;
+      opacity: 1;
+    }
+
+    .step-list li.active::before {
+      opacity: 1;
+      color: #4facfe;
+    }
+
+    .step-list li.completed::before {
+      opacity: 1;
+      color: #00f2fe;
+    }
+
+
+  </style>
+</head>
+<body>
+  <div class="sparkles" id="sparkles"></div>
+  
+  <div class="loading-container">
+    <div class="logo">
+      <img src="Icon-Gignaati.png" alt="Gignaati Logo" id="logo-img">
+    </div>
+    
+    <div class="magic-text">✨ Adding AI Magic ✨</div>
+    
+    <div class="status-text" id="status-text">
+      Preparing your AI workspace...
+    </div>
+    
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+    <div class="progress-percentage" id="progress-percentage">0%</div>
+    
+    <div class="spinner"></div>
+    
+    <div class="step-indicator">
+      <ul class="step-list" id="step-list">
+        <li id="step-1">Initializing Ollama</li>
+        <li id="step-2">Starting AI Engine</li>
+        <li id="step-3">Setting up N8N Workspace</li>
+        <li id="step-4">Configuring AI Models</li>
+        <li id="step-5">Almost ready...</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Create sparkles
+    const sparklesContainer = document.getElementById('sparkles');
+    for (let i = 0; i < 30; i++) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.style.left = Math.random() * 100 + '%';
+      sparkle.style.top = Math.random() * 100 + '%';
+      sparkle.style.animationDelay = Math.random() * 4 + 's';
+      sparklesContainer.appendChild(sparkle);
+    }
+
+    // Progress tracking
+    let currentProgress = 0;
+    let currentStep = 0;
+    const steps = ['step-1', 'step-2', 'step-3', 'step-4', 'step-5'];
+
+    // Listen for progress updates from Electron
+    if (window.electronAPI && window.electronAPI.onLoadingProgress) {
+      window.electronAPI.onLoadingProgress((progress, message) => {
+        updateProgress(progress, message);
+      });
+    }
+
+    function updateProgress(progress, message) {
+      currentProgress = progress;
+      
+      // Update progress bar
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.style.width = progress + '%';
+      
+      // Update percentage
+      document.getElementById('progress-percentage').textContent = Math.round(progress) + '%';
+      
+      // Update status message
+      if (message) {
+        document.getElementById('status-text').textContent = message;
+      }
+      
+      // Update step indicators
+      const stepIndex = Math.floor((progress / 100) * steps.length);
+      if (stepIndex !== currentStep && stepIndex < steps.length) {
+        // Mark previous steps as completed
+        for (let i = 0; i < stepIndex; i++) {
+          const stepEl = document.getElementById(steps[i]);
+          stepEl.classList.remove('active');
+          stepEl.classList.add('completed');
+        }
+        
+        // Mark current step as active
+        const currentStepEl = document.getElementById(steps[stepIndex]);
+        currentStepEl.classList.add('active');
+        
+        currentStep = stepIndex;
+      }
+      
+      // When complete, redirect to main app
+      if (progress >= 100) {
+        setTimeout(() => {
+          if (window.electronAPI && window.electronAPI.loadingComplete) {
+            window.electronAPI.loadingComplete();
+          }
+        }, 1000);
+      }
+    }
+
+    // Simulate progress for demo (remove this in production)
+    if (!window.electronAPI) {
+      let demoProgress = 0;
+      const demoInterval = setInterval(() => {
+        demoProgress += Math.random() * 5;
+        if (demoProgress >= 100) {
+          demoProgress = 100;
+          clearInterval(demoInterval);
+        }
+        
+        const messages = [
+          'Initializing Ollama...',
+          'Starting AI Engine...',
+          'Setting up N8N Workspace...',
+          'Configuring AI Models...',
+          'Almost ready...',
+          'Loading complete!'
+        ];
+        
+        const messageIndex = Math.floor((demoProgress / 100) * messages.length);
+        updateProgress(demoProgress, messages[messageIndex]);
+      }, 500);
+    }
+  </script>
+</body>
+</html>
+

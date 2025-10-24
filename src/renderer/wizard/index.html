@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agent Builder - Setup</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wizard-container">
+    <!-- Step 1: Welcome -->
+    <div id="step-welcome" class="wizard-step active">
+      <div class="step-content">
+        <h1>🚀 Welcome to AI Agent Builder</h1>
+        <p class="subtitle">Build powerful AI agents on your local PC</p>
+        
+        <div class="features">
+          <div class="feature">
+            <span class="icon">⚡</span>
+            <h3>Zero Token Costs</h3>
+            <p>Run AI models completely offline</p>
+          </div>
+          <div class="feature">
+            <span class="icon">🔒</span>
+            <h3>Private & Secure</h3>
+            <p>Your data never leaves your computer</p>
+          </div>
+          <div class="feature">
+            <span class="icon">🎨</span>
+            <h3>No Coding Required</h3>
+            <p>Visual workflow builder powered by N8N</p>
+          </div>
+        </div>
+        
+        <button onclick="startWizard()" class="btn-primary">Get Started</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Hardware Scan -->
+    <div id="step-hardware" class="wizard-step">
+      <div class="step-content">
+        <h2>🔍 Scanning Your System</h2>
+        <p>Detecting your hardware capabilities...</p>
+        
+        <div id="scan-progress" class="progress-container">
+          <div class="spinner"></div>
+          <p>Analyzing CPU, GPU, and RAM...</p>
+        </div>
+        
+        <div id="hardware-results" class="hardware-results" style="display: none;">
+          <!-- Hardware info will be inserted here -->
+        </div>
+        
+        <div class="button-group" id="hardware-buttons" style="display: none;">
+          <button onclick="proceedToModels()" class="btn-primary">Continue</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Model Selection -->
+    <div id="step-models" class="wizard-step">
+      <div class="step-content">
+        <h2>🤖 Choose Your AI Models</h2>
+        <p>Select models based on your system capabilities</p>
+        
+        <div id="model-list" class="model-grid">
+          <!-- Models will be inserted here -->
+        </div>
+        
+        <div class="button-group">
+          <button onclick="goBack('step-hardware')" class="btn-secondary">Back</button>
+          <button onclick="startInstallation()" class="btn-primary">Install</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Installation -->
+    <div id="step-install" class="wizard-step">
+      <div class="step-content">
+        <h2>📦 Installing Components</h2>
+        <p id="install-status">Preparing installation...</p>
+        
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div id="install-progress-bar" class="progress-fill"></div>
+          </div>
+          <span id="install-percentage">0%</span>
+        </div>
+        
+        <div id="install-log" class="install-log">
+          <!-- Installation logs will appear here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: Complete -->
+    <div id="step-complete" class="wizard-step">
+      <div class="step-content">
+        <h1>🎉 Setup Complete!</h1>
+        <p class="subtitle">Your AI Agent Builder is ready to use</p>
+        
+        <div class="success-info">
+          <h3>What's Next?</h3>
+          <ul>
+            <li>✅ Ollama is running with GPU acceleration</li>
+            <li>✅ N8N workflow builder is ready</li>
+            <li>✅ AI models are downloaded</li>
+          </ul>
+        </div>
+        
+        <button onclick="launchApp()" class="btn-primary btn-large">Launch AI Agent Builder</button>
+        
+        <div class="help-section">
+          <p>Need help? Check our <a href="#">documentation</a> or <a href="#">tutorials</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="wizard.js"></script>
+</body>
+</html>
