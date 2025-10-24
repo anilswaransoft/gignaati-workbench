@@ -268,10 +268,14 @@
         document.body.style.transition = 'opacity 0.8s ease-out';
         document.body.style.opacity = '0';
         
+        // Remove loader from DOM after fade
         setTimeout(() => {
+          window.parent.postMessage('loader-done', '*');
           if (window.electronAPI) {
             window.electronAPI.send('loader-complete');
           }
+          // Force cleanup
+          window.parent.document.getElementById('n8n-loading-overlay')?.remove();
         }, 800);
       }
     });

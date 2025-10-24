@@ -1534,13 +1534,9 @@
               </button>
             </li>
             <li>
-              <!-- <button type="button" class="" id="Build-btn" onclick='handleTabbutton("Build")'> -->
-              <button type="button" class="" id="Build-btn" onclick='openN8NInApp()'>
+              <button type="button" class="" id="Build-btn" onclick='showN8NView()'>
                 Make AI Agent
               </button>
-              <!-- <button type="button" class="" onclick="handleMakeAIAgentClick()">
-                Make AI Agent
-              </button> -->
               <!-- Subscription Expired Modal -->
               <div class="modal fade" id="subscriptionModal" tabindex="-1" aria-labelledby="subscriptionModalLabel"
                 aria-hidden="true">
@@ -1971,7 +1967,7 @@
           </div>
         </div>
 
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-4" id="system-info" style="display: none;">
+        <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-4" id="system-info" style="display: none;">
           <div class="features-container">
             <h1 class="title">System Information</h1>
             <div id="system-monitoring">
@@ -2005,7 +2001,9 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
+      
+      
       </div>
 
     </div>
@@ -2351,7 +2349,7 @@
           
           <!-- Performance Tier Badge -->
           <div id="performance-tier-badge" style="display:none; margin: 15px 0; padding: 12px; border-radius: 10px; text-align: center;">
-            <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">Your System Performance</div>
+            <div style="font-size: 0.85rem; color: #f9f6f6; margin-bottom: 5px;">Your System Performance</div>
             <div id="tier-name" style="font-size: 1.3rem; font-weight: 700;"></div>
             <div id="tier-description" style="font-size: 0.9rem; color: #666; margin-top: 5px;"></div>
           </div>
@@ -2595,148 +2593,9 @@
   <script src="task.js"></script>
   <script src="download-manager-improved.js"></script>
   <script src="script.js"></script>
+  <script src="n8n-direct-handler.js"></script>
   <script>
-    // openN8NInApp method - Opens N8N in embedded webview
-    async function openN8NInApp() {
-      // Show loading overlay
-      showN8NLoadingOverlay();
-      
-      try {
-        // Check if N8N is running
-        const response = await fetch('http://localhost:5678/healthz', { timeout: 2000 });
-        
-        if (response.ok) {
-          // N8N is ready, show it in webview
-          showN8NWebview();
-        } else {
-          throw new Error('Agentic Platform not ready');
-        }
-      } catch (error) {
-        // N8N not running, show friendly message
-        hideN8NLoadingOverlay();
-        showToast(
-          "Agentic Platform is initializing. Please wait a moment and try again.",
-          false
-        );
-      }
-    }
-    
-    // Show loading overlay with AI quotes while N8N loads
-    function showN8NLoadingOverlay() {
-      const overlay = document.createElement('iframe');
-      overlay.id = 'n8n-loading-overlay';
-      overlay.src = 'ai-quotes-loader.html';
-      overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border: none;
-        z-index: 99999;
-      `;
-      
-      document.body.appendChild(overlay);
-      
-      // Poll N8N health and hide overlay when ready
-      const checkInterval = setInterval(async () => {
-        try {
-          const response = await fetch('http://localhost:5678/healthz');
-          if (response.ok) {
-            clearInterval(checkInterval);
-            // Send ready message to loader
-            overlay.contentWindow.postMessage('n8n-ready', '*');
-            // Hide overlay after animation
-            setTimeout(() => {
-              hideN8NLoadingOverlay();
-            }, 1000);
-          }
-        } catch (error) {
-          // Still loading, continue checking
-        }
-      }, 1000); // Check every second
-    }
-    
-    // Hide loading overlay
-    function hideN8NLoadingOverlay() {
-      const overlay = document.getElementById('n8n-loading-overlay');
-      if (overlay) {
-        overlay.remove();
-      }
-    }
-    
-    // Show N8N in embedded webview
-    function showN8NWebview() {
-      // Create fullscreen webview container
-      const container = document.createElement('div');
-      container.id = 'n8n-webview-container';
-      container.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: white;
-        z-index: 99998;
-        display: flex;
-        flex-direction: column;
-      `;
-      
-      // Create header with close button
-      const header = document.createElement('div');
-      header.style.cssText = `
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 15px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      `;
-      
-      header.innerHTML = `
-        <div style="font-size: 1.2rem; font-weight: 600;">🤖 Agentic Platform</div>
-        <button onclick="closeN8NWebview()" style="
-          background: rgba(255,255,255,0.2);
-          border: none;
-          color: white;
-          padding: 8px 20px;
-          border-radius: 5px;
-          cursor: pointer;
-          font-weight: 500;
-          transition: all 0.3s;
-        " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
-          ← Back to Dashboard
-        </button>
-      `;
-      
-      // Create iframe for N8N
-      const iframe = document.createElement('iframe');
-      iframe.src = 'http://localhost:5678';
-      iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads');
-      iframe.style.cssText = `
-        flex: 1;
-        width: 100%;
-        border: none;
-      `;
-      
-      container.appendChild(header);
-      container.appendChild(iframe);
-      
-      // Hide loading, show webview
-      hideN8NLoadingOverlay();
-      document.body.appendChild(container);
-    }
-    
-    // Close N8N webview
-    function closeN8NWebview() {
-      const container = document.getElementById('n8n-webview-container');
-      if (container) {
-        container.remove();
-      }
-    }
-
-    // Start Your Journey button handler
+        // Start Your Journey button handler
     async function verify() {
 
       const Checked = document.getElementById("termsCheckbox").checked;
@@ -3219,147 +3078,7 @@
     }
   </script>
 
-  <script>
-    // openN8NInApp method - Opens N8N in embedded webview
-    async function openN8NInApp() {
-      // Show loading overlay
-      showN8NLoadingOverlay();
-      
-      try {
-        // Check if N8N is running
-        const response = await fetch('http://localhost:5678/healthz', { timeout: 2000 });
-        
-        if (response.ok) {
-          // N8N is ready, show it in webview
-          showN8NWebview();
-        } else {
-          throw new Error('Agentic Platform not ready');
-        }
-      } catch (error) {
-        // N8N not running, show friendly message
-        hideN8NLoadingOverlay();
-        showToast(
-          "Agentic Platform is initializing. Please wait a moment and try again.",
-          false
-        );
-      }
-    }
-    
-    // Show loading overlay with AI quotes while N8N loads
-    function showN8NLoadingOverlay() {
-      const overlay = document.createElement('iframe');
-      overlay.id = 'n8n-loading-overlay';
-      overlay.src = 'ai-quotes-loader.html';
-      overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border: none;
-        z-index: 99999;
-      `;
-      
-      document.body.appendChild(overlay);
-      
-      // Poll N8N health and hide overlay when ready
-      const checkInterval = setInterval(async () => {
-        try {
-          const response = await fetch('http://localhost:5678/healthz');
-          if (response.ok) {
-            clearInterval(checkInterval);
-            // Send ready message to loader
-            overlay.contentWindow.postMessage('n8n-ready', '*');
-            // Hide overlay after animation
-            setTimeout(() => {
-              hideN8NLoadingOverlay();
-            }, 1000);
-          }
-        } catch (error) {
-          // Still loading, continue checking
-        }
-      }, 1000); // Check every second
-    }
-    
-    // Hide loading overlay
-    function hideN8NLoadingOverlay() {
-      const overlay = document.getElementById('n8n-loading-overlay');
-      if (overlay) {
-        overlay.remove();
-      }
-    }
-    
-    // Show N8N in embedded webview
-    function showN8NWebview() {
-      // Create fullscreen webview container
-      const container = document.createElement('div');
-      container.id = 'n8n-webview-container';
-      container.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: white;
-        z-index: 99998;
-        display: flex;
-        flex-direction: column;
-      `;
-      
-      // Create header with close button
-      const header = document.createElement('div');
-      header.style.cssText = `
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 15px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      `;
-      
-      header.innerHTML = `
-        <div style="font-size: 1.2rem; font-weight: 600;">🤖 Agentic Platform</div>
-        <button onclick="closeN8NWebview()" style="
-          background: rgba(255,255,255,0.2);
-          border: none;
-          color: white;
-          padding: 8px 20px;
-          border-radius: 5px;
-          cursor: pointer;
-          font-weight: 500;
-          transition: all 0.3s;
-        " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
-          ← Back to Dashboard
-        </button>
-      `;
-      
-      // Create iframe for N8N
-      const iframe = document.createElement('iframe');
-      iframe.src = 'http://localhost:5678';
-      iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads');
-      iframe.style.cssText = `
-        flex: 1;
-        width: 100%;
-        border: none;
-      `;
-      
-      container.appendChild(header);
-      container.appendChild(iframe);
-      
-      // Hide loading, show webview
-      hideN8NLoadingOverlay();
-      document.body.appendChild(container);
-    }
-    
-    // Close N8N webview
-    function closeN8NWebview() {
-      const container = document.getElementById('n8n-webview-container');
-      if (container) {
-        container.remove();
-      }
-    }
-  </script>
+ 
 
   <script>
     function openNav() {
@@ -3720,4 +3439,4 @@ document.addEventListener("DOMContentLoaded", function () {
   <script src="system-detection-ui.js"></script>
   <script src="smart-model-recommendations.js"></script>
 </body>
-</html>>
+</html>

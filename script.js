@@ -2244,7 +2244,8 @@ function handleMakeAIAgentClick() {
     return;
   }
   // If trial is active, open n8n as before
-  openN8NInApp();
+  //openN8NInApp();
+  showN8NView();
 }
 // Fetch and render notifications dynamically, order by releaseDate desc
 document.addEventListener("DOMContentLoaded", function () {
@@ -2551,7 +2552,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function getDefaultTemplateHtml() {
     return `
       <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-3">
-        <div class="box-cover-2 create-new-template" style="cursor:pointer;" onclick='openN8NInApp()'>
+        <div class="box-cover-2 create-new-template" style="cursor:pointer;" onclick='showN8NView()'>
           <div class="plus">+</div>
           <h2 class="title">Build from Scratch</h2>
           <p>Transform your idea into an AI agent</p>
@@ -3062,8 +3063,8 @@ NPU: ${llm.npu}
 
 // Click-to-Launch: install/start Ollama and N8N showing inline progress and console
 async function clickToLaunchInstall() {
-  const systeminfo = document.getElementById("system-info");
-  systeminfo.style.display = "block";
+  // const systeminfo = document.getElementById("system-info");
+  // systeminfo.style.display = "block";
   
   const panel = document.getElementById('launch-progress-panel');
   const bar = document.getElementById('launch-progress-bar');
@@ -3400,7 +3401,7 @@ function reloadTemplateData() {
 
           const createNewTemplateHTML = `
             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-3">
-              <div class="box-cover-2 create-new-template" style="cursor:pointer;" onclick='openN8NInApp()'>
+              <div class="box-cover-2 create-new-template" style="cursor:pointer;" onclick='showN8NView()'>
                 <div class="plus">+</div>
                 <h2 class="title">Build from Scratch</h2>
                 <p>Transform your idea into an AI agent</p>
@@ -3472,7 +3473,7 @@ function reloadTemplateData() {
           //templateListContainer.innerHTML = '<div class="col-12">No templates found.</div>';
           templateListContainer.innerHTML = `
             <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-12 mb-3">
-              <div class="box-cover-2 create-new-template" style="cursor:pointer;" onclick='openN8NInApp()'>
+              <div class="box-cover-2 create-new-template" style="cursor:pointer;" onclick='showN8NView()'>
                 <div class="plus">+</div>
                 <h2 class="title">Build from Scratch</h2>
                 <p>Transform your idea into an AI agent</p>
@@ -3622,8 +3623,8 @@ async function validateAndStartJourney() {
     //   showToast("Please complete step 1 & step 2 and try again!", false);
     // }
 
-    const systeminfo = document.getElementById("system-info");
-    systeminfo.style.display = "none";
+    // const systeminfo = document.getElementById("system-info");
+    // systeminfo.style.display = "none";
     StartJourney();
 
     document.getElementById("chatBotDiv").style.display = "none";
@@ -3649,7 +3650,8 @@ function attachCopyJsonEvents() {
         document.execCommand("copy");
         document.body.removeChild(textarea);
       }
-      openN8NInApp();
+      //openN8NInApp();
+      showN8NView();
       //btn.innerText = "Copied!";
       setTimeout(() => {
         btn.innerText = "Build Now";

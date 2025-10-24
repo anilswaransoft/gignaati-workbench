@@ -1,5 +1,5 @@
 // electron-main.js - FIXED VERSION with Loading Screen
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, session } = require('electron'); // ----- FIX 1: Added 'session'
 const { spawn, exec } = require('child_process');
 const path = require('path');
 const si = require('systeminformation');
@@ -283,9 +283,29 @@ function createWindow() {
             contextIsolation: true,
             nodeIntegration: false,
             webSecurity: false, // Allow loading N8N in iframe
-            allowRunningInsecureContent: true // Allow localhost content
+            allowRunningInsecureContent: true, // Allow localhost content
+            webviewTag: true // Enable webview support
         }
     });
+
+    // ----- FIX 2: START -----
+    // This block intercepts n8n's login cookies and modifies them
+    // to work correctly inside the file:// iframe.
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+        if (details.responseHeaders && details.responseHeaders['Set-Cookie']) {
+            const modifiedCookies = details.responseHeaders['Set-Cookie'].map(cookie => {
+                // Force cookies from localhost to work in the iframe
+                if (details.url.startsWith('http://localhost')) {
+                    return cookie.replace(/; SameSite=Lax/ig, '; SameSite=None; Secure')
+                                 .replace(/; SameSite=Strict/ig, '; SameSite=None; Secure');
+                }
+                return cookie;
+            });
+            details.responseHeaders['Set-Cookie'] = modifiedCookies;
+        }
+        callback({ responseHeaders: details.responseHeaders });
+    });
+    // ----- FIX 2: END -----
     
     mainWindow.loadFile('index.html');
     
@@ -441,93 +461,92 @@ app.on('before-quit', () => {
 
 // ========== Existing IPC Handlers ==========
 
-// Docker check
-ipcMain.handle('check-docker-installed', async () => {
-    return new Promise((resolve) => {
-        exec('docker info', (error) => {
-            resolve(!error);
-        });
-    });
-});
+// // Docker check
+// ipcMain.handle('check-docker-installed', async () => {
+//     return new Promise((resolve) => {
+//         exec('docker info', (error) => {
+//             resolve(!error);
+//         });
+//     });
+// });
 
 // Open Docker Desktop
-ipcMain.handle('open-docker-desktop', async () => {
-    const dockerPath = '"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe"';
-    exec(dockerPath, (error) => {
-        if (error) {
-            console.error('Failed to open Docker Desktop:', error);
-        } else {
-            console.log('Docker Desktop opened successfully.');
-        }
-    });
-});
+// ipcMain.handle('open-docker-desktop', async () => {
+//     const dockerPath = '"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe"';
+//     exec(dockerPath, (error) => {
+//         if (error) {
+//             console.error('Failed to open Docker Desktop:', error);
+//         } else {
+//             console.log('Docker Desktop opened successfully.');
+//         }
+//     });
+// });
 
-function getCpuUsageWindows() {
-    return new Promise((resolve) => {
-        exec('powershell -command "(Get-Counter \'\\Processor(_Total)\\% Processor Time\').CounterSamples[0].CookedValue"', (error, stdout) => {
-            if (error) {
-                console.error(`Error getting CPU usage with PowerShell: ${error.message}`);
-                resolve(0);
-            } else {
-                const value = parseFloat(stdout.trim());
-                resolve(isNaN(value) ? 0 : Math.round(value));
-            }
-        });
-    });
-}
+// function getCpuUsageWindows() {
+//     return new Promise((resolve) => {
+//         exec('powershell -command "(Get-Counter \'\\Processor(_Total)\\% Processor Time\').CounterSamples[0].CookedValue"', (error, stdout) => {
+//             if (error) {
+//                 console.error(`Error getting CPU usage with PowerShell: ${error.message}`);
+//                 resolve(0);
+//             } else {
+//                 const value = parseFloat(stdout.trim());
+//                 resolve(isNaN(value) ? 0 : Math.round(value));
+//             }
+//         });
+//     });
+// }
 
 // GPU usage (Windows)
-function getGpuUsageWindows() {
-    return new Promise((resolve) => {
-        exec('powershell -command "(Get-Counter \'\\GPU Engine(*)\\Utilization Percentage\').CounterSamples | Measure-Object -Property CookedValue -Sum | Select-Object -ExpandProperty Sum"', (error, stdout) => {
-            if (error) {
-                console.error(`Error getting GPU usage with PowerShell: ${error.message}`);
-                resolve(0);
-            } else {
-                const value = parseFloat(stdout.trim());
-                resolve(isNaN(value) ? 0 : Math.round(value));
-            }
-        });
-    });
-}
+// function getGpuUsageWindows() {
+//     return new Promise((resolve) => {
+//         exec('powershell -command "(Get-Counter \'\\GPU Engine(*)\\Utilization Percentage\').CounterSamples | Measure-Object -Property CookedValue -Sum | Select-Object -ExpandProperty Sum"', (error, stdout) => {
+//             if (error) {
+//                 console.error(`Error getting GPU usage with PowerShell: ${error.message}`);
+//                 resolve(0);
+//             } else {
+//                 const value = parseFloat(stdout.trim());
+//                 resolve(isNaN(value) ? 0 : Math.round(value));
+//             }
+//         });
+//     });
+// }
 
-ipcMain.handle('get-system-stats', async () => {
-    let cpuVal = 0;
-    let ramVal = 0;
-    let gpuVal = 0;
-    const npuVal = 0;
+// ipcMain.handle('get-system-stats', async () => {
+//     let cpuVal = 0;
+//     let ramVal = 0;
+//     let gpuVal = 0;
+//     const npuVal = 0;
 
-    try {
-        if (process.platform === 'win32') {
-            cpuVal = await getCpuUsageWindows();
-            gpuVal = await getGpuUsageWindows();
-        } else {
-            const cpuSi = await si.currentLoad();
-            cpuVal = (typeof cpuSi.currentload === 'number' && !isNaN(cpuSi.currentload)) ? Math.round(cpuSi.currentload) : 0;
-            const gpuSi = await si.graphics();
-            if (gpuSi.controllers && gpuSi.controllers.length > 0) {
-                const gpuController = gpuSi.controllers[0];
-                if (gpuController && typeof gpuController.utilizationGpu === 'number' && !isNaN(gpuController.utilizationGpu)) {
-                    gpuVal = Math.round(gpuController.utilizationGpu);
-                }
-            }
-        }
-    } catch (err) {
-        console.error('Error fetching system stats (non-RAM):', err);
-    }
+//     try {
+//         if (process.platform === 'win32') {
+//             cpuVal = await getCpuUsageWindows();
+//             gpuVal = await getGpuUsageWindows();
+//         } else {
+//             const cpuSi = await si.currentLoad();
+//             cpuVal = (typeof cpuSi.currentload === 'number' && !isNaN(cpuSi.currentload)) ? Math.round(cpuSi.currentload) : 0;
+//             const gpuSi = await si.graphics();
+//             if (gpuSi.controllers && gpuSi.controllers.length > 0) {
+//                 const gpuController = gpuSi.controllers[0];
+//                if (gpuController && typeof gpuController.utilizationGpu === 'number' && !isNaN(gpuController.utilizationGpu)) {
+//                     gpuVal = Math.round(gpuController.utilizationGpu);
+//                 }
+//             }
+//         }
+//     } catch (err) {
+//         console.error('Error fetching system stats (non-RAM):', err);
+//     }
     
-    try {
-        const mem = await si.mem();
-        ramVal = (mem.total > 0) ? Math.round((mem.active / mem.total) * 100) : 0;
-    } catch (err) {
-        console.error('Error fetching RAM stats:', err);
-    }
+//     try {
+//         const mem = await si.mem();
+//         ramVal = (mem.total > 0) ? Math.round((mem.active / mem.total) * 100) : 0;
+//     } catch (err) {
+//         console.error('Error fetching RAM stats:', err);
+//     }
     
-    return {
-        cpu: cpuVal,
-        ram: ramVal,
-        gpu: gpuVal,
-        npu: npuVal
-    };
-});
-
+//     return {
+//         cpu: cpuVal,
+//         ram: ramVal,
+//         gpu: gpuVal,
+//         npu: npuVal
+//     };
+// });
