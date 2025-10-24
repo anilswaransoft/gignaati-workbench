@@ -1,1 +1,101 @@
+# Node modules
 node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Electron build outputs
+dist/
+dist_electron/
+out/
+build/
+release/
+
+# Electron Builder artifacts
+*.exe
+*.dmg
+*.AppImage
+*.deb
+*.snap
+*.msi
+*.pkg
+*.blockmap
+*.zip
+*.tar.gz
+
+# Resources folder (ignored)
+resources/
+
+# Compiled source
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Coverage and testing
+coverage/
+.nyc_output/
+coverage-final.json
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# VSCode and IDE configs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+
+# TypeScript cache (if using TS)
+*.tsbuildinfo
+
+# Yarn and npm cache
+.yarn/
+.yarnrc.yml
+.pnpm-store/
+.npm/
+.npmrc
+
+# Electron forge / builder cache
+.cache/
+electron-builder.yml
+electron-builder-debug.yml
+
+# Optional: Ignore test files
+__tests__/
+tests/
+
+# Optional: Ignore screenshots and assets not needed in repo
+screenshots/
+assets/temp/
