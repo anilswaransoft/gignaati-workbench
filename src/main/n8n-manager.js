@@ -1,8 +1,11 @@
-// src/main/n8n-manager.js - FIXED VERSION
+// src/main/n8n-manager.js - FINAL FIXED VERSION (using npx + spawn fix + robust wait)
 const { spawn, execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const { app } = require('electron');
+// Use require for node-fetch consistently
+const fetch = require('node-fetch'); // Ensure node-fetch v2 is installed
+
 
 class N8NManager {
   constructor() {
@@ -11,15 +14,12 @@ class N8NManager {
     this.n8nDataPath = path.join(this.appDataPath, 'n8n-data');
     this.dbPath = path.join(this.n8nDataPath, 'database.sqlite');
     this.workflowsPath = path.join(this.n8nDataPath, 'workflows');
+    this.bootLogPath = path.join(this.appDataPath, 'logs', 'n8n-boot.log'); // Define earlier
   }
 
   async initialize() {
-    console.log('Initializing N8N...');
-    
-    // Create necessary directories
+    console.log('Initializing N8N workspace structure...');
     this.ensureDirectories();
-    
-    // Copy starter templates if first run
     if (!fs.existsSync(this.dbPath)) {
       await this.copyStarterTemplates();
     }
@@ -30,404 +30,517 @@ class N8NManager {
       this.n8nDataPath,
       this.workflowsPath,
       path.join(this.n8nDataPath, 'credentials'),
-      path.join(this.appDataPath, 'logs')
+      path.join(this.appDataPath, 'logs') // Log directory
     ];
-
     dirs.forEach(dir => {
       if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-        console.log(`Created directory: ${dir}`);
+        try {
+          fs.mkdirSync(dir, { recursive: true });
+          console.log(`Created directory: ${dir}`);
+        } catch (mkdirError) {
+          console.error(`Failed to create directory ${dir}:`, mkdirError);
+        }
       }
     });
+    // Ensure log file exists for appending later
+    try {
+        if (!fs.existsSync(this.bootLogPath)) {
+            fs.writeFileSync(this.bootLogPath, `=== n8n boot log created: ${new Date().toISOString()} ===\n`);
+        }
+    } catch(e) {
+        console.error('Failed to create initial boot log file:', e);
+    }
   }
 
   async copyStarterTemplates() {
     try {
-      const templatesSource = path.join(process.resourcesPath, 'templates', 'starter-workflows');
+      const basePath = app.isPackaged ? process.resourcesPath : app.getAppPath();
+      // Adjust path assuming 'resources' is at the root of your project / package
+      const templatesSource = path.join(basePath, 'resources', 'templates', 'starter-workflows');
       const templatesDest = path.join(this.workflowsPath, 'templates');
 
       if (fs.existsSync(templatesSource)) {
         if (!fs.existsSync(templatesDest)) {
-          fs.mkdirSync(templatesDest, { recursive: true });
+            fs.mkdirSync(templatesDest, { recursive: true });
         }
-        
         const files = fs.readdirSync(templatesSource);
         files.forEach(file => {
-          const src = path.join(templatesSource, file);
-          const dest = path.join(templatesDest, file);
-          fs.copyFileSync(src, dest);
-          console.log(`Copied template: ${file}`);
+            const src = path.join(templatesSource, file);
+            const dest = path.join(templatesDest, file);
+            if (fs.statSync(src).isFile()) {
+                fs.copyFileSync(src, dest);
+                console.log(`Copied template: ${file}`);
+            }
         });
+      } else {
+        console.warn(`Starter templates directory not found at: ${templatesSource}`);
       }
     } catch (error) {
-      console.error('Failed to copy templates:', error);
+      console.error('Failed to copy starter templates:', error);
     }
   }
 
+
   async start(progressCallback) {
-    if (this.n8nProcess) {
-      console.log('N8N is already running');
-      progressCallback && progressCallback(100, 'N8N is already running');
+    // Check if process exists and hasn't exited
+    if (this.n8nProcess && this.n8nProcess.exitCode === null) {
+      console.log('N8N process appears to be already running.');
+      progressCallback?.(100, 'N8N is already running');
       return this.n8nProcess;
     }
 
     const net = require('net');
-    let fetch;
-    try {
-      fetch = require('node-fetch');
-    } catch (error) {
-      console.error('Failed to load node-fetch:', error);
-      throw new Error('node-fetch dependency is required but not available. Please ensure it is installed correctly.');
-    }
 
-    // Helper to check whether a TCP port is open
+    // Port checking logic
     const isPortOpen = (port, host = '127.0.0.1', timeout = 1000) => {
-      return new Promise((resolve) => {
-        const socket = new net.Socket();
-        let settled = false;
-        socket.setTimeout(timeout);
-        socket.once('connect', () => {
-          settled = true;
-          socket.destroy();
-          resolve(true);
+        return new Promise((resolve) => {
+            const socket = new net.Socket();
+            let settled = false;
+            const onError = () => {
+                if (!settled) { settled = true; socket.destroy(); resolve(false); }
+            };
+            socket.setTimeout(timeout);
+            socket.once('connect', () => { settled = true; socket.destroy(); resolve(true); });
+            socket.once('timeout', onError);
+            socket.once('error', onError);
+            socket.connect(port, host);
         });
-        socket.once('timeout', () => {
-          if (!settled) { settled = true; socket.destroy(); resolve(false); }
-        });
-        socket.once('error', () => {
-          if (!settled) { settled = true; socket.destroy(); resolve(false); }
-        });
-        socket.connect(port, host);
-      });
     };
 
-    // If something is already listening on the N8N port, prefer to reuse it
-    try {
-      const portInUse = await isPortOpen(5678, '127.0.0.1', 800);
-      if (portInUse) {
-        console.log('Detected existing service on port 5678, checking health...');
-        progressCallback && progressCallback(50, 'Checking existing N8N instance...');
-        try {
-          const res = await fetch('http://127.0.0.1:5678/healthz', { timeout: 1500 });
-          if (res.ok) {
-            console.log('An existing healthy N8N instance is running on port 5678; reusing it.');
-            progressCallback && progressCallback(100, 'N8N is already running');
-            this.n8nProcess = null;
-            return { reused: true };
-          }
-        } catch (e) {
-          console.warn('Port 5678 is in use but N8N healthcheck failed:', e && e.message);
-          throw new Error('Port 5678 is in use by another process and is not responding as N8N');
-        }
-      }
-    } catch (e) {
-      console.warn('Port check for N8N failed, continuing to attempt start:', e && e.message);
-    }
+     try {
+       const portInUse = await isPortOpen(5678);
+       if (portInUse) {
+         console.log('Port 5678 is potentially in use, checking n8n health...');
+         progressCallback?.(50, 'Checking existing n8n instance...');
+         try {
+           // Use localhost consistently for health check
+           const res = await fetch('http://localhost:5678/healthz', { timeout: 2000 }); // Increased timeout slightly
+           if (res.ok) {
+             console.log('Healthy n8n instance found running on port 5678. Reusing it.');
+             progressCallback?.(100, 'Reusing existing n8n instance');
+             this.n8nProcess = null;
+             return { reused: true };
+           } else {
+              throw new Error(`Health check failed with status ${res.status}`);
+           }
+         } catch (e) {
+           console.error('Port 5678 check failed:', e?.message);
+           // It's occupied, but not by a healthy n8n instance. Error out.
+           throw new Error('Port 5678 is occupied by a non-n8n process or n8n is unhealthy.');
+         }
+       } else {
+          console.log('Port 5678 is free.');
+       }
+     } catch (e) {
+       console.error('Failed during port check or health check:', e.message);
+       // If the error was about the port being occupied, re-throw it.
+       if (e.message.includes('Port 5678 is occupied')) {
+           throw e;
+       }
+       // Otherwise, log and allow attempt to start n8n
+       console.warn('Proceeding to start n8n despite port check issues.');
+     }
 
-    progressCallback && progressCallback(10, 'Setting up N8N workspace...');
+
+    progressCallback?.(10, 'Configuring n8n environment...');
 
     return new Promise((resolve, reject) => {
+      // --- Environment Variables ---
       const env = {
-        ...process.env,
-        
-        // Database configuration - SQLite (no Docker needed)
+        ...process.env, // Inherit existing env vars
+        // --- Core n8n Settings ---
+        N8N_PORT: '5678',
+        N8N_HOST: 'localhost', // Listen only on localhost for security
+        N8N_PROTOCOL: 'http',
+        N8N_USER_FOLDER: this.n8nDataPath, // Use user data folder
+        WEBHOOK_URL: 'http://localhost:5678/', // Base URL for webhooks
+
+        // --- Database (SQLite) ---
         DB_TYPE: 'sqlite',
         DB_SQLITE_DATABASE: this.dbPath,
-        DB_SQLITE_ENABLE_WAL: 'true',
-        
-        // N8N server configuration
-        N8N_PORT: '5678',
-        N8N_HOST: 'localhost',
-        N8N_PROTOCOL: 'http',
-        
-        // User management configuration
-        N8N_BASIC_AUTH_ACTIVE: 'false',
-        N8N_USER_MANAGEMENT_DISABLED: 'false', // Enable user management for owner setup
-        N8N_SKIP_OWNER_SETUP: 'false', // Allow owner setup
-        N8N_USER_MANAGEMENT_JWT_SECRET: 'gignaati-workbench-secret-key-2025', // JWT secret for sessions
-        
-        // Disable telemetry and external connections
+        DB_SQLITE_ENABLE_WAL: 'true', // Recommended for performance
+
+        // --- User Management & Security ---
+        N8N_BASIC_AUTH_ACTIVE: 'false', // Disable basic auth
+        N8N_USER_MANAGEMENT_DISABLED: 'false', // Enable user management
+        N8N_SKIP_OWNER_SETUP: 'false', // Ensure owner account must be created on first run
+        // Generate or load a persistent encryption key
+        N8N_ENCRYPTION_KEY: this.getEncryptionKey(),
+        N8N_USER_MANAGEMENT_JWT_SECRET: this.getJwtSecret(), // Use persistent JWT secret
+        N8N_BLOCK_ENV_ACCESS_IN_NODE: 'true', // Security best practice (added)
+
+        // --- Disable External Calls & Telemetry ---
         N8N_DIAGNOSTICS_ENABLED: 'false',
         N8N_TELEMETRY_ENABLED: 'false',
         N8N_VERSION_NOTIFICATIONS_ENABLED: 'false',
         N8N_TEMPLATES_ENABLED: 'false',
         N8N_HIRING_BANNER_ENABLED: 'false',
         N8N_PERSONALIZATION_ENABLED: 'false',
-        
-        // Paths
-        N8N_USER_FOLDER: this.n8nDataPath,
-        N8N_CUSTOM_EXTENSIONS: this.workflowsPath,
-        
-        // Performance optimization
-        EXECUTIONS_DATA_PRUNE: 'true',
-        EXECUTIONS_DATA_MAX_AGE: '336', // 2 weeks
+
+        // --- Performance & Data Management ---
+        EXECUTIONS_DATA_PRUNE: 'true', // Auto-prune execution data
+        EXECUTIONS_DATA_MAX_AGE: '336', // Keep data for 14 days (336 hours)
         EXECUTIONS_DATA_SAVE_ON_ERROR: 'all',
-        EXECUTIONS_DATA_SAVE_ON_SUCCESS: 'none',
+        EXECUTIONS_DATA_SAVE_ON_SUCCESS: 'none', // Don't save successful run data unless needed
         EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS: 'true',
-        
-        // Logging
-        N8N_LOG_LEVEL: 'info',
+
+        // --- Logging ---
+        N8N_LOG_LEVEL: 'info', // Or 'warn', 'error' for less verbosity
         N8N_LOG_OUTPUT: 'console,file',
         N8N_LOG_FILE_LOCATION: path.join(this.appDataPath, 'logs', 'n8n.log'),
         N8N_LOG_FILE_COUNT_MAX: '5',
-        N8N_LOG_FILE_SIZE_MAX: '16', // MB
-        
-        // Webhook URL
-        WEBHOOK_URL: 'http://localhost:5678/',
-        
-        // === OLLAMA INTEGRATION ===
-        // Configure Ollama as default LLM provider
-        OLLAMA_HOST: 'http://localhost:11434',
-        N8N_AI_ENABLED: 'true'
+        N8N_LOG_FILE_SIZE_MAX: '10', // Reduced max log size to 10MB
+
+        // --- Ollama Integration ---
+        OLLAMA_HOST: 'http://localhost:11434', // Ensure Ollama runs here
+        N8N_AI_ENABLED: 'true', // Enable AI features
+
+        // --- Deprecation Warnings ---
+        DB_SQLITE_POOL_SIZE: '1', // Address deprecation (value > 0)
+        N8N_RUNNERS_ENABLED: 'true', // Address deprecation
+        N8N_GIT_NODE_DISABLE_BARE_REPOS: 'true' // Address deprecation (if not using bare repos)
       };
+      // --- End Environment Variables ---
 
-      console.log('Starting N8N server...');
-      console.log('Database path:', this.dbPath);
-      console.log('Ollama integration enabled at: http://localhost:11434');
-      
-      progressCallback && progressCallback(20, 'Starting N8N server...');
 
-      // Find n8n executable or launcher
+      console.log('Attempting to start n8n server via npx...');
+      progressCallback?.(20, 'Locating npx...');
+
       const launcher = this.findN8NExecutable();
 
       if (!launcher) {
-        reject(new Error('N8N executable not found. Ensure n8n is installed (npm install -g n8n) or bundled with the app.'));
-        return;
+        return reject(new Error('npx command not found. Ensure Node.js/npm is installed correctly.'));
       }
 
-      console.log('Using N8N launcher:', launcher.cmd, launcher.args || []);
-
-      // record which launcher was used so callers can adjust timeouts
+      console.log(`Using launcher: ${launcher.cmd} ${launcher.args.join(' ')}`);
       this.lastLauncher = launcher;
 
-      // Prepare boot log file
-      try {
-        const logDir = path.join(this.appDataPath, 'logs');
-        if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
-        this.bootLogPath = path.join(logDir, 'n8n-boot.log');
-        // rotate/clear previous boot log
-        try { fs.writeFileSync(this.bootLogPath, `=== n8n boot log started: ${new Date().toISOString()} ===\n`); } catch(e){}
-      } catch (e) {
-        console.error('Failed to prepare n8n boot log:', e);
-      }
+      // Ensure boot log file exists before spawning
+       try {
+           if (!fs.existsSync(path.dirname(this.bootLogPath))) {
+              fs.mkdirSync(path.dirname(this.bootLogPath), { recursive: true });
+           }
+           fs.writeFileSync(this.bootLogPath, `=== n8n boot log started: ${new Date().toISOString()} ===\nAttempting launch with: ${launcher.cmd} ${launcher.args.join(' ')}\n`);
+       } catch (e) {
+           console.error('Failed to prepare n8n boot log:', e);
+           // Continue even if logging fails initially
+       }
 
-      progressCallback && progressCallback(30, 'Launching N8N process...');
 
-      this.n8nProcess = spawn(launcher.cmd, launcher.args || [], {
+      progressCallback?.(30, 'Launching n8n via npx (this might take a moment)...');
+
+      let command = launcher.cmd;
+      let args = launcher.args || [];
+      const options = {
         env,
         cwd: launcher.cwd || process.cwd(),
         stdio: ['ignore', 'pipe', 'pipe'],
-        detached: false, // Changed from default to ensure proper cleanup
-        windowsHide: true // Hide console window on Windows
-      });
+        detached: false,
+        windowsHide: true,
+        shell: false // Explicitly disable shell unless needed
+      };
+
+      // Adjust for Windows .cmd execution
+      if (process.platform === 'win32' && command.endsWith('.cmd')) {
+        args = ['/c', command].concat(args);
+        command = 'cmd.exe';
+        // options.shell = true; // Using cmd.exe often requires shell: true
+        console.log(`Adjusted for Windows: Running ${command} with args: ${args.join(' ')}`);
+      }
+
+      try {
+        this.n8nProcess = spawn(command, args, options);
+      } catch (spawnError) {
+         console.error(`CRITICAL: Failed to spawn process '${command}' with args '${args.join(' ')}'. Error: ${spawnError.message}`, spawnError);
+         progressCallback?.(0, `Failed to launch n8n process: ${spawnError.message}`);
+         return reject(spawnError);
+      }
+
 
       let ready = false;
-      let accumulatedStdout = '';
-      let accumulatedStderr = '';
+      let stdoutBuffer = '';
+      let stderrBuffer = '';
+      const startupTimeoutMs = 300000; // 5 minutes
 
-      this.n8nProcess.stdout.on('data', (data) => {
-        const output = data.toString();
-        accumulatedStdout += output;
-        if (accumulatedStdout.length > 8192) accumulatedStdout = accumulatedStdout.slice(-8192);
-        console.log(`N8N: ${output}`);
-        try { fs.appendFileSync(this.bootLogPath, `[STDOUT ${new Date().toISOString()}] ${output}`); } catch (e) {}
+      // Helper to append to boot log safely
+      const appendLog = (prefix, data) => {
+          try {
+              fs.appendFileSync(this.bootLogPath, `[${prefix} ${new Date().toISOString()}] ${data.toString()}`);
+          } catch (logErr) {
+              console.warn('Failed to append to boot log:', logErr.message);
+          }
+      };
 
-        // Detect when N8N is ready
+
+      this.n8nProcess.stdout?.on('data', (data) => {
+          const output = data.toString();
+          stdoutBuffer += output;
+           // Keep buffer reasonable, e.g., last ~50 lines or 16KB
+           const lines = stdoutBuffer.split('\n');
+           if (lines.length > 50) stdoutBuffer = lines.slice(-50).join('\n');
+           if (stdoutBuffer.length > 16384) stdoutBuffer = stdoutBuffer.slice(-16384);
+
+          console.log(`N8N_stdout: ${output.trim()}`);
+          appendLog('STDOUT', output);
+
+
         if (!ready && (output.includes('Editor is now accessible') || output.includes('Server started') || output.includes('Webhook waiting'))) {
           ready = true;
-          progressCallback && progressCallback(90, 'N8N is starting up...');
-          // Give it a bit more time to fully initialize
+          clearTimeout(timeoutHandle); // Clear startup timeout
+          progressCallback?.(90, 'n8n server running, finalizing...');
+          // Give a very short delay for routes to fully initialize
           setTimeout(() => {
-            progressCallback && progressCallback(100, 'N8N ready!');
+            progressCallback?.(100, 'n8n ready!');
+            console.log("n8n signaled readiness via stdout.");
             resolve(this.n8nProcess);
-          }, 3000); // Increased from 2000ms
+          }, 1000); // Reduced delay
         } else if (output.includes('Initializing')) {
-          progressCallback && progressCallback(40, 'Initializing N8N...');
+          progressCallback?.(40, 'Initializing n8n...');
         } else if (output.includes('Loading')) {
-          progressCallback && progressCallback(50, 'Loading N8N components...');
+          progressCallback?.(50, 'Loading n8n components...');
         } else if (output.includes('Starting')) {
-          progressCallback && progressCallback(60, 'Starting N8N services...');
+          progressCallback?.(60, 'Starting n8n services...');
         }
       });
 
-      this.n8nProcess.stderr.on('data', (data) => {
+      this.n8nProcess.stderr?.on('data', (data) => {
         const output = data.toString();
-        accumulatedStderr += output;
-        if (accumulatedStderr.length > 16384) accumulatedStderr = accumulatedStderr.slice(-16384);
-        
-        // Only log as error if it's actually an error, not just warnings
+        stderrBuffer += output;
+        const lines = stderrBuffer.split('\n');
+        if (lines.length > 100) stderrBuffer = lines.slice(-100).join('\n');
+        if (stderrBuffer.length > 32768) stderrBuffer = stderrBuffer.slice(-32768);
+
+        // Log warnings/errors differently
         if (output.toLowerCase().includes('error') || output.toLowerCase().includes('fatal')) {
-          console.error(`N8N Error: ${output}`);
+          console.error(`N8N_stderr: ${output.trim()}`);
         } else {
-          console.log(`N8N: ${output}`);
+          console.warn(`N8N_stderr: ${output.trim()}`);
         }
-        
-        try { fs.appendFileSync(this.bootLogPath, `[STDERR ${new Date().toISOString()}] ${output}`); } catch (e) {}
+        appendLog('STDERR', output);
       });
 
       this.n8nProcess.on('error', (error) => {
-        console.error('Failed to start N8N:', error);
-        progressCallback && progressCallback(0, `Error: ${error.message}`);
+        clearTimeout(timeoutHandle); // Clear startup timeout
+        console.error('Failed to start n8n process:', error);
+        progressCallback?.(0, `Error starting n8n: ${error.message}`);
+        appendLog('ERROR', `Spawn error: ${error.message}\n${error.stack}`);
         reject(error);
       });
 
       this.n8nProcess.on('close', (code) => {
-        console.log(`N8N process exited with code ${code}`);
-        const wasReady = ready;
-        this.n8nProcess = null;
-        
-        if (!wasReady) {
-          const err = new Error(`N8N process exited before becoming ready (code ${code})`);
+        clearTimeout(timeoutHandle); // Clear startup timeout
+        console.log(`n8n process exited with code ${code}`);
+        appendLog('CLOSE', `Process exited with code: ${code}`);
+        const wasReady = ready; // Capture readiness state before clearing process
+        this.n8nProcess = null; // Clear process reference
+
+        if (!wasReady && code !== 0) { // Reject only if abnormal exit before ready
+          const err = new Error(`n8n process exited unexpectedly (code ${code}) before signaling readiness.`);
           err.code = code;
-          err.stdout = accumulatedStdout;
-          err.stderr = accumulatedStderr;
-          
-          // Log detailed error information
-          console.error('\n========== N8N STARTUP FAILURE ==========');
-          console.error('Exit code:', code);
-          console.error('Launcher used:', launcher.cmd, launcher.args);
-          console.error('\n--- STDOUT ---');
-          console.error(accumulatedStdout || '(empty)');
-          console.error('\n--- STDERR ---');
-          console.error(accumulatedStderr || '(empty)');
-          console.error('\nBoot log path:', this.bootLogPath);
-          console.error('\nPossible causes:');
-          console.error('1. N8N not installed: Run "npm install -g n8n" or "npm install n8n"');
-          console.error('2. Port 5678 already in use');
-          console.error('3. Missing dependencies');
-          console.error('4. Database file corruption');
-          console.error('========================================\n');
-          
-          progressCallback && progressCallback(0, `N8N failed to start (code ${code})`);
-          return reject(err);
+          err.stdout = stdoutBuffer;
+          err.stderr = stderrBuffer;
+          console.error('\n========== n8n STARTUP FAILURE (details below) ==========');
+          console.error(`Exit Code: ${code}`);
+          console.error(`Launcher: ${launcher.cmd} ${launcher.args.join(' ')}`);
+          console.error('\n--- STDOUT (Last Buffer) ---');
+          console.error(stdoutBuffer || '(empty)');
+          console.error('\n--- STDERR (Last Buffer) ---');
+          console.error(stderrBuffer || '(empty)');
+          console.error(`\nFull logs might be available in: ${this.bootLogPath} and ${path.join(this.appDataPath, 'logs', 'n8n.log')}`);
+          console.error('========================================================\n');
+          progressCallback?.(0, `n8n failed to start (code ${code})`);
+          reject(err);
+        } else if (!wasReady && code === 0) {
+            console.warn('n8n process exited cleanly (code 0) but did not signal readiness via stdout. Check logs.');
+            // Potentially resolve, but indicate uncertainty? Or reject?
+            // Let's reject for now as it didn't confirm readiness.
+             const err = new Error(`n8n process exited cleanly (code 0) but didn't signal readiness.`);
+             err.code = code;
+             reject(err);
         }
+        // If it was already ready, or exited cleanly, we don't reject here.
       });
 
-      // Timeout fallback - INCREASED TIMEOUT
-      const isNpx = launcher && launcher.cmd && launcher.cmd.toLowerCase().includes('npx');
-      const fallbackMs = isNpx ? 300000 : 60000; // 5 minutes for npx, 1 minute for others
-
-      // If not ready within fallbackMs, resolve with the process (caller will poll health endpoint)
-      setTimeout(() => {
-        if (this.n8nProcess && !ready) {
-          console.log(`N8N start fallback after ${fallbackMs}ms; returning process for external readiness checks`);
-          progressCallback && progressCallback(70, 'N8N is taking longer than expected...');
-          resolve(this.n8nProcess);
+      // Startup Timeout
+      const timeoutHandle = setTimeout(() => {
+        if (this.n8nProcess && !ready) { // Check if process still exists and isn't ready
+          console.warn(`n8n did not signal readiness via stdout within ${startupTimeoutMs / 1000}s. Attempting health check as fallback...`);
+          progressCallback?.(75, 'n8n taking longer than expected, checking health...');
+          // Attempt a direct health check before giving up or resolving
+          this.waitForN8N(10, progressCallback) // Try for 10 more seconds
+              .then(() => {
+                   console.log("n8n confirmed ready via fallback health check.");
+                   resolve(this.n8nProcess);
+              })
+              .catch((waitError) => {
+                   console.error("Fallback health check also failed.", waitError);
+                   // Kill the potentially hung process
+                   this.stop().catch(stopErr => console.error("Error stopping hung process:", stopErr)); // Attempt to cleanup
+                   reject(new Error(`n8n failed to start or become ready within ${startupTimeoutMs / 1000}s timeout.`));
+              });
         }
-      }, fallbackMs);
-    });
-  }
+      }, startupTimeoutMs);
 
-  findN8NExecutable() {
-    // Common places to look for a bundled n8n binary/script
-    const possiblePaths = [
-      path.join(__dirname, '../../node_modules/n8n/bin/n8n'), // development
-      path.join(process.resourcesPath || '', 'app.asar.unpacked/node_modules/n8n/bin/n8n'),
-      path.join(process.resourcesPath || '', 'app/node_modules/n8n/bin/n8n'),
-      path.join(path.dirname(app.getPath('exe')), 'resources/app.asar.unpacked/node_modules/n8n/bin/n8n') // packaged
-    ];
+    }); // End Promise constructor
+  } // End start() method
 
-    for (const p of possiblePaths) {
-      if (fs.existsSync(p)) {
-        console.log(`Found N8N script at: ${p}`);
-        // Use `node path/to/n8n` as the launcher
-        return { cmd: 'node', args: [p], cwd: path.dirname(p) };
-      }
-    }
-
-    // Try to find n8n on PATH (where on Windows, which on *nix)
-    try {
-      const whichCmd = process.platform === 'win32' ? 'where n8n' : 'which n8n';
-      const out = execSync(whichCmd, { encoding: 'utf8' }).split(/\r?\n/).find(Boolean);
-      if (out && fs.existsSync(out.trim())) {
-        const p = out.trim();
-        console.log(`Found n8n on PATH at: ${p}`);
-        // n8n on PATH is usually an executable script; run it with node if it's a JS file
-        if (p.endsWith('.js')) {
-          return { cmd: 'node', args: [p], cwd: path.dirname(p) };
-        }
-        return { cmd: p, args: [], cwd: path.dirname(p) };
-      }
-    } catch (e) {
-      // ignore
-    }
-
-    // Check npm global bin (npm root -g or npm bin -g)
-    try {
-      const npmBin = execSync('npm bin -g', { encoding: 'utf8' }).trim();
-      const candidate = path.join(npmBin, process.platform === 'win32' ? 'n8n.cmd' : 'n8n');
-      if (fs.existsSync(candidate)) {
-        console.log(`Found n8n in npm global bin at: ${candidate}`);
-        return { cmd: candidate, args: [], cwd: path.dirname(candidate) };
-      }
-    } catch (e) {
-      // ignore
-    }
-
-    // Fallback: use npx to run n8n (this will download/execute temporarily if not installed)
-    console.log('Falling back to npx n8n launcher');
-    return { cmd: process.platform === 'win32' ? 'npx.cmd' : 'npx', args: ['n8n'], cwd: process.cwd() };
-  }
-
-  async waitForN8N(maxAttempts = 60, progressCallback) { // Increased from 30 to 60
-    let fetch;
-    try {
-      fetch = require('node-fetch');
-    } catch (error) {
-      console.error('Failed to load node-fetch:', error);
-      throw new Error('node-fetch dependency is required but not available. Please ensure it is installed correctly.');
-    }
-    
-    for (let i = 0; i < maxAttempts; i++) {
+  // --- Persistent Key/Secret Generation ---
+  getPersistentSecret(fileName, length = 64) {
+      const filePath = path.join(this.appDataPath, fileName);
       try {
-        const response = await fetch('http://localhost:5678/healthz', {
-          timeout: 3000 // Increased from 2000
+          if (fs.existsSync(filePath)) {
+              const secret = fs.readFileSync(filePath, 'utf-8');
+              if (secret.length === length) {
+                  return secret;
+              } else {
+                  console.warn(`Stored secret in ${fileName} has incorrect length. Regenerating.`);
+              }
+          }
+          // Generate a new secret
+          const crypto = require('crypto');
+          const newSecret = crypto.randomBytes(Math.ceil(length / 2)).toString('hex').slice(0, length);
+          fs.writeFileSync(filePath, newSecret, 'utf-8');
+          console.log(`Generated and saved new secret to ${fileName}`);
+          return newSecret;
+      } catch (error) {
+          console.error(`Error handling persistent secret file ${fileName}:`, error);
+          // Fallback to a less secure default if file operations fail
+          return 'fallback_insecure_secret_please_fix_permissions_' + fileName.replace('.secret','');
+      }
+  }
+
+  getEncryptionKey() {
+      // n8n requires exactly 64 hex characters (32 bytes)
+      return this.getPersistentSecret('encryption.key', 64);
+  }
+
+  getJwtSecret() {
+      // Recommend at least 32 characters for JWT secret
+      return this.getPersistentSecret('jwt.secret', 64); // Use 64 for strong secret
+  }
+  // --- End Persistent Key/Secret Generation ---
+
+  // ----- findN8NExecutable (Unchanged - Uses npx) -----
+  findN8NExecutable() {
+    console.log('[N8NManager] Using npx to find and launch n8n.');
+    const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+    try {
+      // Verify npx exists using a command that works on both platforms
+      execSync(process.platform === 'win32' ? 'where npx.cmd' : 'which npx', { stdio: 'ignore' });
+      return { cmd: npxCmd, args: ['n8n'], cwd: process.cwd() };
+    } catch (error) {
+      console.error("CRITICAL: 'npx' command not found. Ensure Node.js/npm is installed and in the system PATH.");
+      return null;
+    }
+  }
+  // ----- END findN8NExecutable -----
+
+  // ----- waitForN8N (Updated with better logging and using localhost) -----
+  async waitForN8N(maxAttempts = 60, progressCallback) {
+    const healthUrl = 'http://localhost:5678/healthz'; // Use localhost
+    console.log(`Waiting for n8n to be ready at ${healthUrl} (up to ${maxAttempts}s)...`);
+
+    for (let i = 0; i < maxAttempts; i++) {
+      const attempt = i + 1;
+      progressCallback?.(Math.floor((attempt / maxAttempts) * 20) + 75, `Checking n8n readiness... (${attempt}/${maxAttempts})`); // Progress from 75-95%
+
+      try {
+        const response = await fetch(healthUrl, {
+          method: 'GET', // Explicitly GET
+          timeout: 1500 // Shorter timeout for quick checks
         });
-        
+
         if (response.ok) {
-          console.log('N8N is ready!');
-          progressCallback && progressCallback(100, 'N8N is ready!');
-          return true;
+          console.log(`n8n health check successful! (Attempt ${attempt}/${maxAttempts})`);
+          progressCallback?.(100, 'n8n is ready!');
+          return true; // n8n is ready
+        } else {
+          // Log non-OK status only once every few attempts
+          if (attempt % 5 === 0) {
+            console.warn(`n8n health check returned status ${response.status} (Attempt ${attempt}/${maxAttempts})`);
+          }
         }
       } catch (error) {
-        // N8N not ready yet
-        const progress = Math.floor((i / maxAttempts) * 100);
-        progressCallback && progressCallback(progress, `Waiting for N8N... ${i}/${maxAttempts}s`);
+        // Log connection errors only periodically to avoid spam
+        if (attempt % 5 === 0 || attempt === 1) {
+          console.warn(`n8n health check failed (Attempt ${attempt}/${maxAttempts}): ${error.message}`);
+        }
+        // Common errors: ECONNREFUSED (not started yet), ETIMEDOUT
       }
-      
+
+      // Wait 1 second before the next attempt
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    
-    throw new Error('N8N failed to start within timeout period');
-  }
 
+    console.error(`n8n failed to become ready at ${healthUrl} within ${maxAttempts} seconds.`);
+    throw new Error('n8n failed to start or become healthy within the timeout period.');
+  }
+  // ----- END waitForN8N -----
+
+
+  // stop method (Improved for robustness)
   async stop() {
-    if (this.n8nProcess) {
-      console.log('Stopping N8N...');
-      
-      try {
-        // Try graceful shutdown first
-        this.n8nProcess.kill('SIGTERM');
-        
-        // Force kill after 5 seconds if not stopped
-        setTimeout(() => {
-          if (this.n8nProcess && !this.n8nProcess.killed) {
-            console.log('Force killing N8N process...');
-            this.n8nProcess.kill('SIGKILL');
+    if (!this.n8nProcess || this.n8nProcess.killed) {
+      console.log('n8n process is not running or already stopped.');
+      this.n8nProcess = null; // Ensure reference is cleared
+      return;
+    }
+
+    console.log(`Attempting to stop n8n process (PID: ${this.n8nProcess.pid})...`);
+    const pid = this.n8nProcess.pid; // Capture PID before potentially clearing reference
+
+    try {
+      if (process.platform === 'win32') {
+        console.log(`Using taskkill /PID ${pid} /F /T`);
+        try {
+          execSync(`taskkill /PID ${pid} /F /T`);
+          console.log('n8n process terminated via taskkill.');
+        } catch (tkError) {
+          // Ignore "not found" errors, process might have exited already
+          if (!tkError.message.includes('not found')) {
+              console.error(`Taskkill failed: ${tkError.message}`);
+          } else {
+               console.log('Taskkill reported process not found (likely already exited).');
           }
-        }, 5000);
-      } catch (e) {
-        console.error('Error stopping N8N:', e);
+        }
+      } else {
+        // Use standard kill signals for macOS/Linux
+        console.log(`Sending SIGTERM to PID ${pid}...`);
+        process.kill(pid, 'SIGTERM');
+
+        // Setup a fallback SIGKILL
+        const killTimeout = setTimeout(() => {
+          try {
+              console.warn(`Process ${pid} did not exit via SIGTERM, sending SIGKILL...`);
+              process.kill(pid, 'SIGKILL');
+          } catch (killError) {
+              // Ignore errors if process already exited
+              if (killError.code !== 'ESRCH') { // ESRCH = No such process
+                  console.error(`Error sending SIGKILL to PID ${pid}:`, killError.message);
+              }
+          }
+        }, 3000); // 3 seconds grace period
+
+        // Wait briefly for SIGTERM to work before clearing timeout
+        await new Promise(resolve => setTimeout(resolve, 500));
+        clearTimeout(killTimeout); // Clear fallback if process likely exited
       }
-      
-      this.n8nProcess = null;
+    } catch (e) {
+      console.error('Error occurred during process termination:', e.message);
+    } finally {
+      // Always clear the reference after attempting to stop
+      if (this.n8nProcess && this.n8nProcess.pid === pid) {
+          this.n8nProcess = null;
+          console.log('n8n process reference cleared.');
+      }
     }
   }
 
+
   isRunning() {
-    return this.n8nProcess !== null && !this.n8nProcess.killed;
+    // Check if the process object exists and its exitCode is null (meaning it hasn't exited)
+    return !!this.n8nProcess && this.n8nProcess.exitCode === null;
   }
 }
 
 module.exports = N8NManager;
-
