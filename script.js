@@ -2886,7 +2886,7 @@ NPU: ${llm.npu}
 
 
   if (llmListContainer) {
-    fetch("https://api.gignaati.com/api/Template/llmList?type=Chat")
+    fetch("https://api.gignaati.com/api/Template/llmList?type=Ultra-Low Config")
       .then(function (response) {
         return response.json();
       })
@@ -3062,7 +3062,9 @@ NPU: ${llm.npu}
 // }
 
 // Click-to-Launch: install/start Ollama and N8N showing inline progress and console
-async function clickToLaunchInstall() {
+
+
+async function clickToLaunchInstall_1st() {
   // const systeminfo = document.getElementById("system-info");
   // systeminfo.style.display = "block";
   
@@ -3131,6 +3133,229 @@ async function clickToLaunchInstall() {
     if (button) button.disabled = false;
   }
 }
+
+async function clickToLaunchInstall_2nd() {
+  const panel = document.getElementById('launch-progress-panel');
+  const bar = document.getElementById('launch-progress-bar');
+  const text = document.getElementById('launch-progress-text');
+  const consoleEl = document.getElementById('launch-console');
+  const button = document.querySelector('.install-btn');
+
+  function updateProgress(percent, message) {
+    if (bar) {
+      bar.style.width = `${percent}%`;
+      bar.textContent = `${percent}%`;
+    }
+    if (text) {
+      text.textContent = message;
+    }
+    if (consoleEl) {
+      const div = document.createElement('div');
+      div.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+      consoleEl.appendChild(div);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+  }
+
+  try {
+    // Show progress and disable button
+    if (panel) panel.style.display = 'block';
+    if (button) button.disabled = true;
+
+    // Step 1: Install AI Brain
+    updateProgress(5, 'Installing AI Brain...');
+    await window.electronAPI.installOllama();
+    updateProgress(30, 'AI Brain installed successfully');
+
+    // Step 2: Start AI Brain
+    updateProgress(35, 'Configuring GPU acceleration...');
+    const ollamaResult = await window.electronAPI.startOllama();
+    updateProgress(40, `AI Brain started with ${ollamaResult.optimization.accelerationType}`);
+
+    // Step 3: Setup N8N using API instead of local method
+    updateProgress(45, 'Starting N8N setup process...');
+
+    let currentProgress = 45;
+    let lastStatus = null;
+    let pollInterval = null;
+
+    async function pollN8NInstallStatus() {
+      try {
+        const response = await fetch('http://localhost:5000/api/Provisioning/install-n8n', {
+          method: 'GET',
+          headers: { 'accept': 'application/json' }
+        });
+
+        const result = await response.json();
+        const status = result?.data;
+        const message = result?.message || 'Checking installation status...';
+
+        // If error from API → stop polling
+        if (result?.error) {
+          updateProgress(currentProgress, `Error: ${result.error}`);
+          clearInterval(pollInterval);
+          return;
+        }
+
+        // If already installed → complete progress
+        if (status === 'installed') {
+          updateProgress(100, 'N8N installed successfully!');
+          clearInterval(pollInterval);
+          document.getElementById('startJourney').classList.remove('disable-click');
+          return;
+        }
+
+        // If still in progress and message not same as last
+        if (status === 'In-progress' && status !== lastStatus) {
+          currentProgress = Math.min(currentProgress + 5, 95);
+          updateProgress(currentProgress, message);
+          lastStatus = status;
+        }
+
+        // If started (first call)
+        if (status === 'started') {
+          updateProgress(currentProgress + 2, message);
+          lastStatus = status;
+        }
+
+      } catch (err) {
+        updateProgress(currentProgress, `Error fetching status: ${err.message}`);
+        clearInterval(pollInterval);
+      }
+    }
+
+    // Call immediately and then poll every 2 minutes
+    await pollN8NInstallStatus();
+    pollInterval = setInterval(pollN8NInstallStatus, 2 * 60 * 1000);
+
+    // Step 4: Removed direct setupN8N() and startN8N()
+    // await window.electronAPI.setupN8N();
+    // await window.electronAPI.startN8N();
+
+  } catch (error) {
+    console.error('Installation failed:', error);
+    updateProgress(0, `Error: ${error.message}`);
+    if (consoleEl) {
+      const div = document.createElement('div');
+      div.style.color = 'red';
+      div.textContent = `${new Date().toLocaleTimeString()}: Installation failed: ${error.message}`;
+      consoleEl.appendChild(div);
+    }
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+async function clickToLaunchInstall() {
+  const panel = document.getElementById('launch-progress-panel');
+  const bar = document.getElementById('launch-progress-bar');
+  const text = document.getElementById('launch-progress-text');
+  const consoleEl = document.getElementById('launch-console');
+  const button = document.querySelector('.install-btn');
+
+  function updateProgress(percent, message) {
+    if (bar) {
+      bar.style.width = `${percent}%`;
+      bar.textContent = `${percent}%`;
+    }
+    if (text) {
+      text.textContent = message;
+    }
+    if (consoleEl) {
+      const div = document.createElement('div');
+      div.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+      consoleEl.appendChild(div);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+  }
+
+  try {
+    if (panel) panel.style.display = 'block';
+    if (button) button.disabled = true;
+
+    // 🔹 Step 1: Install Ollama (AI Brain)
+    updateProgress(5, 'Installing AI Brain...');
+    const installResult = await window.electronAPI.installOllama();
+    if (!installResult || installResult.error) throw new Error('AI Brain installation failed');
+    updateProgress(30, 'AI Brain installed successfully');
+
+    // 🔹 Step 2: Start Ollama
+    updateProgress(35, 'Configuring GPU acceleration...');
+    const ollamaResult = await window.electronAPI.startOllama();
+    const accelerationType = ollamaResult?.optimization?.accelerationType || 'default CPU mode';
+    updateProgress(40, `AI Brain started with ${accelerationType}`);
+
+    // 🔹 Step 3: Start N8N setup using external API
+    updateProgress(45, 'Starting N8N setup process...');
+    let currentProgress = 45;
+    let lastStatus = null;
+    let pollInterval = null;
+
+    async function pollN8NInstallStatus() {
+      try {
+        const response = await fetch('http://localhost:5000/api/Provisioning/install-n8n', {
+          method: 'GET',
+          headers: { accept: 'application/json' }
+        });
+
+        const result = await response.json();
+        const status = result?.data;
+        const message = result?.message || 'Checking installation status...';
+
+        if (result?.error) {
+          updateProgress(currentProgress, `Error: ${result.error}`);
+          clearInterval(pollInterval);
+          return;
+        }
+
+        if (status === 'installed') {
+          updateProgress(100, 'N8N installed successfully!');
+          clearInterval(pollInterval);
+          document.getElementById('startJourney').classList.remove('disable-click');
+
+          if (panel) panel.style.display = 'none';
+          if (bar) bar.style.display = 'none';
+          if (text) text.style.display = 'none';
+          if (consoleEl) text.style.display = 'none';
+          return;
+        }
+
+        if (status === 'In-progress' && status !== lastStatus) {
+          currentProgress = Math.min(currentProgress + 5, 95);
+          updateProgress(currentProgress, message);
+          lastStatus = status;
+        }
+
+        if (status === 'started') {
+          updateProgress(currentProgress + 2, message);
+          lastStatus = status;
+        }
+      } catch (err) {
+        updateProgress(currentProgress, `Error fetching status: ${err.message}`);
+        clearInterval(pollInterval);
+      }
+    }
+
+    // Call immediately, then poll every 2 mins
+    await pollN8NInstallStatus();
+    pollInterval = setInterval(pollN8NInstallStatus, 2 * 60 * 1000);
+
+  } catch (error) {
+    console.error('Installation failed:', error);
+    updateProgress(0, `Error: ${error.message}`);
+    if (consoleEl) {
+      const div = document.createElement('div');
+      div.style.color = 'red';
+      div.textContent = `${new Date().toLocaleTimeString()}: Installation failed: ${error.message}`;
+      consoleEl.appendChild(div);
+    }
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+
+
 const handleTabbutton = (target) => {
   // Recall APIs on every tab click
   if (typeof loadUpcomingUpdate === "function") loadUpcomingUpdate();
@@ -3234,13 +3459,15 @@ function OTPVerify1() {
   const gignaatiWorkBenchContainer = document.getElementById(
     "gignaati-workBench-container"
   );
-  // const brandingContainer = document.getElementById("branding-container");
-  const actionFeaturesSetup = document.getElementById("action-features-setup");
+  //const actionFeaturesSetup = document.getElementById("action-features-setup");
   const footer = document.getElementById("footer");
   gignaatiWorkBenchContainer.style.display = "none";
   footer.classList.remove("active");
-  // brandingContainer.style.display = "none";
-  actionFeaturesSetup.style.display = "block";
+  //actionFeaturesSetup.style.display = "block";
+
+  validateAndStartJourney();
+
+
 }
 
 function backToVerify() {
@@ -3329,12 +3556,12 @@ function reloadTemplateData() {
 
   var categoryType = "";
   var storedIdeaText = "";
-  var ideaInputElement = document.getElementById("idea-input");
-  var ideaText = ideaInputElement.value;
-  if (ideaText && ideaText.trim() !== '') {
-    storedIdeaText = ideaText.trim();
-    ideaInputElement.value = "";
-  }
+  // var ideaInputElement = document.getElementById("idea-input");
+  // var ideaText = ideaInputElement.value;
+  // if (ideaText && ideaText.trim() !== '') {
+  //   storedIdeaText = ideaText.trim();
+  //   ideaInputElement.value = "";
+  // }
 
   if (dropdownValue && dropdownValue !== "Select Category" && dropdownValue !== "All") {
     categoryType = dropdownValue;
@@ -3495,7 +3722,7 @@ function reloadTemplateData() {
 function reloadLLMData() {
   var llmListContainer = document.getElementById("llm-list-container");
   if (llmListContainer) {
-    fetch("https://api.gignaati.com/api/Template/llmList?type=Chat")
+    fetch("https://api.gignaati.com/api/Template/llmList?type=Ultra-Low Config")
       .then((res) => res.json())
       .then((data) => {
 
@@ -3886,4 +4113,54 @@ function loadTemplatePreview(templateId, templateName = "--", templateTagline = 
 function triggerCtrlR() {
     location.reload(true);
 }
+
+
+// function learnVideos() {
+//   fetch('https://api.gignaati.com/api/Template/getLearnVideo', {
+//     method: 'GET',
+//     headers: {
+//       'accept': 'text/plain'
+//     }
+//   })
+//   .then(response => {
+//     if (!response.ok) {
+//       throw new Error('HTTP error! Status: ' + response.status);
+//     }
+//     return response.json();
+//   })
+//   .then(result => {
+//     if (result.data && result.data.length > 0) {
+//       console.log('🎓 Learn Videos fetched successfully:', result.data);
+//       //showLearnVideos(result.data);
+//     } else {
+//       //alert('⚠️ No learning videos available.');
+//     }
+//   })
+//   .catch(error => {
+//     console.error('Error fetching learn videos:', error);
+//    // alert('⚠️ Unable to fetch learn videos. Please check API status.');
+//   });
+// }
+
+// function loadLearnVideo() {
+//   fetch('https://api.gignaati.com/api/Template/getLearnVideo')
+//     .then(response => response.json())
+//     .then(response => {
+//       if (response && response.data && response.data.length > 0) {
+//         const firstVideo = response.data[0];
+//         const videoUrl = firstVideo.videoUrl;
+        
+//         const iframe = document.getElementById("idea-video");
+//         if (iframe && videoUrl) {
+//           iframe.src = `${videoUrl}?title=0&byline=0&portrait=0&autopause=0`;
+//         }
+//       } else {
+//         console.log("No video data found.");
+//       }
+//     })
+//     .catch(error => console.error("Error fetching video data:", error));
+// }
+// // Call the function when page loads
+// window.onload = loadLearnVideo;
+
 

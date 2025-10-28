@@ -122,6 +122,15 @@ function createN8NView() {
 }
 
 function showN8NView() {
+
+const isInstalled =  checkN8nInstallation();
+
+  if (!isInstalled) {
+   // console.warn('n8n not installed. Please setup Agentic Platform first.');
+     showToast('Please Setup Agentic Platform.', false);
+    return;
+  }
+ 
     // Remove any existing instance
     const existingContainer = document.getElementById('n8n-container');
     if (existingContainer) {
@@ -154,3 +163,37 @@ function retryN8NConnection() {
 window.showN8NView = showN8NView;
 window.closeN8NView = closeN8NView;
 window.retryN8NConnection = retryN8NConnection;
+
+
+
+function checkN8nInstallation() {
+  return fetch('http://localhost:5000/api/Provisioning/checkN8nInstalled', {
+    method: 'GET',
+    headers: {
+      'accept': 'text/plain'
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('HTTP error! Status: ' + response.status);
+    }
+    return response.json();
+  })
+  .then(result => {
+    if (result.data) {
+      console.log(result.message);
+      //alert('✅ ' + result.message);
+      return true;
+    } else {
+      console.warn(result.message || 'n8n not installed.');
+      //alert('❌ ' + (result.message || 'n8n not installed.'));
+      return false;
+    }
+  })
+  .catch(error => {
+    console.error('Error checking n8n installation:', error);
+    //alert('⚠️ Unable to check n8n installation. Please ensure the backend API is running.');
+    return false;
+  });
+}
+

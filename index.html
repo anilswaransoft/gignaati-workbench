@@ -11,7 +11,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
     rel="stylesheet" />
- <style>
+  <style>
     * {
       box-sizing: border-box;
       padding: 0px;
@@ -400,8 +400,8 @@
     .llm-container .llm-box button.btn.btn-primary.custom-btn.custom-btn-white {
       position: absolute;
       bottom: 20px;
-          background: #e8e8e8 !important;
-  border: 1px solid #b5b5b5;
+      background: #e8e8e8 !important;
+      border: 1px solid #b5b5b5;
     }
 
     .llm-container .llm-box h3 {
@@ -441,19 +441,21 @@
       position: relative;
       padding-bottom: 74px;
     }
- .tamplate-container .tamplate-box button.btn.btn-primary.custom-btn.custom-btn-white {
-          position: absolute;
-    bottom: 20px;
-    left: 16px;
-    background: #e8e8e8 !important;
-  border: 1px solid #b5b5b5;
+
+    .tamplate-container .tamplate-box button.btn.btn-primary.custom-btn.custom-btn-white {
+      position: absolute;
+      bottom: 20px;
+      left: 16px;
+      background: #e8e8e8 !important;
+      border: 1px solid #b5b5b5;
     }
+
     .tamplate-container .tamplate-box button.btn.btn-primary.custom-btn.custom-btn-white.copy-json-btn {
-        position: absolute;
-    bottom: 20px;
-        left: 94px;
-        background: #e8e8e8 !important;
-  border: 1px solid #b5b5b5;
+      position: absolute;
+      bottom: 20px;
+      left: 94px;
+      background: #e8e8e8 !important;
+      border: 1px solid #b5b5b5;
     }
 
     .tamplate-container .tamplate-box h3 {
@@ -1142,7 +1144,7 @@
     .chat-bot .chat-area .top h3 {
       margin-bottom: 0px;
       font-size: 1rem;
-        color: #0062cb;
+      color: #0062cb;
     }
 
     .close-chat {
@@ -1326,180 +1328,209 @@
       margin-top: 20px;
     }
 
-    .why{
+    .why {
       font-size: .8rem !important;
-    color: blue !important;
-    font-weight: 500;
-    background: #e8e8e8;
-    padding: 10px 10px;
-    border-radius: 9px;
-    line-height: 16px;
+      color: blue !important;
+      font-weight: 500;
+      background: #e8e8e8;
+      padding: 10px 10px;
+      border-radius: 9px;
+      line-height: 16px;
     }
-.why div{
-  margin-bottom: 10px !important;
-}
-    
-    .why p{
+
+    .why div {
+      margin-bottom: 10px !important;
+    }
+
+    .why p {
       font-size: .8rem !important;
-    color: blue !important;
-    font-style: italic;
+      color: blue !important;
+      font-style: italic;
     }
-   .system-info-2 {
-    width: 92%;
-     position: absolute;
-    bottom: 79px;
-}
 
-
-
-
+    .system-info-2 {
+      width: 92%;
+      position: absolute;
+      bottom: 79px;
+    }
   </style>
 
 
-<!-- ChatBot Style -->
+  <!-- ChatBot Style -->
   <style>
+    .chat-container {
+      width: 360px;
+      height: 520px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+    }
 
-.chat-container {
-  width: 360px;
-  height: 520px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  font-family: 'Segoe UI', sans-serif;
-}
+    .chat-header {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+      text-align: center;
+      padding: 12px 0;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
 
-.chat-header {
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  color: white;
-  text-align: center;
-  padding: 12px 0;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
+    .chat-messages {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      /* background: #f8f9fc; */
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-.chat-messages {
-  flex: 1;
-  padding: 12px;
-  overflow-y: auto;
-  /* background: #f8f9fc; */
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+    .message {
+      display: flex;
+      flex-direction: column;
+    }
 
-.message {
-  display: flex;
-  flex-direction: column;
-}
+    .bot-message .message-content {
+      align-self: flex-start;
+      /* background: #e9f2ff; */
+      color: #333;
+      border-radius: 14px 14px 14px 4px;
+      /* padding: 10px 14px; */
+      max-width: 85%;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      animation: fadeIn 0.3s ease;
+    }
 
-.bot-message .message-content {
-  align-self: flex-start;
-  /* background: #e9f2ff; */
-  color: #333;
-  border-radius: 14px 14px 14px 4px;
-  /* padding: 10px 14px; */
-  max-width: 85%;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  animation: fadeIn 0.3s ease;
-}
+    .user-message .message-content {
+      align-self: flex-end;
+      /* background: #007bff; */
+      color: white;
+      border-radius: 14px 14px 4px 14px;
+      /* padding: 10px 14px; */
+      max-width: 85%;
+      /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); */
+      animation: fadeIn 0.3s ease;
+    }
 
-.user-message .message-content {
-  align-self: flex-end;
-  /* background: #007bff; */
-  color: white;
-  border-radius: 14px 14px 4px 14px;
-  /* padding: 10px 14px; */
-  max-width: 85%;
-  /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); */
-  animation: fadeIn 0.3s ease;
-}
+    .option-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      margin: 4px 4px 0 0;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
 
-.option-btn {
-  display: inline-block;
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  margin: 4px 4px 0 0;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: all 0.3s ease;
-}
+    .option-btn:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #0056b3, #004099);
+    }
 
-.option-btn:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #0056b3, #004099);
-}
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+      background: white;
+      padding: 8px;
+    }
 
-.chat-input {
-  display: flex;
-  border-top: 1px solid #ddd;
-  background: white;
-  padding: 8px;
-}
+    .chat-input input {
+      flex: 1;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+      background: #f2f4f8;
+    }
 
-.chat-input input {
-  flex: 1;
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  outline: none;
-  font-size: 14px;
-  background: #f2f4f8;
-}
+    .chat-input button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-left: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
 
-.chat-input button {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  margin-left: 8px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
+    .chat-input button:hover {
+      background: #0056b3;
+    }
 
-.chat-input button:hover {
-  background: #0056b3;
-}
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 
-<style>
-  /* --- Button Size Fix for "Click to Launch" and "Start Building AI Agent" --- */
-  .setup-box .custom-btn {
-    width: 100%;
-    max-width: 250px;
-    padding: 12px 0;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 10px;
-    text-align: center;
-    display: block;
-    margin: 10px auto;
-  }
+  <style>
+    /* --- Button Size Fix for "Click to Launch" and "Start Building AI Agent" --- */
+    .setup-box .custom-btn {
+      width: 100%;
+      max-width: 250px;
+      padding: 12px 0;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 10px;
+      text-align: center;
+      display: block;
+      margin: 10px auto;
+    }
 
-  .setup-box .custom-btn.btn-primary {
-    background-color: #000;
-    border: 1px solid #000;
-    color: #fff;
-  }
+    .setup-box .custom-btn.btn-primary {
+      background-color: #000;
+      border: 1px solid #000;
+      color: #fff;
+    }
 
-  .setup-box .custom-btn.btn-primary:hover {
-    background-color: #333 !important;
-  }
-</style>
+    .setup-box .custom-btn.btn-primary:hover {
+      background-color: #333 !important;
+    }
+  </style>
+  <style>
+    .share-box {
+      border: 1px solid var(--border-color);
+      background: var(--gradient-card);
+      padding: 16px;
+      padding-bottom: 16px;
+      border-radius: 10px;
+      height: 100%;
+    }
+
+    /* .share-box .share-box-video {}
+
+    .share-box .share-box-video video {} */
+
+    .share-box h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .share-box p {
+      margin-bottom: 0px;
+      font-size: 0.9rem;
+      color: var(--light-gray);
+      margin-bottom: 12px;
+    }
+  </style>
 
 </head>
 
@@ -1515,28 +1546,26 @@
           <ul>
             <li>
               <button type="button" class="active" id="Dashboard-btn" onclick='handleTabbutton("Dashboard")'>
-                Dashboard
+                Learn
               </button>
             </li>
 
             <li>
               <button type="button" class="" id="LLM-btn" onclick='handleTabbutton("LLM")'>
-                Models
+                Build
               </button>
             </li>
             <li>
-              <!-- <button type="button" class="" id="Template-btn" onclick='handleTabbutton("Template")'>
-                Templates
+              <button type="button" class="" id="Template-btn" onclick='reloadTemplateData()'>
+                Earn
+              </button>
+            </li>
+            <li>
+              <!-- <button type="button" class="" id="Build-btn" onclick='showN8NView()'>
+                Make AI Agent
               </button> -->
 
-              <button type="button" class="" id="Template-btn" onclick='reloadTemplateData()'>
-                Templates
-              </button>
-            </li>
-            <li>
-              <button type="button" class="" id="Build-btn" onclick='showN8NView()'>
-                Make AI Agent
-              </button>
+
               <!-- Subscription Expired Modal -->
               <div class="modal fade" id="subscriptionModal" tabindex="-1" aria-labelledby="subscriptionModalLabel"
                 aria-hidden="true">
@@ -1905,38 +1934,46 @@
           <div class="setup-container">
             <h1 class="title">2-Easy Steps</h1>
             <div class="row">
-              
-               <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+
+              <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
                 <div class="setup-box mb-3 disable-click1" id="n8n-setup-box" style="cursor: pointer">
                   <div class="setup-info">
                     <h3>
                       Launch Agentic Platform <span class="count">1</span>
                     </h3>
-                    
-                    <button type="button" class="btn btn-primary custom-btn w-100 install-btn" onclick="clickToLaunchInstall()">
+
+                    <button type="button" class="btn btn-primary custom-btn w-100 install-btn"
+                      onclick="clickToLaunchInstall()">
                       Click to Launch
                     </button>
 
-                    <div id="launch-progress-panel" style="display:none; margin-top:12px;">
+                    <!-- <div id="launch-progress-panel" style="display:none; margin-top:12px;">
                       <div style="margin-bottom:8px;">
                         <div class="progress" style="height:14px;">
-                          <div id="launch-progress-bar" class="progress-bar" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                          <div id="launch-progress-bar" class="progress-bar" role="progressbar" style="width:0%"
+                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                         </div>
                       </div>
-                      <div id="launch-progress-text" style="font-size:0.9rem; color:#333; margin-bottom:6px;">Waiting...</div>
-                      <div id="launch-console" style="background:#111; color:#0f0; padding:8px; border-radius:6px; max-height:160px; overflow:auto; font-family: monospace; font-size:12px;"></div>
+                      <div id="launch-progress-text" style="font-size:0.9rem; color:#333; margin-bottom:6px;">Waiting...
+                      </div>
+                      <div id="launch-console"
+                        style="background:#111; color:#0f0; padding:8px; border-radius:6px; max-height:160px; overflow:auto; font-family: monospace; font-size:12px;">
+                      </div>
                     </div>
 
-                    <!-- Inline progress panel for Click to Launch (download progress + console) -->
                     <div id="launch-progress-panel" style="display:none; margin-top:12px;">
                       <div style="margin-bottom:8px;">
                         <div class="progress" style="height:14px;">
-                          <div id="launch-progress-bar" class="progress-bar" role="progressbar" style="width:0%">0%</div>
+                          <div id="launch-progress-bar" class="progress-bar" role="progressbar" style="width:0%">0%
+                          </div>
                         </div>
                       </div>
-                      <div id="launch-progress-text" style="font-size:0.9rem; color:#333; margin-bottom:6px;">Waiting...</div>
-                      <div id="launch-console" style="background:#111; color:#0f0; padding:8px; border-radius:6px; max-height:160px; overflow:auto; font-family: monospace; font-size:12px;"></div>
-                    </div>
+                      <div id="launch-progress-text" style="font-size:0.9rem; color:#333; margin-bottom:6px;">Waiting...
+                      </div>
+                      <div id="launch-console"
+                        style="background:#111; color:#0f0; padding:8px; border-radius:6px; max-height:160px; overflow:auto; font-family: monospace; font-size:12px;">
+                      </div>
+                    </div> -->
 
                     <div id="n8n-loader" style="display: none; margin-top: 10px">
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -2002,8 +2039,8 @@
             </div>
           </div>
         </div> -->
-      
-      
+
+
       </div>
 
     </div>
@@ -2036,7 +2073,43 @@
                     " />
               </div> -->
               <div class="share-idea-container px-5" id="idea-container">
-                <div class="share-idea">
+                <div class="top-heading-sec mb-3 " style="justify-content: end;">
+                  <!-- <h1 class="title" id="templateCount" style="display: none;">Templates : 9</h1> -->
+                  <button type="button" class="btn btn-primary custom-btn w-20" onclick="openAcademy()">
+                    Explore AI Academy
+                  </button>
+                </div>
+              </div>
+              <!-- <div class="row">
+                  <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-12 mb-3">
+                    <div class="share-box">
+                      <div class="share-box-video">
+                           <iframe id="idea-video" class="w-100 mb-3"
+                    src="https://player.vimeo.com/video/1124556952?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                    frameborder="0"
+                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    
+                    title="GMT20251004-092314_Recording_1920x1080"></iframe>
+                      </div>
+                      <h3>Phi-3 Mini (3.8B)</h3>
+                     
+                    </div>
+                  </div>
+                
+                </div> -->
+              <div style="padding:56.25% 0 0 0;position:relative;">
+                <iframe id="idea-video"
+                  src="https://player.vimeo.com/video/1124556952?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                  frameborder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                  title="GMT20251004-092314_Recording_1920x1080"></iframe>
+              </div>
+
+
+              <!-- <div class="share-idea">
                   <h2 class="title">Transform your idea into reality</h2>
                   <form action="">
                     <textarea id="idea-input" class="form-control mb-1" placeholder="What do you want to build today"
@@ -2049,44 +2122,44 @@
                         Build Agent
                       </button></div>
                   </form>
-                </div>
-              </div>
+                </div> -->
+            </div>
 
-              <div class="Economics-container px-5" id="economics-container" style="display: none;">
-                <div class="Economics box-cover-2">
-                  <!-- <h1 class="title text-center" id="agentEconomic">Your Agent Economics</h1> -->
-                  <h1 class="title text-center" id="agentEconomic">AI Agent</h1>
-                  <p class="sec-des">Cost analysis and return on investment</p>
-                  <div class="row">
-                    <div class="col-lg-4 col-md-6 col-12 mb-3">
-                      <div class="economic-box">
-                        <h3 class="economic-img"><img src="" alt=""></h3>
-                        <p class="economic-value" id="token-cost">124</p>
-                        <p class="economic-des">
-                          Token Cost Per Request
-                        </p>
-                      </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-12 mb-3">
-                      <div class="economic-box">
-                        <h3 class="economic-img"><img src="" alt=""></h3>
-                        <p class="economic-value" id="roi-value">255%</p>
-                        <p class="economic-des">
-                          Expected ROI
-                        </p>
-                      </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-12 mb-3">
-                      <div class="economic-box">
-                        <h3 class="economic-img"><img src="" alt=""></h3>
-                        <p class="economic-value" id="hours-saved">15h</p>
-                        <p class="economic-des">
-                          Time Saved per week
-                        </p>
-                      </div>
+            <div class="Economics-container px-5" id="economics-container" style="display: none;">
+              <div class="Economics box-cover-2">
+                <!-- <h1 class="title text-center" id="agentEconomic">Your Agent Economics</h1> -->
+                <h1 class="title text-center" id="agentEconomic">AI Agent</h1>
+                <p class="sec-des">Cost analysis and return on investment</p>
+                <div class="row">
+                  <div class="col-lg-4 col-md-6 col-12 mb-3">
+                    <div class="economic-box">
+                      <h3 class="economic-img"><img src="" alt=""></h3>
+                      <p class="economic-value" id="token-cost">124</p>
+                      <p class="economic-des">
+                        Token Cost Per Request
+                      </p>
                     </div>
                   </div>
-                  <!-- <div class="row">
+                  <div class="col-lg-4 col-md-6 col-12 mb-3">
+                    <div class="economic-box">
+                      <h3 class="economic-img"><img src="" alt=""></h3>
+                      <p class="economic-value" id="roi-value">255%</p>
+                      <p class="economic-des">
+                        Expected ROI
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-md-6 col-12 mb-3">
+                    <div class="economic-box">
+                      <h3 class="economic-img"><img src="" alt=""></h3>
+                      <p class="economic-value" id="hours-saved">15h</p>
+                      <p class="economic-des">
+                        Time Saved per week
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="row">
                     <div class="small-heading title text-center mb-3">
                       Financial Impact
                     </div>
@@ -2108,83 +2181,87 @@
                       </div>
                     </div>
                   </div> -->
-                </div>
-                <div class="Benefits-container box-cover-2 mt-4">
-                  <h1 class="title">Key Benefits</h1>
-                  <ul class="benefits-list" id="benefits-list">
-                    <li><span></span>Save 10-15 hours per week on repetitive tasks</li>
-                    <li><span></span>Reduce operational costs by 40-60%</li>
-                    <li><span></span>Improve response time by 80%</li>
-                    <li><span></span>24/7 availability without human intervention</li>
+              </div>
+              <div class="Benefits-container box-cover-2 mt-4">
+                <h1 class="title">Key Benefits</h1>
+                <ul class="benefits-list" id="benefits-list">
+                  <li><span></span>Save 10-15 hours per week on repetitive tasks</li>
+                  <li><span></span>Reduce operational costs by 40-60%</li>
+                  <li><span></span>Improve response time by 80%</li>
+                  <li><span></span>24/7 availability without human intervention</li>
 
-                  </ul>
-                  <div class="box-cover-3">
-                    <p><Strong>Note:</Strong> This analysis is based on industry averages. Your actual results may vary
-                      based on implementation and usage patterns.</p>
-                  </div>
+                </ul>
+                <div class="box-cover-3">
+                  <p><Strong>Note:</Strong> This analysis is based on industry averages. Your actual results may vary
+                    based on implementation and usage patterns.</p>
                 </div>
-
-                <div class="text-end"><button type="button" class="btn btn-primary custom-btn mt-3"
-                    onclick='reloadTemplateData()'>
-                    View Templates
-                  </button></div>
               </div>
 
-
+              <div class="text-end"><button type="button" class="btn btn-primary custom-btn mt-3"
+                  onclick='reloadTemplateData()'>
+                  View Templates
+                </button></div>
             </div>
-            <div class="build-container pt-4" id="build-container" style="display: none">
-              <!-- <h1 class="title">build-container</h1> -->
-              <div style="
+
+
+          </div>
+          <div class="build-container pt-4" id="build-container" style="display: none">
+            <!-- <h1 class="title">build-container</h1> -->
+            <div style="
                     position: relative;
                     display: inline-block;
                     text-align: center;
                     width: 100%;
                     max-width: 900px;
                   ">
-                <img src="build.jpg" alt="200+ Automations - Ultimate n8n Workflow Templates Collection" style="
+              <img src="build.jpg" alt="200+ Automations - Ultimate n8n Workflow Templates Collection" style="
                       max-width: 100%;
                       border-radius: 12px;
                       box-shadow: 0 2px 8px #0002;
                       margin-bottom: 20px;
                     " />
-                <button type="button" class="btn build-gradient-btn" style="
+              <button type="button" class="btn build-gradient-btn" style="
                       position: absolute;
                       top: 18px;
                       right: 18px;
                       min-width: 120px;
                       z-index: 2;
                     " onclick="openN8NInApp()">
-                  Build Now
-                </button>
-                <style>
-                  .build-gradient-btn {
-                    background: linear-gradient(90deg,
-                        #e9498c 0%,
-                        #ff758c 100%) !important;
-                    border: none !important;
-                    color: #fff !important;
-                    font-weight: 600;
-                    box-shadow: 0 2px 8px #ff7eb344;
-                    transition: background 0.2s;
-                  }
+                Build Now
+              </button>
+              <style>
+                .build-gradient-btn {
+                  background: linear-gradient(90deg,
+                      #e9498c 0%,
+                      #ff758c 100%) !important;
+                  border: none !important;
+                  color: #fff !important;
+                  font-weight: 600;
+                  box-shadow: 0 2px 8px #ff7eb344;
+                  transition: background 0.2s;
+                }
 
-                  .build-gradient-btn:hover,
-                  .build-gradient-btn:focus {
-                    background: linear-gradient(90deg,
-                        #ff758c 0%,
-                        #ff7eb3 100%) !important;
-                    color: #fff !important;
-                  }
-                </style>
-              </div>
-              <iframe src="https://n8n.io/" width="600" height="450" style="border: 0; margin-top: 30px"
-                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-              </iframe>
+                .build-gradient-btn:hover,
+                .build-gradient-btn:focus {
+                  background: linear-gradient(90deg,
+                      #ff758c 0%,
+                      #ff7eb3 100%) !important;
+                  color: #fff !important;
+                }
+              </style>
             </div>
-            <div class="llm-container pt-4" style="display: none" id="llm-container">
-              <div class="top-heading-sec mb-3">
-                <h1 class="title">Models</h1>
-                <div class="btn-grp" id="llm-btn-grp"></div>
+            <iframe src="https://n8n.io/" width="600" height="450" style="border: 0; margin-top: 30px"
+              allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+          </div>
+          <div class="llm-container pt-4" style="display: none" id="llm-container">
+
+
+
+            <div class="top-heading-sec mb-3">
+              <!-- <h1 class="title">Models</h1> -->
+              <div class="filter-box">
+
                 <div class="Search-box" style="width: 19em;">
                   <input type="text" id="llm-search-bar" class="form-control" placeholder="Search" style="
                         max-width: 500px;
@@ -2196,25 +2273,41 @@
                         padding: 10px;
                       " />
                 </div>
-              </div>
 
-              <div class="row" id="llm-list-container">
-                <!-- LLM models will be injected here by JS -->
+                <div class="btn-grp" id="llm-btn-grp"></div>
+              </div>
+              <button type="button" class="btn btn-primary custom-btn w-20 install-btn"
+                onclick="clickToLaunchInstall()">
+                Build AI Agents
+              </button>
+
+            </div>
+            <div id="launch-progress-panel" style="display:none; margin:12px 0px;">
+              <div style="margin-bottom:8px;">
+                <div class="progress" style="height:14px;">
+                  <div id="launch-progress-bar" class="progress-bar" role="progressbar" style="width:0%"
+                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>
+              </div>
+              <div id="launch-progress-text" style="font-size:0.9rem; color:#333; margin-bottom:6px;">Waiting...
+              </div>
+              <div id="launch-console"
+                style="background:#111; color:#0f0; padding:8px; border-radius:6px; max-height:160px; overflow:auto; font-family: monospace; font-size:12px;">
               </div>
             </div>
-            <div class="tamplate-container pt-4" style="display: none" id="tamplate-container">
-              <div class="top-heading-sec mb-3 ">
-                <h1 class="title" id="templateCount">Templates</h1>
-                <div class="filter-box">
-                  <div class="drop-down-btn">
-                    <div class="drop-down-btn-text" id="drop-down-btn-text">Select Category</div>
-                    <div class="drop-down">
-                      <div id="tamplate-btn-grp"></div>
-                    </div>
-                  </div>
 
-                  <div class="Search-box" style="width: 19em;">
-                    <input type="text" id="template-search-bar" class="form-control" placeholder="Search" style="
+            <div class="row" id="llm-list-container">
+              <!-- LLM models will be injected here by JS -->
+            </div>
+          </div>
+          <div class="tamplate-container pt-4" style="display: none" id="tamplate-container">
+            <div class="top-heading-sec mb-3 ">
+              <h1 class="title" id="templateCount" style="display: none;">Templates</h1>
+
+
+              <div class="filter-box">
+                <div class="Search-box" style="width: 19em;">
+                  <input type="text" id="template-search-bar" class="form-control" placeholder="Search" style="
                         max-width: 500px;
                         margin: 0 auto;
                         border: 1px solid #000;
@@ -2223,25 +2316,36 @@
                         box-shadow: 0 2px 8px #0001;
                         padding: 10px;
                       " />
+                </div>
+                <div class="drop-down-btn">
+                  <div class="drop-down-btn-text" id="drop-down-btn-text">Select Category</div>
+                  <div class="drop-down">
+                    <div id="tamplate-btn-grp"></div>
                   </div>
                 </div>
-              </div>
 
-              <div class="row" id="template-list-container">
 
-                <!-- Templates will be injected here by JS -->
               </div>
+              <button type="button" class="btn btn-primary custom-btn w-20" onclick="openMarketPlace()">
+                AI MarketPlace
+              </button>
+            </div>
+
+            <div class="row" id="template-list-container">
+
+              <!-- Templates will be injected here by JS -->
             </div>
           </div>
         </div>
-        <div id="mySidenav" class="sidenav" style="padding: 0px">
-          <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-          <div class="notifications-box">
-            <h3 class="title-notifications">Notifications</h3>
-            <div class="notifications-list" id="notifications-list-container"></div>
-          </div>
+      </div>
+      <div id="mySidenav" class="sidenav" style="padding: 0px">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div class="notifications-box">
+          <h3 class="title-notifications">Notifications</h3>
+          <div class="notifications-list" id="notifications-list-container"></div>
         </div>
-        <!-- <div class="col-lg-3">
+      </div>
+      <!-- <div class="col-lg-3">
             <div class="notifications-box">
               <h3 class="title-notifications">Notifications</h3>
               <div
@@ -2250,16 +2354,16 @@
               ></div>
             </div>
           </div> -->
-      </div>
     </div>
   </div>
+  </div>
 
-  <div class="footer" id="footer">
+  <p id="footer"></p>
+  <!-- <div class="footer" id="footer">
     <div class="container-fluid">
       <div class="footer-row">
         <div class="footer-box" onclick="openAcademy()">
           <div class="Offering-box">
-            <!-- <div class="offer-icon"></div> -->
             <div class="offer-img">
               <img src="ai-academy-icon-D2xONIWL.jpg" alt="" />
             </div>
@@ -2268,26 +2372,17 @@
         </div>
         <div class="footer-box" onclick="openMarketPlace()">
           <div class="Offering-box">
-            <!-- <div class="offer-icon"></div> -->
             <div class="offer-img">
               <img src="ai-marketplace-icon-Gip8ZonJ.jpg" alt="" />
             </div>
             <h3 class="offer-title mb-0 mt-3">AI MarketPlace</h3>
           </div>
         </div>
-        <!-- <div class="footer-box" onclick="openCoach()">
-          <div class="Offering-box">
-            
-            <div class="offer-img">
-              <img src="ai-coach-icon-D8JqMM6f.jpg" alt="" />
-            </div>
-            <h3 class="offer-title mb-0 mt-3">AI Coach</h3>
-          </div>
-        </div> -->
-
       </div>
     </div>
-  </div>
+  </div> -->
+
+
   <!-- Modal -->
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered contactus">
@@ -2341,22 +2436,26 @@
           <a onclick="openSubscription('basic')" class="btn btn-lg"
             style="background:#111; color:#fff; font-weight:600; border-radius:10px; padding:12px 32px; font-size:1.1rem; box-shadow:0 2px 8px #0002; border:none;">Get
             Subscription</a> -->
-          <ul id="system-requirements-list" style="list-style-type: disc; text-align: left; padding-left: 20px; color:#444; font-size:1rem;">
+          <ul id="system-requirements-list"
+            style="list-style-type: disc; text-align: left; padding-left: 20px; color:#444; font-size:1rem;">
             <li><strong style="display: block;">Memory</strong><span id="sys-req-memory">Detecting...</span></li>
             <li><strong style="display: block;">Processor</strong><span id="sys-req-cpu">Detecting...</span></li>
             <li><strong style="display: block;">Graphics</strong><span id="sys-req-gpu">Detecting...</span></li>
           </ul>
-          
+
           <!-- Performance Tier Badge -->
-          <div id="performance-tier-badge" style="display:none; margin: 15px 0; padding: 12px; border-radius: 10px; text-align: center;">
+          <div id="performance-tier-badge"
+            style="display:none; margin: 15px 0; padding: 12px; border-radius: 10px; text-align: center;">
             <div style="font-size: 0.85rem; color: #f9f6f6; margin-bottom: 5px;">Your System Performance</div>
             <div id="tier-name" style="font-size: 1.3rem; font-weight: 700;"></div>
             <div id="tier-description" style="font-size: 0.9rem; color: #666; margin-top: 5px;"></div>
           </div>
-          <div class="radio" style="display: flex; align-items: baseline; margin-bottom: 14px; background: #e7f3ff; padding: 10px; border-radius: 8px; column-gap: 4px; font-size: .86rem;">
+          <div class="radio"
+            style="display: flex; align-items: baseline; margin-bottom: 14px; background: #e7f3ff; padding: 10px; border-radius: 8px; column-gap: 4px; font-size: .86rem;">
             <input type="checkbox" name="termsCheckbox" class="form-check-input" id="termsCheckbox" required />
             <label for="termsCheckbox" style="color: #004085; text-align: left;">
-              I acknowledge that my system may not meet the recommended requirements and agree to proceed at my own discretion.
+              I acknowledge that my system may not meet the recommended requirements and agree to proceed at my own
+              discretion.
             </label>
           </div>
           <div class="btn-grps" style="    display: flex
@@ -2595,7 +2694,7 @@
   <script src="script.js"></script>
   <script src="n8n-direct-handler.js"></script>
   <script>
-        // Start Your Journey button handler
+    // Start Your Journey button handler
     async function verify() {
 
       const Checked = document.getElementById("termsCheckbox").checked;
@@ -2742,7 +2841,6 @@
         //showToast("Invalid License Key.", false);
       }
     }
-
 
 
 
@@ -3078,7 +3176,7 @@
     }
   </script>
 
- 
+
 
   <script>
     function openNav() {
@@ -3295,17 +3393,17 @@
   </script>
 
   <script>
-   
 
-document.addEventListener("DOMContentLoaded", function () {
-  const inputField = document.querySelector(".chat-input input");
-  const sendButton = document.querySelector(".chat-input button");
-  const chatMessages = document.querySelector(".chat-messages");
 
-  // ✅ Show default welcome message with buttons
-  const welcomeMessageDiv = document.createElement("div");
-  welcomeMessageDiv.classList.add("message", "bot-message");
-  welcomeMessageDiv.innerHTML = `
+    document.addEventListener("DOMContentLoaded", function () {
+      const inputField = document.querySelector(".chat-input input");
+      const sendButton = document.querySelector(".chat-input button");
+      const chatMessages = document.querySelector(".chat-messages");
+
+      // ✅ Show default welcome message with buttons
+      const welcomeMessageDiv = document.createElement("div");
+      welcomeMessageDiv.classList.add("message", "bot-message");
+      welcomeMessageDiv.innerHTML = `
     <div class="message-content">
       <div class="message-ans text-start">
         <strong>Hi! Welcome to the Workbench Helper Chatbot.</strong><br>
@@ -3316,109 +3414,109 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
     </div>
   `;
-  chatMessages.appendChild(welcomeMessageDiv);
+      chatMessages.appendChild(welcomeMessageDiv);
 
-  // ✅ Smooth scroll helper
-  function smoothScroll() {
-    chatMessages.scrollTo({
-      top: chatMessages.scrollHeight,
-      behavior: "smooth",
-    });
-  }
+      // ✅ Smooth scroll helper
+      function smoothScroll() {
+        chatMessages.scrollTo({
+          top: chatMessages.scrollHeight,
+          behavior: "smooth",
+        });
+      }
 
-  // ✅ Handle option button clicks
-  chatMessages.addEventListener("click", function (e) {
-    if (e.target.classList.contains("option-btn")) {
-      const selectedOption = e.target.getAttribute("data-option");
-      sendMessage(selectedOption);
-    }
-  });
+      // ✅ Handle option button clicks
+      chatMessages.addEventListener("click", function (e) {
+        if (e.target.classList.contains("option-btn")) {
+          const selectedOption = e.target.getAttribute("data-option");
+          sendMessage(selectedOption);
+        }
+      });
 
-  // ✅ Handle manual input
-  sendButton.addEventListener("click", async function () {
-    const userMessage = inputField.value.trim();
-    if (userMessage === "") return;
+      // ✅ Handle manual input
+      sendButton.addEventListener("click", async function () {
+        const userMessage = inputField.value.trim();
+        if (userMessage === "") return;
 
-    let optionText = userMessage;
-    // Convert number to corresponding option text
-    if (userMessage === "1") optionText = "Launch Docker";
-    if (userMessage === "2") optionText = "Agentic Platform";
+        let optionText = userMessage;
+        // Convert number to corresponding option text
+        if (userMessage === "1") optionText = "Launch Docker";
+        if (userMessage === "2") optionText = "Agentic Platform";
 
-    sendMessage(optionText);
-    inputField.value = "";
-  });
+        sendMessage(optionText);
+        inputField.value = "";
+      });
 
-  // ✅ Send message and get response
-  async function sendMessage(messageText) {
-    // Show user message
-    const userMessageDiv = document.createElement("div");
-    userMessageDiv.classList.add("message", "user-message");
-    userMessageDiv.innerHTML = `
+      // ✅ Send message and get response
+      async function sendMessage(messageText) {
+        // Show user message
+        const userMessageDiv = document.createElement("div");
+        userMessageDiv.classList.add("message", "user-message");
+        userMessageDiv.innerHTML = `
       <div class="message-content">
         <div class="message-qus text-start">${messageText}</div>
       </div>
     `;
-    chatMessages.appendChild(userMessageDiv);
-    smoothScroll();
+        chatMessages.appendChild(userMessageDiv);
+        smoothScroll();
 
-    // Show typing indicator
-    const typingDiv = document.createElement("div");
-    typingDiv.classList.add("message", "bot-message");
-    typingDiv.innerHTML = `
+        // Show typing indicator
+        const typingDiv = document.createElement("div");
+        typingDiv.classList.add("message", "bot-message");
+        typingDiv.innerHTML = `
       <div class="message-content">
         <div class="message-ans text-start"><em>🤖 Bot is typing...</em></div>
       </div>
     `;
-    chatMessages.appendChild(typingDiv);
-    smoothScroll();
+        chatMessages.appendChild(typingDiv);
+        smoothScroll();
 
-    try {
-      const res = await fetch("https://api.gignaati.com/api/Chat/WorkbenchHelperChatAgent", {
-        method: "POST",
-        headers: {
-          "accept": "text/plain",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userQuery: messageText,
-          outputFormat: "string"
-        }),
-      });
+        try {
+          const res = await fetch("https://api.gignaati.com/api/Chat/WorkbenchHelperChatAgent", {
+            method: "POST",
+            headers: {
+              "accept": "text/plain",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userQuery: messageText,
+              outputFormat: "string"
+            }),
+          });
 
-      const data = await res.json();
-      const botResponse = data.Response || "I'm sorry, I couldn't get a response.";
+          const data = await res.json();
+          const botResponse = data.Response || "I'm sorry, I couldn't get a response.";
 
-      // Remove typing indicator
-      typingDiv.remove();
+          // Remove typing indicator
+          typingDiv.remove();
 
-      const botMessageDiv = document.createElement("div");
-      botMessageDiv.classList.add("message", "bot-message");
-      botMessageDiv.innerHTML = `
+          const botMessageDiv = document.createElement("div");
+          botMessageDiv.classList.add("message", "bot-message");
+          botMessageDiv.innerHTML = `
         <div class="message-content">
           <div class="message-ans text-start">${botResponse}</div>
         </div>
       `;
-      chatMessages.appendChild(botMessageDiv);
-      smoothScroll();
+          chatMessages.appendChild(botMessageDiv);
+          smoothScroll();
 
-    } catch (error) {
-      console.error("API Error:", error);
-      typingDiv.remove();
+        } catch (error) {
+          console.error("API Error:", error);
+          typingDiv.remove();
 
-      const errorDiv = document.createElement("div");
-      errorDiv.classList.add("message", "bot-message");
-      errorDiv.innerHTML = `
+          const errorDiv = document.createElement("div");
+          errorDiv.classList.add("message", "bot-message");
+          errorDiv.innerHTML = `
         <div class="message-content">
           <div class="message-ans text-start text-danger">
             ⚠️ Unable to connect. Please check your internet and try again.
           </div>
         </div>
       `;
-      chatMessages.appendChild(errorDiv);
-      smoothScroll();
-    }
-  }
-});
+          chatMessages.appendChild(errorDiv);
+          smoothScroll();
+        }
+      }
+    });
 
   </script>
 
@@ -3438,5 +3536,7 @@ document.addEventListener("DOMContentLoaded", function () {
   <!-- System Detection and Smart Recommendations -->
   <script src="system-detection-ui.js"></script>
   <script src="smart-model-recommendations.js"></script>
+  <script src="https://player.vimeo.com/api/player.js"></script>
 </body>
+
 </html>
