@@ -93,16 +93,16 @@ function closeCouponPopup() {
 }
 
 
-// NEW CODE - Real download with proper error handling
+// ===================================================================
+// === MODIFIED FUNCTION: downloadLlmModel (with Timeout Fix) ===
+// ===================================================================
 async function downloadLlmModel(modelName) {
-  // Model name validation - agar model name nahi hai to error show karo
+  // Model name validation
   if (!modelName) {
-    showToast && showToast("Model name is missing or invalid.", false);
+    console.error("Model name is missing or invalid.");
     return;
   }
 
-  // Button ko disable kar do taaki multiple downloads na ho sake
-  // Disable button to prevent multiple simultaneous downloads
   const button = event?.target;
   if (button) {
     button.disabled = true;
@@ -110,229 +110,132 @@ async function downloadLlmModel(modelName) {
     button.style.pointerEvents = 'none';
   }
 
-  // Progress container banate hai jo screen ke top-right mein dikhega
-  // Create progress container that will show in top-right of screen
-  const progressContainer = document.createElement('div');
-  progressContainer.id = `progress-${modelName}`;
-  progressContainer.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 10000;
-    min-width: 300px;
-    max-width: 400px;
-  `;
+  // Get the inline progress bar elements
+  const llmBox = button ? button.closest('.llm-box') : null;
+  const progressWrapper = llmBox ? llmBox.querySelector('.progress-bar-new') : null;
+  const progressBar = llmBox ? llmBox.querySelector('.progress-bar') : null;
 
-  // Progress bar aur text add karte hai
-  // Add progress bar and text
-  progressContainer.innerHTML = `
-    <div style="display: flex; align-items: center; margin-bottom: 10px;">
-      <span class="spinner-border spinner-border-sm me-2"></span>
-      <strong>Configuring ${modelName}</strong>
-    </div>
-    <div class="progress" style="height: 8px; margin-bottom: 10px;">
-      <div class="progress-bar" role="progressbar" style="width: 3%"></div>
-    </div>
-    <div class="progress-text" style="font-size: 12px; color: #666;">Started Configuring...</div>
-  `;
+  // Show and reset the inline progress bar
+  if (progressWrapper) {
+    progressWrapper.style.display = 'block';
+  }
+  if (progressBar) {
+    progressBar.style.width = '3%';
+    progressBar.setAttribute('aria-valuenow', 3);
+    progressBar.textContent = '3%';
+    progressBar.classList.remove('bg-success', 'bg-danger');
+  }
 
-  document.body.appendChild(progressContainer);
+  // === FIX: Define a named handler for this specific download ===
+  const progressHandler = (data) => {
+    if (data.modelName === modelName) {
+      const progress = data.progress || 0;
 
-  // Cancel button event listener
-  //<button class="btn btn-sm btn-outline-danger cancel-download-btn" style="margin-top:10px;">Cancel Download</button>
-  // const cancelButton = progressContainer.querySelector(".cancel-download-btn");
-  // cancelButton.addEventListener("click", () => cancelModelDownload(modelName));
+      // Update inline progress bar
+      if (progressBar) {
+        progressBar.style.width = `${progress}%`;
+        progressBar.setAttribute('aria-valuenow', progress);
+        progressBar.textContent = `${Math.round(progress)}%`;
+      }
 
+      // Update button text
+      if (button) {
+        button.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>${Math.round(progress)}%`;
+      }
+    }
+  };
 
   try {
-
-
-    // Electron API check karte hai - agar available hai to real download karenge
-    // Check if Electron API is available for real download
+    // Check if Electron API is available
     if (window.electronAPI && window.electronAPI.downloadModel) {
       console.log(`Starting real download of model: ${modelName}`);
-      showToast(`Starting download of ${modelName}...`, true);
 
       // ========================================
       // PROGRESS TRACKING SETUP
       // ========================================
-      // Real-time progress tracking ke liye variables
-      // Variables for real-time progress tracking
-      let progressInterval;
-      let lastProgress = 0;
-
-      // Progress handler function - ye har progress update pe call hota hai
-      // Progress handler function - called on every progress update
-      const progressHandler = (event, data) => {
-        if (data.step === 'model-download' && data.model === modelName) {
-          const progress = data.progress || 0;
-          const message = data.message || 'Downloading...';
-
-          // Progress bar update karte hai
-          // Update progress bar
-          const progressBar = progressContainer.querySelector('.progress-bar');
-          const progressText = progressContainer.querySelector('.progress-text');
-
-          if (progressBar) {
-            progressBar.style.width = `${progress}%`;
-            progressBar.setAttribute('aria-valuenow', progress);
-          }
-
-          if (progressText) {
-            progressText.textContent = `${message} (${progress}%)`;
-          }
-
-          // Button text bhi update karte hai
-          // Update button text too
-          if (button) {
-            button.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>${message} (${progress}%)`;
-          }
-
-          // Har 10% pe toast message show karte hai
-          // Show toast message every 10%
-          if (progress - lastProgress >= 10 || message.includes('success') || message.includes('error')) {
-            showToast(`${message} (${progress}%)`, true);
-            lastProgress = progress;
-          }
-        }
-      };
-
-      // Add progress listener
+      
+      // === FIX: Add progress listener using the named handler ===
       if (window.electronAPI.onModelDownloadProgress) {
-        window.electronAPI.onModelDownloadProgress((data) => {
-          if (data.modelName === modelName) {
-            const progress = data.progress || 0;
-            const message = data.message || 'Downloading...';
-
-            // Update progress bar
-            const progressBar = progressContainer.querySelector('.progress-bar');
-            const progressText = progressContainer.querySelector('.progress-text');
-
-            if (progressBar) {
-              progressBar.style.width = `${progress}%`;
-              progressBar.setAttribute('aria-valuenow', progress);
-            }
-
-            if (progressText) {
-              progressText.textContent = `${message} (${Math.round(progress)}%)`;
-            }
-
-            // Update button text
-            if (button) {
-              button.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>${Math.round(progress)}%`;
-            }
-
-            // Show toast every 20%
-            if (progress - lastProgress >= 20) {
-              showToast(`Downloading: ${Math.round(progress)}%`, true);
-              lastProgress = progress;
-            }
-          }
-        });
+        window.electronAPI.onModelDownloadProgress(progressHandler);
       }
 
       // Start the actual download
       await window.electronAPI.downloadModel(modelName);
 
-      // Success
-      if (button) {
-        button.innerHTML = '✓ Configured';
-//        button.classList.remove('btn-primary');
-button.disabled = false;
-        button.classList.add('btn-success');
-        button.style.pointerEvents = 'auto';
-      }
-
-      // Update progress container to show success
-      const progressBar = progressContainer.querySelector('.progress-bar');
-      const progressText = progressContainer.querySelector('.progress-text');
-      const spinner = progressContainer.querySelector('.spinner-border');
-
-      if (progressBar) {
-        progressBar.style.width = '100%';
-        progressBar.classList.add('bg-success');
-      }
-
-      if (progressText) {
-        progressText.textContent = `Successfully configured ${modelName}!`;
-        progressText.style.color = '#28a745';
-      }
-
-      if (spinner) {
-        spinner.className = 'me-2';
-        spinner.innerHTML = '✓';
-        spinner.style.color = '#28a745';
-      }
-
-      showToast(`Successfully configured ${modelName}!`, true);
-
-      // Remove progress container after 3 seconds
-      setTimeout(() => {
-        if (progressContainer && progressContainer.parentNode) {
-          progressContainer.parentNode.removeChild(progressContainer);
-        }
-      }, 3000);
-
-      // Remove progress listener
+      // === FIX: Remove listener *before* updating UI ===
       if (window.electronAPI.removeProgressListener) {
         window.electronAPI.removeProgressListener(progressHandler);
       }
 
+      // === FIX 2: Add a small delay (as you suggested) ===
+      // This lets any final "100%" events clear the queue *before* we set the success state.
+      setTimeout(() => {
+        // Success
+        if (button) {
+          // Check if button hasn't been manually reset (e.g., by cancel)
+          if (button.disabled) {
+            button.innerHTML = '✓ Configured';
+            button.disabled = false;
+            button.classList.add('btn-success');
+            button.style.pointerEvents = 'auto';
+          }
+        }
+
+        // Update progress container to show success
+        if (progressBar) {
+          progressBar.style.width = '100%';
+          progressBar.classList.add('bg-success');
+          progressBar.textContent = '✓ Configured!';
+        }
+      }, 100); // 100ms delay is enough to fix the race condition
+
+      // Hide progress bar after 3 seconds
+      setTimeout(() => {
+        if (progressWrapper) {
+          progressWrapper.style.display = 'none';
+        }
+        if (progressBar) { // Reset for next time
+          progressBar.style.width = '0%';
+          progressBar.textContent = '';
+          progressBar.classList.remove('bg-success');
+        }
+      }, 3000);
+
     } else {
-      // Fallback: Try to download using Node.js child_process (if available)
+      // Fallback
       throw new Error("Electron API not available. Please run this application in Electron environment for model downloads.");
     }
 
   } catch (err) {
     console.error("Model download failed:", err);
 
+    // === FIX: Remove listener on error too! ===
+    if (window.electronAPI.removeProgressListener) {
+      window.electronAPI.removeProgressListener(progressHandler);
+    }
+
     // Reset button state on error
     if (button) {
       button.disabled = false;
       button.innerHTML = 'Configure';
       button.classList.remove('btn-success');
-      button.classList.add('btn-primary');
       button.style.pointerEvents = 'auto';
     }
 
     // Update progress container to show error
-    const progressBar = progressContainer.querySelector('.progress-bar');
-    const progressText = progressContainer.querySelector('.progress-text');
-    const spinner = progressContainer.querySelector('.spinner-border');
-
     if (progressBar) {
+      progressBar.style.width = '100%';
       progressBar.classList.add('bg-danger');
-    }
-
-    if (progressText) {
-      progressText.textContent = 'Configuration failed!';
-      progressText.style.color = '#dc3545';
-    }
-
-    if (spinner) {
-      spinner.className = 'me-2';
-      spinner.innerHTML = '✗';
-      spinner.style.color = '#dc3545';
+      progressBar.textContent = '✗ Failed!';
     }
 
     // ========================================
-    // ERROR HANDLING - IMPROVED FROM PREVIOUS VERSION
+    // ERROR HANDLING
     // ========================================
-    // Pehle sirf generic error message tha, ab specific error messages hain
-    // Previously only generic error message, now there are specific error messages
-
-    // Different types of errors ke liye different messages
-    // Different messages for different types of errors
     let errorMessage = "Configuration failed: ";
     if (err.message.includes("not installed")) {
       errorMessage += "Ollama is not installed. Please install Ollama first.";
     } else if (err.message.includes("timeout") || err.message.includes("TLS handshake")) {
-      // NEW: Network timeout handling with retry information
       errorMessage += "Network timeout. This might be due to slow internet connection. The app will automatically retry. If it continues to fail, please check your internet connection and try again later.";
     } else if (err.message.includes("network") || err.message.includes("connection")) {
       errorMessage += "Network error. Please check your internet connection and try again.";
@@ -344,16 +247,24 @@ button.disabled = false;
       errorMessage += err.message;
     }
 
-    showToast(errorMessage, false);
+    console.error(errorMessage); // Log error
 
     // Remove progress container after 5 seconds on error
     setTimeout(() => {
-      if (progressContainer && progressContainer.parentNode) {
-        progressContainer.parentNode.removeChild(progressContainer);
+      if (progressWrapper) {
+        progressWrapper.style.display = 'none';
+      }
+      if (progressBar) { // Reset for next time
+        progressBar.style.width = '0%';
+        progressBar.textContent = '';
+        progressBar.classList.remove('bg-danger');
       }
     }, 5000);
   }
 }
+// ===================================================================
+// === END OF MODIFIED FUNCTION ===
+// ===================================================================
 
 function cancelModelDownload(modelName) {
   const progressContainer = document.getElementById(`progress-${modelName}`);
@@ -692,6 +603,7 @@ function categoryLLMData(str) {
                 ? llm.tags.map(tag => `<li>${tag}</li>`).join("")
                 : "<li></li>";
 
+              // === MODIFIED: Progress bar hidden by default ===
               return `
               <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-3">
                 <div class="llm-box">
@@ -738,9 +650,9 @@ NPU: ${llm.npu}
                   >
                     Configure
                   </button>
-                                  <div class="progress progress-bar-new">
-  <div class="progress-bar progress-bar-striped" role="progressbar" aria-label="Default striped example" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
-</div>
+                  <div class="progress progress-bar-new" style="display: none;">
+                    <div class="progress-bar progress-bar-striped" role="progressbar" aria-label="Default striped example" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
                 </div>
               </div>
             `;
@@ -778,7 +690,7 @@ document.addEventListener("DOMContentLoaded", function () {
               ? llm.tags.map(tag => `<li>${tag}</li>`).join("")
               : "<li></li>";
 
-
+            // === MODIFIED: Progress bar hidden by default ===
             return `
         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
           <div class="llm-box">
@@ -824,9 +736,9 @@ NPU: ${llm.npu}
                   >
                     Configure
                   </button>
-         <div class="progress progress-bar-new">
-  <div class="progress-bar progress-bar-striped" role="progressbar" aria-label="Default striped example" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
-</div>
+                 <div class="progress progress-bar-new" style="display: none;">
+                    <div class="progress-bar progress-bar-striped" role="progressbar" aria-label="Default striped example" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                 </div>
           
             </div>
         </div>
@@ -1659,6 +1571,7 @@ function reloadLLMData() {
                 ? llm.tags.map(tag => `<li>${tag}</li>`).join("")
                 : "<li></li>";
 
+              // === MODIFIED: Progress bar hidden by default ===
               return `
               <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-3">
                 <div class="llm-box">
@@ -1705,9 +1618,9 @@ NPU: ${llm.npu}
                   >
                     Configure
                   </button>
-                                  <div class="progress progress-bar-new">
-  <div class="progress-bar progress-bar-striped" role="progressbar" aria-label="Default striped example" style="width: 10%; height:100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
-</div>
+                  <div class="progress progress-bar-new" style="display: none;">
+                    <div class="progress-bar progress-bar-striped" role="progressbar" aria-label="Default striped example" style="width: 0%; height:100%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
                 </div>
               </div>
             `;
