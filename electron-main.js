@@ -86,105 +86,105 @@ ipcMain.handle('open-external-link', async (event, url) => {
 });
 
 // Installation handlers with progress callbacks
-ipcMain.handle('install-ollama', async (event) => {
-    const OllamaManager = require('./src/main/ollama-manager');
-    const ollamaManager = new OllamaManager();
+// ipcMain.handle('install-ollama', async (event) => {
+//     const OllamaManager = require('./src/main/ollama-manager');
+//     const ollamaManager = new OllamaManager();
     
-    try {
-        await ollamaManager.installOllama((progress, message) => {
-            event.sender.send('ollama-install-progress', progress, message);
-            updateLoadingProgress(progress * 0.3, message); // 0-30% of total loading
-        });
-        return { success: true };
-    } catch (error) {
-        console.error('Ollama installation failed:', error);
-        throw error;
-    }
-});
+//     try {
+//         await ollamaManager.installOllama((progress, message) => {
+//             event.sender.send('ollama-install-progress', progress, message);
+//             updateLoadingProgress(progress * 0.3, message); // 0-30% of total loading
+//         });
+//         return { success: true };
+//     } catch (error) {
+//         console.error('Ollama installation failed:', error);
+//         throw error;
+//     }
+// });
 
-ipcMain.handle('start-ollama', async (event) => {
-    const OllamaManager = require('./src/main/ollama-manager');
-    const ollamaManager = new OllamaManager();
+// ipcMain.handle('start-ollama', async (event) => {
+//     const OllamaManager = require('./src/main/ollama-manager');
+//     const ollamaManager = new OllamaManager();
     
-    try {
-        await ollamaManager.startOllama({}, (progress, message) => {
-            event.sender.send('ollama-start-progress', progress, message);
-            updateLoadingProgress(30 + (progress * 0.3), message); // 30-60% of total loading
-        });
-        return { success: true, optimization: { 
-            accelerationType: 'CPU/GPU',
-            cpuThreads: Math.floor(require('os').cpus().length * 0.5),
-            gpuOffloading: true
-        }};
-    } catch (error) {
-        console.error('Failed to start Ollama:', error);
-        throw error;
-    }
-});
+//     try {
+//         await ollamaManager.startOllama({}, (progress, message) => {
+//             event.sender.send('ollama-start-progress', progress, message);
+//             updateLoadingProgress(30 + (progress * 0.3), message); // 30-60% of total loading
+//         });
+//         return { success: true, optimization: { 
+//             accelerationType: 'CPU/GPU',
+//             cpuThreads: Math.floor(require('os').cpus().length * 0.5),
+//             gpuOffloading: true
+//         }};
+//     } catch (error) {
+//         console.error('Failed to start Ollama:', error);
+//         throw error;
+//     }
+// });
 
-ipcMain.handle('setup-n8n', async (event) => {
-    const N8NManager = require('./src/main/n8n-manager');
-    const n8nManager = new N8NManager();
+// ipcMain.handle('setup-n8n', async (event) => {
+//     const N8NManager = require('./src/main/n8n-manager');
+//     const n8nManager = new N8NManager();
     
-    try {
-        await n8nManager.initialize();
-        updateLoadingProgress(65, 'N8N workspace initialized');
-        return { success: true };
-    } catch (error) {
-        console.error('N8N setup failed:', error);
-        throw error;
-    }
-});
+//     try {
+//         await n8nManager.initialize();
+//         updateLoadingProgress(65, 'N8N workspace initialized');
+//         return { success: true };
+//     } catch (error) {
+//         console.error('N8N setup failed:', error);
+//         throw error;
+//     }
+// });
 
-ipcMain.handle('start-n8n', async (event) => {
-    const N8NManager = require('./src/main/n8n-manager');
-    const n8nManager = new N8NManager();
+// ipcMain.handle('start-n8n', async (event) => {
+//     const N8NManager = require('./src/main/n8n-manager');
+//     const n8nManager = new N8NManager();
     
-    try {
-        await n8nManager.initialize();
-        updateLoadingProgress(70, 'Starting N8N server...');
+//     try {
+//         await n8nManager.initialize();
+//         updateLoadingProgress(70, 'Starting N8N server...');
         
-        await n8nManager.start((progress, message) => {
-            event.sender.send('n8n-start-progress', progress, message);
-            updateLoadingProgress(70 + (progress * 0.25), message); // 70-95% of total loading
-        });
+//         await n8nManager.start((progress, message) => {
+//             event.sender.send('n8n-start-progress', progress, message);
+//             updateLoadingProgress(70 + (progress * 0.25), message); // 70-95% of total loading
+//         });
         
-        // Wait for N8N to be fully ready
-        await n8nManager.waitForN8N(60, (progress, message) => {
-            event.sender.send('n8n-ready-progress', progress, message);
-            updateLoadingProgress(95 + (progress * 0.05), message); // 95-100% of total loading
-        });
+//         // Wait for N8N to be fully ready
+//         await n8nManager.waitForN8N(60, (progress, message) => {
+//             event.sender.send('n8n-ready-progress', progress, message);
+//             updateLoadingProgress(95 + (progress * 0.05), message); // 95-100% of total loading
+//         });
         
-        // Auto-configure Ollama credentials in N8N
-        updateLoadingProgress(98, 'Configuring AI Brain integration...');
-        try {
-            const N8NCredentialInjector = require('./src/main/n8n-credential-injector');
-            const credentialInjector = new N8NCredentialInjector();
+//         // Auto-configure Ollama credentials in N8N
+//         updateLoadingProgress(98, 'Configuring AI Brain integration...');
+//         try {
+//             const N8NCredentialInjector = require('./src/main/n8n-credential-injector');
+//             const credentialInjector = new N8NCredentialInjector();
             
-            // Wait a bit for N8N database to be fully initialized
-            await new Promise(r => setTimeout(r, 3000));
+//             // Wait a bit for N8N database to be fully initialized
+//             await new Promise(r => setTimeout(r, 3000));
             
-            const result = await credentialInjector.injectOllamaCredentials();
-            if (result.success) {
-                console.log('✅ Ollama credentials auto-configured in N8N');
-            } else if (result.alreadyExists) {
-                console.log('ℹ️ Ollama credentials already exist in N8N');
-            } else if (result.needsRetry) {
-                console.log('⚠️ N8N not fully initialized, credentials will be configured on next launch');
-            }
-        } catch (credError) {
-            console.error('⚠️ Failed to auto-configure Ollama credentials (non-critical):', credError);
-            // Don't fail the entire startup if credential injection fails
-        }
+//             const result = await credentialInjector.injectOllamaCredentials();
+//             if (result.success) {
+//                 console.log('✅ Ollama credentials auto-configured in N8N');
+//             } else if (result.alreadyExists) {
+//                 console.log('ℹ️ Ollama credentials already exist in N8N');
+//             } else if (result.needsRetry) {
+//                 console.log('⚠️ N8N not fully initialized, credentials will be configured on next launch');
+//             }
+//         } catch (credError) {
+//             console.error('⚠️ Failed to auto-configure Ollama credentials (non-critical):', credError);
+//             // Don't fail the entire startup if credential injection fails
+//         }
         
-        updateLoadingProgress(100, 'AI Magic added! Ready to go! ✨');
+//         updateLoadingProgress(100, 'AI Magic added! Ready to go! ✨');
         
-        return { success: true };
-    } catch (error) {
-        console.error('Failed to start N8N:', error);
-        throw error;
-    }
-});
+//         return { success: true };
+//     } catch (error) {
+//         console.error('Failed to start N8N:', error);
+//         throw error;
+//     }
+// });
 
 // Open n8n in a new window
 ipcMain.handle('open-n8n-window', async () => {

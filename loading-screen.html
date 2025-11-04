@@ -278,11 +278,7 @@
     const steps = ['step-1', 'step-2', 'step-3', 'step-4', 'step-5'];
 
     // Listen for progress updates from Electron
-    if (window.electronAPI && window.electronAPI.onLoadingProgress) {
-      window.electronAPI.onLoadingProgress((progress, message) => {
-        updateProgress(progress, message);
-      });
-    }
+    // REMOVED: if (window.electronAPI && window.electronAPI.onLoadingProgress) { ... }
 
     function updateProgress(progress, message) {
       currentProgress = progress;
@@ -326,30 +322,29 @@
       }
     }
 
-    // Simulate progress for demo (remove this in production)
-    if (!window.electronAPI) {
-      let demoProgress = 0;
-      const demoInterval = setInterval(() => {
-        demoProgress += Math.random() * 5;
-        if (demoProgress >= 100) {
-          demoProgress = 100;
-          clearInterval(demoInterval);
-        }
-        
-        const messages = [
-          'Initializing Ollama...',
-          'Starting AI Engine...',
-          'Setting up N8N Workspace...',
-          'Configuring AI Models...',
-          'Almost ready...',
-          'Loading complete!'
-        ];
-        
-        const messageIndex = Math.floor((demoProgress / 100) * messages.length);
-        updateProgress(demoProgress, messages[messageIndex]);
-      }, 500);
-    }
+    // Simulate progress for demo (runs unconditionally now)
+    // REMOVED: if (!window.electronAPI) { ... }
+    let demoProgress = 0;
+    const demoInterval = setInterval(() => {
+      demoProgress += Math.random() * 5;
+      if (demoProgress >= 100) {
+        demoProgress = 100;
+        clearInterval(demoInterval);
+      }
+      
+      const messages = [
+        'Initializing Ollama...',
+        'Starting AI Engine...',
+        'Setting up N8N Workspace...',
+        'Configuring AI Models...',
+        'Almost ready...',
+        'Loading complete!'
+      ];
+      
+      const messageIndex = Math.floor((demoProgress / 100) * messages.length);
+      updateProgress(demoProgress, messages[messageIndex]);
+    }, 500);
+
   </script>
 </body>
 </html>
-

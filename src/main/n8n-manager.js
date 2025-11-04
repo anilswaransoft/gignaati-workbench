@@ -92,7 +92,8 @@ class N8NManager {
     const net = require('net');
 
     // Port checking logic
-    const isPortOpen = (port, host = '127.0.0.1', timeout = 1000) => {
+     const isPortOpen = (port, host = '127.0.0.1', timeout = 1000) => {
+      //const isPortOpen = (port, host = 'localhost', timeout = 1000) => {
         return new Promise((resolve) => {
             const socket = new net.Socket();
             let settled = false;

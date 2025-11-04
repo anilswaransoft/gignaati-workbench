@@ -70,7 +70,7 @@ function updateSystemRequirementsModal(systemInfo) {
         tierName.style.color = 'white';
         tierDesc.style.color = 'rgba(255,255,255,0.9)';
       } else if (performance.tier === 'STANDARD') {
-        badge.style.background = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+        badge.style.background = 'linear-gradient(135deg, rgb(59, 130, 246) 0%, rgb(113 124 149) 100%)';
         badge.style.color = 'white';
         tierName.style.color = 'white';
         tierDesc.style.color = 'rgba(255,255,255,0.9)';

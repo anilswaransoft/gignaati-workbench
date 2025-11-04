@@ -1,6 +1,7 @@
 // Direct N8N Integration using Electron webview
 
 function createN8NView() {
+    
     // Create the container
     const container = document.createElement('div');
     container.id = 'n8n-container';
@@ -84,7 +85,7 @@ function createN8NView() {
     // Assemble the container
     container.appendChild(header);
     container.appendChild(webview);
-   // container.appendChild(loader);
+    //container.appendChild(loader);
     
     // Add webview event listeners
     webview.addEventListener('dom-ready', () => {
@@ -97,6 +98,9 @@ function createN8NView() {
             .layout-default { padding-top: 0 !important; }
         `);
     });
+
+
+    
 
     webview.addEventListener('did-fail-load', (event) => {
         const loader = document.getElementById('n8n-loader');
@@ -123,14 +127,12 @@ function createN8NView() {
 
 function showN8NView() {
 
-const isInstalled =  checkN8nInstallation();
+    const isInstalled = checkN8nInstallation();
+    if (!isInstalled) {
+        showToast('Please Setup Agentic Platform.', false);
+        return;
+    }
 
-  if (!isInstalled) {
-   // console.warn('n8n not installed. Please setup Agentic Platform first.');
-     showToast('Please Setup Agentic Platform.', false);
-    return;
-  }
- 
     // Remove any existing instance
     const existingContainer = document.getElementById('n8n-container');
     if (existingContainer) {
