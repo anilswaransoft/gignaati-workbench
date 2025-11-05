@@ -3,6 +3,14 @@
 // ===================================================================
 var allLLMs = []; // Stores all LLMs, will be REPLACED on each tab click
 
+function openExternalLink(url) {
+  if (window.electronAPI && window.electronAPI.openExternalLink) {
+    window.electronAPI.openExternalLink(url);
+  } else {
+    window.open(url, "_blank");
+  }
+}
+
 async function restartServices() {
   const apiUrl = 'http://localhost:5000/api/OllamaProvisioning/restartOllamaN8n';
   try {
@@ -545,6 +553,9 @@ document.addEventListener("DOMContentLoaded", function () {
 /**
  * Takes a list of LLM models and returns the HTML string to render them.
  */
+/**
+ * Takes a list of LLM models and returns the HTML string to render them.
+ */
 function renderLLMCardHTML(models) {
   return models.length > 0
     ? models
@@ -557,6 +568,9 @@ function renderLLMCardHTML(models) {
         const tagsHTML = llm.tags && llm.tags.length > 0
           ? llm.tags.map(tag => `<li>${tag}</li>`).join("")
           : "<li></li>";
+        
+        // --- NEW: Unique ID for the file input ---
+        const fileInputId = `byom-file-${idx}`;
 
         return `
         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
@@ -603,6 +617,9 @@ function renderLLMCardHTML(models) {
             >
               Configure
             </button>
+
+            
+
             <div class="progress progress-bar-new" style="display: none;">
               <div class="progress-bar progress-bar-striped" role="progressbar" aria-label="Default striped example" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
@@ -612,6 +629,69 @@ function renderLLMCardHTML(models) {
       })
       .join("")
     : '<div class="col-12">No models found.</div>';
+}
+
+/**
+ * Handles the "Bring your own model" modal submission.
+ * 1. Reads the path from the modal's text input.
+ * 2. Closes the modal.
+ * 3. Sends the path to the .NET API as a URL query parameter.
+ * 4. Shows a success/error toast and refreshes the model list.
+ */
+async function handleSubmitModelPath() {
+  const input = document.getElementById("byomFolderPathInput");
+  const errorDiv = document.getElementById("byomModalError");
+  
+  if (!input || !input.value) {
+    errorDiv.textContent = "Please paste the folder path first.";
+    errorDiv.style.display = "block";
+    return;
+  }
+  
+  const folderPath = input.value.trim();
+  errorDiv.style.display = "none"; // Hide error
+
+  // 1. Close the modal
+  try {
+    const modalElement = document.getElementById('byomModal');
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    modalInstance.hide();
+  } catch (e) {
+    console.error("Could not close modal", e);
+  }
+
+  // 2. Show "in-progress" toast
+  //showToast("Creating model from path... This may take time.", true);
+
+  try {
+    // 3. Send the folder path to the .NET API
+    //const baseUrl = "http://localhost:5000/api/OllamaProvisioning/insert-models";
+    const baseUrl = "http://localhost:5000/api/OllamaProvisioning/insert-models";
+    const apiUrl = new URL(baseUrl);
+    apiUrl.searchParams.append('folderPath', folderPath); // Add path as query param
+
+    const response = await fetch(apiUrl, {
+      method: "GET"
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || `Server error: ${response.status}`);
+    }
+
+    if (result.success) {
+      showToast(result.message, true); // Show success toast
+      refreshLLMTab(); // Refresh the list to show the new model
+      input.value = ""; // Clear the input for next time
+    } else {
+      throw new Error(result.message || "Failed to create model.");
+    }
+
+  } catch (err) {
+    console.error("Failed to create model from folder:", err);
+    showToast(`Error: ${err.message}`, false); // Show error toast
+  }
 }
 
 /**
