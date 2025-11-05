@@ -1,3 +1,7 @@
+// ===================================================================
+// === GLOBAL STATE FOR LLMs ===
+// ===================================================================
+var allLLMs = []; // Stores all LLMs, will be REPLACED on each tab click
 
 async function restartServices() {
   const apiUrl = 'http://localhost:5000/api/OllamaProvisioning/restartOllamaN8n';
@@ -105,7 +109,7 @@ async function downloadLlmModel(modelName) {
 
   const button = event?.target;
   if (button) {
-    button.disabled = true;
+    button.disabled = false;
     button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Configuring...';
     button.style.pointerEvents = 'none';
   }
@@ -173,7 +177,8 @@ async function downloadLlmModel(modelName) {
         // Success
         if (button) {
           // Check if button hasn't been manually reset (e.g., by cancel)
-          if (button.disabled) {
+          //if (button.disabled) {
+          if (button.disabled===false) {
             button.innerHTML = '✓ Configured';
             button.disabled = false;
             button.classList.add('btn-success');
@@ -533,165 +538,27 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+// ===================================================================
+// === CONSOLIDATED LLM FUNCTIONS (REFRESH ON CLICK) ===
+// ===================================================================
 
-function renderLLMsButton(models) {
-  const container = document.getElementById("llm-btn-grp");
-  if (!container) {
-    console.error("Container not found!");
-    return;
-  }
-  container.innerHTML = ""; // Clear existing buttons
-  // Create a Set to track unique categories
-  const seenCategories = new Set();
-  models.forEach((model, idx) => {
-    const category = model.category || `Model ${idx + 1}`;
+/**
+ * Takes a list of LLM models and returns the HTML string to render them.
+ */
+function renderLLMCardHTML(models) {
+  return models.length > 0
+    ? models
+      .map(function (llm, idx) {
+        var imgSrc =
+          llm.imageUrl && llm.imageUrl !== "string"
+            ? "https://api.gignaati.com" + llm.imageUrl
+            : "https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=400&h=300";
 
-    // Skip duplicates
-    if (seenCategories.has(category)) return;
+        const tagsHTML = llm.tags && llm.tags.length > 0
+          ? llm.tags.map(tag => `<li>${tag}</li>`).join("")
+          : "<li></li>";
 
-    seenCategories.add(category);
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = category; // Set button text
-    btn.id = `llm-btn-${idx}`; // Unique ID
-    // btn.classList.add("llm-btn");
-    // btn.classList.add("custom-btn");
-    // btn.classList.add("btn");
-    // btn.classList.add("btn-primary");
-    // btn.classList.add("me-2");
-    btn.classList.add("llm-btn", "custom-btn", "btn", "btn-primary", "me-2");
-    // btn.addEventListener("click", () => {
-    //   categoryLLMData(category);
-    // });
-    btn.addEventListener("click", () => {
-      // remove active from all
-      document.querySelectorAll("#llm-btn-grp .llm-btn").forEach(b => {
-        b.classList.remove("active");
-      });
-      // add active to clicked
-      btn.classList.add("active");
-
-      // call your function
-      categoryLLMData(category);
-    });
-
-    container.appendChild(btn);
-  });
-
-}
-
-function categoryLLMData(str) {
-  var llmListContainer = document.getElementById("llm-list-container");
-  if (llmListContainer) {
-    // fetch(`https://api.gignaati.com/api/Template/llmList?type=${str}`)
-    fetch(`https://api.gignaati.com/api/Template/llmList`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.data && Array.isArray(data.data)) {
-          llmListContainer.innerHTML = data.data
-            .filter((curELe, index) => {
-              return curELe.category === str;
-            })
-            .map((llm, idx) => {
-              var imgSrc =
-                llm.imageUrl && llm.imageUrl !== "string"
-                  ? "https://api.gignaati.com" + llm.imageUrl
-                  : "https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=400&h=300";
-
-              const tagsHTML = llm.tags && llm.tags.length > 0
-                ? llm.tags.map(tag => `<li>${tag}</li>`).join("")
-                : "<li></li>";
-
-              // === MODIFIED: Progress bar hidden by default ===
-              return `
-              <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-3">
-                <div class="llm-box">
-                  <div class="tamplate-img" style="text-align:center; margin-bottom:10px;">
-                    <img src="${imgSrc}" alt="" 
-                         style="width:100%; max-height:200px; border-radius:8px; " />
-                  </div>
-                  <h3>${llm.name || ""}</h3>
-                  <p>${llm.description || ""}</p>
-                         <div class="flex-column align-items-start mb-3 why">
-                <div style="font-size: 14px; color: #555; margin-top: 2px; font-weight: 500;">Why this model:</div>
-                <p style="font-size: 14px;">${llm.useCase}</p>
-              </div>
-                 <div class="cap-list mb-3">
-                    <ul>
-                     ${tagsHTML}
-                    </ul>
-                   </div>
-             <div class="system-info-2" style="display: block;
-    background: #e8e8e8;
-    padding: 10px 10px;
-    border-radius: 9px;">
-              <div style="font-size: 14px; color: #555; margin-top: 2px;     margin-bottom: 4px;font-weight: 500;">System Requirements:</div>
-           <div class="row">
-              <div class="col-6 mb-2" style="font-size: 12px;">
-RAM: ${llm.ram}
-              </div>
-              <div class="col-6 mb-2" style="font-size: 12px;">
-GPU: ${llm.gpu}
-              </div>
-              <div class="col-6 mb-2" style="font-size: 12px;">
-CPU: ${llm.cpu}
-              </div>
-              <div class="col-6 mb-2" style="font-size: 12px;">
-NPU: ${llm.npu}
-              </div></div>
-              </div>
-           
-                  <button 
-                    type="button" 
-                    class="btn btn-primary custom-btn custom-btn-white" 
-                    style="margin-top:16px;"
-                    onclick="downloadLlmModel('${llm.command}')"
-                  >
-                    Configure
-                  </button>
-                  <div class="progress progress-bar-new" style="display: none;">
-                    <div class="progress-bar progress-bar-striped" role="progressbar" aria-label="Default striped example" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div>
-            `;
-            })
-            .join("");
-        } else {
-          llmListContainer.innerHTML =
-            '<div class="col-12">No models found.</div>';
-        }
-      })
-      .catch(() => {
-        llmListContainer.innerHTML =
-          '<div class="col-12 text-danger">Failed to load models.</div>';
-      });
-  }
-}
-
-// Fetch and render LLM list in Language Models card
-document.addEventListener("DOMContentLoaded", function () {
-  var llmListContainer = document.getElementById("llm-list-container");
-  var llmSearchBar = document.getElementById("llm-search-bar");
-  var allLLMs = [];
-
-  function renderLLMs(models) {
-    llmListContainer.innerHTML =
-      models.length > 0
-        ? models
-          .map(function (llm, idx) {
-            var imgSrc =
-              llm.imageUrl && llm.imageUrl !== "string"
-                ? "https://api.gignaati.com" + llm.imageUrl
-                : "https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=400&h=300";
-
-            const tagsHTML = llm.tags && llm.tags.length > 0
-              ? llm.tags.map(tag => `<li>${tag}</li>`).join("")
-              : "<li></li>";
-
-            // === MODIFIED: Progress bar hidden by default ===
-            return `
+        return `
         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
           <div class="llm-box">
             <div class="tamplate-img" style="text-align:center; margin-bottom:10px;">
@@ -699,282 +566,223 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
             <h3>${llm.name || ""}</h3>
             <p>${llm.description || ""}</p>
-                    <div class="flex-column align-items-start mb-3 why">
-                <div style="font-size: 14px; color: #555; margin-top: 2px; font-weight: 500;">Why this model:</div>
-                <p style="font-size: 14px;">${llm.useCase}</p>
-              </div>
-                 <div class="cap-list mb-3">
-                    <ul>
-                      ${tagsHTML}
-                    </ul>
-                   </div>
-             <div class="system-info-2" style="display: block;
-    background: #e8e8e8;
-    padding: 10px 10px;
-    border-radius: 9px;">
-              <div style="font-size: 14px; color: #555; margin-top: 2px;     margin-bottom: 4px;font-weight: 500;">System Requirements:</div>
-           <div class="row">
-              <div class="col-6 mb-2" style="font-size: 12px;">
-RAM: ${llm.ram}
-              </div>
-              <div class="col-6 mb-2" style="font-size: 12px;">
-GPU: ${llm.gpu}
-              </div>
-              <div class="col-6 mb-2" style="font-size: 12px;">
-CPU: ${llm.cpu}
-              </div>
-              <div class="col-6 mb-2" style="font-size: 12px;">
-NPU: ${llm.npu}
-              </div></div>
-              </div>
-           
-                  <button 
-                    type="button" 
-                    class="btn btn-primary custom-btn custom-btn-white" 
-                    style="margin-top:16px;"
-                    onclick="downloadLlmModel('${llm.command}')"
-                  >
-                    Configure
-                  </button>
-                 <div class="progress progress-bar-new" style="display: none;">
-                    <div class="progress-bar progress-bar-striped" role="progressbar" aria-label="Default striped example" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                 </div>
-          
+            <div class="flex-column align-items-start mb-3 why">
+              <div style="font-size: 14px; color: #555; margin-top: 2px; font-weight: 500;">Why this model:</div>
+              <p style="font-size: 14px;">${llm.useCase}</p>
             </div>
+            <div class="cap-list mb-3">
+              <ul>
+                ${tagsHTML}
+              </ul>
+            </div>
+            <div class="system-info-2" style="display: block;
+              background: #e8e8e8;
+              padding: 10px 10px;
+              border-radius: 9px;">
+              <div style="font-size: 14px; color: #555; margin-top: 2px; margin-bottom: 4px;font-weight: 500;">System Requirements:</div>
+              <div class="row">
+                <div class="col-6 mb-2" style="font-size: 12px;">
+                  RAM: ${llm.ram}
+                </div>
+                <div class="col-6 mb-2" style="font-size: 12px;">
+                  GPU: ${llm.gpu}
+                </div>
+                <div class="col-6 mb-2" style="font-size: 12px;">
+                  CPU: ${llm.cpu}
+                </div>
+                <div class="col-6 mb-2" style="font-size: 12px;">
+                  NPU: ${llm.npu}
+                </div>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              class="btn btn-primary custom-btn custom-btn-white" 
+              style="margin-top:16px;"
+              onclick="downloadLlmModel('${llm.command}')"
+            >
+              Configure
+            </button>
+            <div class="progress progress-bar-new" style="display: none;">
+              <div class="progress-bar progress-bar-striped" role="progressbar" aria-label="Default striped example" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
         </div>
       `;
-          })
-          .join("")
-        : '<div class="col-12">No models found.</div>';
-  }
-  //<button type="button" class="btn btn-primary custom-btn custom-btn-white" style="margin-top:16px;">Configure</button>
-
-
-  if (llmListContainer) {
-    fetch("https://api.gignaati.com/api/Template/llmList?type=Default")
-      .then(function (response) {
-        return response.json();
       })
-      .then(function (data) {
-        if (data && data.data && Array.isArray(data.data)) {
-          // allLLMs = data.data;
+      .join("")
+    : '<div class="col-12">No models found.</div>';
+}
 
-          // renderLLMsButton(allLLMs);
+/**
+ * === MODIFIED: Reads search bar *first*. ===
+ * If search bar has text, filters ALL models and resets category to "All".
+ * If search bar is empty, filters by the active category.
+ */
+function filterAndRenderLLMs() {
+  const llmListContainer = document.getElementById("llm-list-container");
+  if (!llmListContainer) return;
 
-          // 🔹 Step 2: Call the second API here
-          fetch("https://api.gignaati.com/api/Template/llmList")
-            .then(function (res) {
-              return res.json();
-            })
-            .then(function (newApi) {
-              if (newApi && newApi.data && Array.isArray(newApi.data)) {
-                // 🔹 Step 3: Pass newApi.data to renderLLMsButton
-                allLLMs = newApi.data;
-                renderLLMs(allLLMs);
-                renderLLMsButton(newApi.data);
-              } else {
-                renderLLMsButton([]);
-              }
-            })
-            .catch(function (err) {
-              renderLLMsButton([]);
-            });
+  const searchBar = document.getElementById("llm-search-bar");
+  const searchTerm = searchBar ? searchBar.value.toLowerCase() : "";
+  let filteredModels = [];
 
-          if (llmSearchBar) {
-            llmSearchBar.addEventListener("input", function (e) {
-              var val = e.target.value.toLowerCase();
-              var filtered = allLLMs.filter(function (llm) {
-                return (
-                  (llm.name && llm.name.toLowerCase().includes(val)) ||
-                  (llm.description &&
-                    llm.description.toLowerCase().includes(val))
-                );
-              });
-              // ⭐ Get the footer element
-              var footerElement = document.getElementById("footer");
-              var llmList = filtered; // Store the list for length check
-              if (footerElement) {
-                if (llmList.length == 0) {
-                  footerElement.classList.add("active");
-                } else {
-                  footerElement.classList.remove("active");
-                }
-              }
-              renderLLMs(filtered);
-            });
-          }
+  if (searchTerm !== "") {
+    // 1. USER IS SEARCHING: Filter ALL models
+    filteredModels = allLLMs.filter(llm =>
+      (llm.name && llm.name.toLowerCase().includes(searchTerm)) ||
+      (llm.description && llm.description.toLowerCase().includes(searchTerm))
+    );
+    
+    // 2. (Good UX) Reset category buttons to "All"
+    const buttons = document.querySelectorAll("#llm-btn-grp .llm-btn");
+    buttons.forEach(b => {
+        if (b.textContent === "All") {
+            b.classList.add("active");
         } else {
-          renderLLMs([]);
+            b.classList.remove("active");
         }
-      })
-      .catch(function (err) {
-        renderLLMs([]);
-      });
-  }
-});
+    });
 
-
-
-// async function clickToLaunchInstall() {
-//   const panel = document.getElementById('launch-progress-panel');
-//   const bar = document.getElementById('launch-progress-bar');
-//   const text = document.getElementById('launch-progress-text');
-//   const consoleEl = document.getElementById('launch-console');
-//   const button = document.querySelector('.install-btn');
-
-//   function updateProgress(percent, message) {
-//     if (bar) {
-//       bar.style.width = `${percent}%`;
-//       bar.textContent = `${percent}%`;
-//     }
-//     if (text) {
-//       text.textContent = message;
-//     }
-//     if (consoleEl) {
-//       const div = document.createElement('div');
-//       div.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
-//       consoleEl.appendChild(div);
-//       consoleEl.scrollTop = consoleEl.scrollHeight;
-//     }
-//   }
-
-//   try {
-//     if (panel) panel.style.display = 'block';
-//     if (button) button.disabled = true;
-
-//     // 🔹 Step 1: Ollama Installation (Poll until installed)
-//     updateProgress(5, 'Starting AI Brain installation...');
-//     let ollamaProgress = 5;
-//     let ollamaLastStatus = null;
-//     let ollamaPollInterval = null;
-
-//     async function pollOllamaInstallStatus() {
-//       try {
-//         const response = await fetch('http://localhost:5000/api/OllamaProvisioning/install-ollama', {
-//           method: 'GET',
-//           headers: { accept: 'application/json' }
-//         });
-
-//         const result = await response.json();
-//         const status = result?.data;
-//         const message = result?.message || 'Checking Ollama installation status...';
-
-//         if (result?.error) {
-//           updateProgress(ollamaProgress, `Error: ${result.error}`);
-//           clearInterval(ollamaPollInterval);
-//           throw new Error(result.error);
-//         }
-
-//         if (status === 'installed') {
-//           updateProgress(40, 'AI Brain installed successfully!');
-//           clearInterval(ollamaPollInterval);
-//           return true;
-//         }
-
-//         if (status === 'In-progress' && status !== ollamaLastStatus) {
-//           ollamaProgress = Math.min(ollamaProgress + 5, 35);
-//           updateProgress(ollamaProgress, message);
-//           ollamaLastStatus = status;
-//         }
-
-//         if (status === 'started') {
-//           ollamaProgress = Math.min(ollamaProgress + 2, 38);
-//           updateProgress(ollamaProgress, message);
-//           ollamaLastStatus = status;
-//         }
-
-//         return false;
-//       } catch (err) {
-//         updateProgress(ollamaProgress, `Error fetching Ollama status: ${err.message}`);
-//         clearInterval(ollamaPollInterval);
-//         throw err;
-//       }
-//     }
-
-//     // Call immediately, then poll every 2 mins until installed
-//     let ollamaInstalled = await pollOllamaInstallStatus();
-//     if (!ollamaInstalled) {
-//       ollamaPollInterval = setInterval(async () => {
-//         const installed = await pollOllamaInstallStatus();
-//         if (installed) clearInterval(ollamaPollInterval);
-//       }, 2 * 60 * 1000);
-//     }
-
-//     // 🔹 Step 2: N8N Installation (existing logic)
-//     updateProgress(45, 'Starting N8N setup process...');
-//     let currentProgress = 45;
-//     let lastStatus = null;
-//     let pollInterval = null;
-
-//     async function pollN8NInstallStatus() {
-//       try {
-//         const response = await fetch('http://localhost:5000/api/Provisioning/install-n8n', {
-//           method: 'GET',
-//           headers: { accept: 'application/json' }
-//         });
-
-//         const result = await response.json();
-//         const status = result?.data;
-//         const message = result?.message || 'Checking installation status...';
-
-//         if (result?.error) {
-//           updateProgress(currentProgress, `Error: ${result.error}`);
-//           clearInterval(pollInterval);
-//           return;
-//         }
-
-//         if (status === 'installed') {
-//           updateProgress(100, 'N8N installed successfully!');
-//           clearInterval(pollInterval);
-//           document.getElementById('startJourney').classList.remove('disable-click');
-
-//           if (panel) panel.style.display = 'none';
-//           if (bar) bar.style.display = 'none';
-//           if (text) text.style.display = 'none';
-//           if (consoleEl) text.style.display = 'none';
-//           return;
-//         }
-
-//         if (status === 'In-progress' && status !== lastStatus) {
-//           currentProgress = Math.min(currentProgress + 5, 95);
-//           updateProgress(currentProgress, message);
-//           lastStatus = status;
-//         }
-
-//         if (status === 'started') {
-//           updateProgress(currentProgress + 2, message);
-//           lastStatus = status;
-//         }
-//       } catch (err) {
-//         updateProgress(currentProgress, `Error fetching status: ${err.message}`);
-//         clearInterval(pollInterval);
-//       }
-//     }
-
-//     // Call immediately, then poll every 2 mins
-//     await pollN8NInstallStatus();
-//     pollInterval = setInterval(pollN8NInstallStatus, 2 * 60 * 1000);
-
-//   } catch (error) {
-//     console.error('Installation failed:', error);
-//     updateProgress(0, `Error: ${error.message}`);
-//     if (consoleEl) {
-//       const div = document.createElement('div');
-//       div.style.color = 'red';
-//       div.textContent = `${new Date().toLocaleTimeString()}: Installation failed: ${error.message}`;
-//       consoleEl.appendChild(div);
-//     }
-//   } finally {
-//     if (button) button.disabled = false;
-//   }
-// }
-function openExternalLink(url) {
-  if (window.electronAPI && window.electronAPI.openExternalLink) {
-    window.electronAPI.openExternalLink(url);
   } else {
-    window.open(url, "_blank");
+    // 1. USER IS NOT SEARCHING: Filter by active category
+    const activeButton = document.querySelector("#llm-btn-grp .llm-btn.active");
+    const activeCategory = activeButton ? activeButton.textContent : "All";
+
+    filteredModels = (activeCategory === "All")
+      ? allLLMs
+      : allLLMs.filter(llm => (llm.category || "Uncategorized") === activeCategory);
+  }
+  
+  // Check footer state
+  var footerElement = document.getElementById("footer");
+  if (footerElement) {
+    if (filteredModels.length == 0) {
+      footerElement.classList.add("active");
+    } else {
+      footerElement.classList.remove("active");
+    }
+  }
+
+  // Render the final list
+  llmListContainer.innerHTML = renderLLMCardHTML(filteredModels);
+}
+
+
+/**
+ * Creates the category buttons for the LLM tab with custom sorting.
+ */
+function renderLLMCategories(models) {
+  const container = document.getElementById("llm-btn-grp");
+  if (!container) return;
+
+  // Preserve the active category if it exists
+  const oldActiveButton = document.querySelector("#llm-btn-grp .llm-btn.active");
+  const oldActiveCategory = oldActiveButton ? oldActiveButton.textContent : "All";
+
+  container.innerHTML = ""; // Clear
+  
+  // === MODIFIED: Custom sort logic ===
+  const order = ['Entry Level', 'Mid Level', 'Advanced Level'];
+  const categories = [...new Set(models.map(m => m.category || "Uncategorized"))];
+
+  categories.sort((a, b) => {
+    let indexA = order.indexOf(a);
+    let indexB = order.indexOf(b);
+
+    if (indexA !== -1 && indexB !== -1) {
+      // Both are in the custom order list
+      return indexA - indexB;
+    } else if (indexA !== -1) {
+      // Only 'a' is in the list, 'b' is not. 'a' comes first.
+      return -1;
+    } else if (indexB !== -1) {
+      // Only 'b' is in the list, 'a' is not. 'b' comes first.
+      return 1;
+    } else {
+      // Neither are in the list, sort them alphabetically
+      return a.localeCompare(b);
+    }
+  });
+  // === END OF MODIFICATION ===
+
+  // Add "All" button
+  const allBtn = document.createElement("button");
+  allBtn.type = "button";
+  allBtn.textContent = "All";
+  allBtn.classList.add("llm-btn", "custom-btn", "btn", "btn-primary", "me-2");
+  if (oldActiveCategory === "All") allBtn.classList.add("active");
+  allBtn.addEventListener("click", () => {
+    // Clear search bar when a category is clicked
+    const searchBar = document.getElementById("llm-search-bar");
+    if (searchBar) searchBar.value = ""; 
+    
+    document.querySelectorAll("#llm-btn-grp .llm-btn").forEach(b => b.classList.remove("active"));
+    allBtn.classList.add("active");
+    filterAndRenderLLMs();
+  });
+  container.appendChild(allBtn);
+
+  // Add other category buttons
+  categories.forEach(category => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = category;
+    btn.classList.add("llm-btn", "custom-btn", "btn", "btn-primary", "me-2");
+    // Re-select the previously active category if it still exists
+    if (category === oldActiveCategory) btn.classList.add("active");
+    btn.addEventListener("click", () => {
+      // Clear search bar when a category is clicked
+      const searchBar = document.getElementById("llm-search-bar");
+      if (searchBar) searchBar.value = "";
+      
+      document.querySelectorAll("#llm-btn-grp .llm-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      filterAndRenderLLMs();
+    });
+    container.appendChild(btn);
+  });
+
+  // Ensure 'All' is active if the old category no longer exists
+  const anyActive = container.querySelector('.llm-btn.active');
+  if (!anyActive) {
+      allBtn.classList.add('active');
   }
 }
+
+/**
+ * Fetches latest LLMs and re-renders the tab.
+ * Called by `handleTabbutton` every time LLM tab is clicked.
+ */
+function refreshLLMTab() {
+  const llmListContainer = document.getElementById("llm-list-container");
+  if (!llmListContainer) return;
+
+  // Show a loading state
+  llmListContainer.innerHTML = '<div class="col-12" style="text-align: center;">Loading latest models...</div>';
+
+  fetch("https://api.gignaati.com/api/Template/llmList")
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.data && Array.isArray(data.data)) {
+        allLLMs = data.data; // Store latest data globally
+        renderLLMCategories(allLLMs); // Re-build categories
+        filterAndRenderLLMs(); // Render using new data
+      } else {
+        allLLMs = []; // Clear old data
+        renderLLMCategories(allLLMs); // Render empty categories
+        llmListContainer.innerHTML = '<div class="col-12">No models found.</div>';
+      }
+    })
+    .catch(err => {
+      console.error("Failed to load LLMs:", err);
+      llmListContainer.innerHTML = '<div class="col-12 text-danger">Failed to load models.</div>';
+    });
+}
+// ===================================================================
+// === END OF LLM FUNCTIONS ===
+// ===================================================================
+
 
 async function clickToLaunchInstall() {
 
@@ -1179,11 +987,10 @@ const handleTabbutton = (target) => {
   // Recall APIs on every tab click
   if (typeof loadUpcomingUpdate === "function") loadUpcomingUpdate();
   if (typeof loadTemplates === "function") loadTemplates();
-  if (typeof loadLLMList === "function") loadLLMList();
-
+  // Note: LLM logic is now handled INSIDE the "LLM" block below
+  
   if (target === "Template") {
     // conatiner
-    // categorytamplateData('Student');
     document.getElementById("dashboard-container").style.display = "none";
     document.getElementById("build-container").style.display = "none";
     document.getElementById("llm-container").style.display = "none";
@@ -1212,13 +1019,13 @@ const handleTabbutton = (target) => {
     handleMakeAIAgentClick()
   } else if (target === "LLM") {
     // conatiner
-    // categoryLLMData('Chat');
     document.getElementById("dashboard-container").style.display = "none";
     document.getElementById("build-container").style.display = "none";
     document.getElementById("llm-container").style.display = "block";
     document.getElementById("tamplate-container").style.display = "none";
 
-
+    // === MODIFIED: Call refresh function every time ===
+    refreshLLMTab();
 
     document.getElementById("Dashboard-btn").classList.remove("active");
     document.getElementById("Build-btn")?.classList.remove("active");
@@ -1538,119 +1345,29 @@ function reloadTemplateData() {
 }
 
 
-// Reload LLM List (LLM tab)
-function reloadLLMData() {
-  var llmListContainer = document.getElementById("llm-list-container");
-  if (llmListContainer) {
-    fetch("https://api.gignaati.com/api/Template/llmList?type=Default")
-      .then((res) => res.json())
-      .then((data) => {
-
-        if (data && data.data && Array.isArray(data.data)) {
-
-          var footerElement = document.getElementById("footer");
-          var llmList = data.data;
-          if (footerElement) {
-            if (llmList.length == 0) {
-              footerElement.classList.add("active");
-            } else {
-              footerElement.classList.remove("active");
-            }
-          }
-
-
-
-          llmListContainer.innerHTML = data.data
-            .map((llm, idx) => {
-              var imgSrc =
-                llm.imageUrl && llm.imageUrl !== "string"
-                  ? "https://api.gignaati.com" + llm.imageUrl
-                  : "https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=400&h=300";
-
-              const tagsHTML = llm.tags && llm.tags.length > 0
-                ? llm.tags.map(tag => `<li>${tag}</li>`).join("")
-                : "<li></li>";
-
-              // === MODIFIED: Progress bar hidden by default ===
-              return `
-              <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-3">
-                <div class="llm-box">
-                  <div class="tamplate-img" style="text-align:center; margin-bottom:10px;">
-                    <img src="${imgSrc}" alt="" 
-                         style="width:100%; max-height:200px; border-radius:8px; " />
-                  </div>
-                  <h3>${llm.name || ""}</h3>
-                  <p>${llm.description || ""}</p>
-                   <div class="flex-column align-items-start mb-3 why">
-                <div style="font-size: 14px; color: #555; margin-top: 2px; font-weight: 500;">Why this model:</div>
-                <p style="font-size: 14px;">${llm.useCase}</p>
-              </div>
-                  <div class="cap-list mb-3">
-                    <ul>
-                      ${tagsHTML}
-                    </ul>
-                   </div>
-             <div class="system-info-2" style="display: block;
-    background: #e8e8e8;
-    padding: 10px 10px;
-    border-radius: 9px;">
-              <div style="font-size: 14px; color: #555; margin-top: 2px;     margin-bottom: 4px;font-weight: 500;">System Requirements:</div>
-           <div class="row">
-              <div class="col-6 mb-2" style="font-size: 12px;">
-RAM: ${llm.ram}
-              </div>
-              <div class="col-6 mb-2" style="font-size: 12px;">
-GPU: ${llm.gpu}
-              </div>
-              <div class="col-6 mb-2" style="font-size: 12px;">
-CPU: ${llm.cpu}
-              </div>
-              <div class="col-6 mb-2" style="font-size: 12px;">
-NPU: ${llm.npu}
-              </div></div>
-              </div>
-          
-                  <button 
-                    type="button" 
-                    class="btn btn-primary custom-btn custom-btn-white" 
-                    style="margin-top:16px;"
-                    onclick="downloadLlmModel('${llm.command}')"
-                  >
-                    Configure
-                  </button>
-                  <div class="progress progress-bar-new" style="display: none;">
-                    <div class="progress-bar progress-bar-striped" role="progressbar" aria-label="Default striped example" style="width: 0%; height:100%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div>
-            `;
-            })
-            .join("");
-        } else {
-          llmListContainer.innerHTML =
-            '<div class="col-12">No models found.</div>';
-        }
-      })
-      .catch(() => {
-        llmListContainer.innerHTML =
-          '<div class="col-12 text-danger">Failed to load models.</div>';
-      });
-  }
-}
-
 // === Attach to Navbar Buttons ===
 document.addEventListener("DOMContentLoaded", () => {
   const dashboardBtn = document.getElementById("Dashboard-btn");
   const buildBtn = document.getElementById("Build-btn");
-  const llmBtn = document.getElementById("LLM-btn");
+  const llmBtn = document.getElementById("LLM-btn"); // This button is handled by handleTabbutton
   const templateBtn = document.getElementById("Template-btn");
 
+  // Attach tab click handlers
   if (dashboardBtn) dashboardBtn.addEventListener("click", reloadDashboardData);
   if (templateBtn) templateBtn.addEventListener("click", reloadTemplateData);
-  if (llmBtn) llmBtn.addEventListener("click", reloadLLMData);
+
+  // === MODIFIED: Attach search listener ONCE on load ===
+  const llmSearchBar = document.getElementById("llm-search-bar");
+  if (llmSearchBar) {
+    llmSearchBar.addEventListener("input", filterAndRenderLLMs); // This filters the global 'allLLMs'
+  }
+  
+  // Load initial data for LLM tab only if it's the default view
+  // (Assuming dashboard is the default view, so we don't need to load LLMs here)
+  
   if (buildBtn)
     buildBtn.addEventListener("click", () => {
-      // No API call for build tab yet, but you can add later if needed
+      // No API call for build tab yet
       console.log("Build tab clicked - no API to reload");
     });
 });
