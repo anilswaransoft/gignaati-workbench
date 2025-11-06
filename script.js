@@ -132,9 +132,9 @@ async function downloadLlmModel(modelName) {
     progressWrapper.style.display = 'block';
   }
   if (progressBar) {
-    progressBar.style.width = '3%';
+    progressBar.style.width = '5%';
     progressBar.setAttribute('aria-valuenow', 3);
-    progressBar.textContent = '3%';
+    progressBar.textContent = '5%';
     progressBar.classList.remove('bg-success', 'bg-danger');
   }
 
@@ -1798,3 +1798,30 @@ async function loadVideos() {
     videoContainer.innerHTML = '<p class="col-12" style="text-align: center; color: red;">Error loading videos. Please try again later.</p>';
   }
 }
+
+
+/**
+ * Calls the n8n start API on page load and logs the response.
+ */
+async function startN8nOnLoad() {
+  const apiUrl = "http://localhost:5000/api/Provisioning/start-n8n";
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        "Cache-Control": "no-store" 
+      }
+    });
+
+    if (!response.ok) {
+      //throw new Error(`Network response was not ok: ${response.statusText}`);
+    }
+    const data = await response.json();
+    console.log("n8n start API response:", data.message);
+  } catch (error) {
+    console.error("Failed to start n8n:", error);
+  }
+}
+
+window.addEventListener('load', startN8nOnLoad);
