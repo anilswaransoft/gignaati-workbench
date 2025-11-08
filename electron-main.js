@@ -1,13 +1,13 @@
-// electron-main.js - FIXED VERSION with Loading Screen
-const { app, BrowserWindow, ipcMain, shell, session } = require('electron'); // ----- FIX 1: Added 'session'
+// electron-main.js - v4 (Smart API-based Routing)
+const { app, BrowserWindow, ipcMain, shell, session, net } = require('electron');
 const { spawn, exec } = require('child_process');
 const path = require('path');
-const si = require('systeminformation');
 
 const isDev = !app.isPackaged;
 let backendProcess = null;
 let loadingWindow = null;
 let mainWindow = null;
+let isMainWindowCreated = false;
 
 // ========== Loading Screen Functions ==========
 
@@ -28,9 +28,6 @@ function createLoadingWindow() {
 
   loadingWindow.loadFile('loading-screen.html');
   loadingWindow.center();
-  
-  // Optional: Open DevTools for debugging
-  // loadingWindow.webContents.openDevTools();
 }
 
 function updateLoadingProgress(progress, message) {
@@ -44,6 +41,79 @@ function closeLoadingWindow() {
     loadingWindow.close();
     loadingWindow = null;
   }
+}
+
+// ========== NEW: API Check Logic ==========
+
+// Helper function to perform HTTP GET requests using Electron's net module
+// (Works reliably even if standard 'fetch' is not available in your Node version)
+function safeFetchJson(url) {
+    return new Promise((resolve, reject) => {
+        const request = net.request(url);
+        request.on('response', (response) => {
+            if (response.statusCode !== 200) {
+                return reject(new Error(`Status: ${response.statusCode}`));
+            }
+            let data = '';
+            response.on('data', (chunk) => { data += chunk.toString(); });
+            response.on('end', () => {
+                try {
+                    resolve(JSON.parse(data));
+                } catch (e) {
+                    reject(e);
+                }
+            });
+        });
+        request.on('error', (error) => reject(error));
+        request.end();
+    });
+}
+
+async function determineStartPage() {
+    console.log("Starting API checks to determine start page...");
+    
+    // Try up to 5 times (approx 10 seconds total) to let the backend start
+    for (let i = 1; i <= 5; i++) {
+        try {
+            // Wait 2 seconds between attempts
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            console.log(`API Check Attempt ${i}/5...`);
+
+            // 1. Call DeviceInfo API
+            const deviceData = await safeFetchJson('http://localhost:5000/api/DeviceInfo');
+            
+            if (!deviceData || !deviceData.deviceId) {
+                console.log("DeviceInfo returned no deviceId. Defaulting to index.html");
+                return 'index.html';
+            }
+
+            console.log(`Got Device ID: ${deviceData.deviceId}. Checking User...`);
+
+            // 2. Call CheckUser API
+            const userData = await safeFetchJson(`https://api.gignaati.com/api/User/checkUserByDeviceId?deviceId=${deviceData.deviceId}`);
+
+            if (userData && userData.data === true && userData.message) {
+                console.log("✅ User Verified! Loading main-screen.html");
+                return {
+                    page: 'main-screen.html',
+                    email: userData.message
+                };
+            } else {
+                console.log("❌ User Not Verified. Loading index.html");
+                return {
+                    page: 'index.html',
+                    email: null
+                };
+            }
+
+        } catch (error) {
+            // If connection failed (backend not up yet), loop and try again
+            console.warn(`Attempt ${i} failed: ${error.message}`);
+        }
+    }
+
+    console.error("All API attempts failed. Defaulting to index.html");
+    return 'index.html';
 }
 
 // ========== IPC Handlers ==========
@@ -84,107 +154,6 @@ ipcMain.handle('open-external-link', async (event, url) => {
         await shell.openExternal(url);
     }
 });
-
-// Installation handlers with progress callbacks
-// ipcMain.handle('install-ollama', async (event) => {
-//     const OllamaManager = require('./src/main/ollama-manager');
-//     const ollamaManager = new OllamaManager();
-    
-//     try {
-//         await ollamaManager.installOllama((progress, message) => {
-//             event.sender.send('ollama-install-progress', progress, message);
-//             updateLoadingProgress(progress * 0.3, message); // 0-30% of total loading
-//         });
-//         return { success: true };
-//     } catch (error) {
-//         console.error('Ollama installation failed:', error);
-//         throw error;
-//     }
-// });
-
-// ipcMain.handle('start-ollama', async (event) => {
-//     const OllamaManager = require('./src/main/ollama-manager');
-//     const ollamaManager = new OllamaManager();
-    
-//     try {
-//         await ollamaManager.startOllama({}, (progress, message) => {
-//             event.sender.send('ollama-start-progress', progress, message);
-//             updateLoadingProgress(30 + (progress * 0.3), message); // 30-60% of total loading
-//         });
-//         return { success: true, optimization: { 
-//             accelerationType: 'CPU/GPU',
-//             cpuThreads: Math.floor(require('os').cpus().length * 0.5),
-//             gpuOffloading: true
-//         }};
-//     } catch (error) {
-//         console.error('Failed to start Ollama:', error);
-//         throw error;
-//     }
-// });
-
-// ipcMain.handle('setup-n8n', async (event) => {
-//     const N8NManager = require('./src/main/n8n-manager');
-//     const n8nManager = new N8NManager();
-    
-//     try {
-//         await n8nManager.initialize();
-//         updateLoadingProgress(65, 'N8N workspace initialized');
-//         return { success: true };
-//     } catch (error) {
-//         console.error('N8N setup failed:', error);
-//         throw error;
-//     }
-// });
-
-// ipcMain.handle('start-n8n', async (event) => {
-//     const N8NManager = require('./src/main/n8n-manager');
-//     const n8nManager = new N8NManager();
-    
-//     try {
-//         await n8nManager.initialize();
-//         updateLoadingProgress(70, 'Starting N8N server...');
-        
-//         await n8nManager.start((progress, message) => {
-//             event.sender.send('n8n-start-progress', progress, message);
-//             updateLoadingProgress(70 + (progress * 0.25), message); // 70-95% of total loading
-//         });
-        
-//         // Wait for N8N to be fully ready
-//         await n8nManager.waitForN8N(60, (progress, message) => {
-//             event.sender.send('n8n-ready-progress', progress, message);
-//             updateLoadingProgress(95 + (progress * 0.05), message); // 95-100% of total loading
-//         });
-        
-//         // Auto-configure Ollama credentials in N8N
-//         updateLoadingProgress(98, 'Configuring AI Brain integration...');
-//         try {
-//             const N8NCredentialInjector = require('./src/main/n8n-credential-injector');
-//             const credentialInjector = new N8NCredentialInjector();
-            
-//             // Wait a bit for N8N database to be fully initialized
-//             await new Promise(r => setTimeout(r, 3000));
-            
-//             const result = await credentialInjector.injectOllamaCredentials();
-//             if (result.success) {
-//                 console.log('✅ Ollama credentials auto-configured in N8N');
-//             } else if (result.alreadyExists) {
-//                 console.log('ℹ️ Ollama credentials already exist in N8N');
-//             } else if (result.needsRetry) {
-//                 console.log('⚠️ N8N not fully initialized, credentials will be configured on next launch');
-//             }
-//         } catch (credError) {
-//             console.error('⚠️ Failed to auto-configure Ollama credentials (non-critical):', credError);
-//             // Don't fail the entire startup if credential injection fails
-//         }
-        
-//         updateLoadingProgress(100, 'AI Magic added! Ready to go! ✨');
-        
-//         return { success: true };
-//     } catch (error) {
-//         console.error('Failed to start N8N:', error);
-//         throw error;
-//     }
-// });
 
 // Open n8n in a new window
 ipcMain.handle('open-n8n-window', async () => {
@@ -269,32 +238,37 @@ ipcMain.on('close-app', () => {
     app.quit();
 });
 
-// Create main window
-function createWindow() {
+// ========== Main Window Creation ==========
+
+// UPDATED: Now accepts a page info object with filename and email
+function createWindow(pageInfo) {
+    if (isMainWindowCreated) return;
+    isMainWindowCreated = true;
+
+    // Handle both string and object parameters for backward compatibility
+    const filename = typeof pageInfo === 'string' ? pageInfo : pageInfo.page;
+    const email = typeof pageInfo === 'object' ? pageInfo.email : null;
+
+    console.log(`Creating main window with: ${filename}, email: ${email || 'none'}`);
+
     mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 800,
-        minWidth: 800,
-        minHeight: 600,
+        width: 1200, height: 800, minWidth: 800, minHeight: 600,
         icon: path.join(__dirname, 'gig.ico'),
-        show: false, // Don't show until ready
+        show: false,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
             nodeIntegration: false,
-            webSecurity: false, // Allow loading N8N in iframe
-            allowRunningInsecureContent: true, // Allow localhost content
-            webviewTag: true // Enable webview support
+            webSecurity: false,
+            allowRunningInsecureContent: true,
+            webviewTag: true
         }
     });
 
-    // ----- FIX 2: START -----
-    // This block intercepts n8n's login cookies and modifies them
-    // to work correctly inside the file:// iframe.
+    // Session fix for iframes (n8n)
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
         if (details.responseHeaders && details.responseHeaders['Set-Cookie']) {
             const modifiedCookies = details.responseHeaders['Set-Cookie'].map(cookie => {
-                // Force cookies from localhost to work in the iframe
                 if (details.url.startsWith('http://localhost')) {
                     return cookie.replace(/; SameSite=Lax/ig, '; SameSite=None; Secure')
                                  .replace(/; SameSite=Strict/ig, '; SameSite=None; Secure');
@@ -305,146 +279,58 @@ function createWindow() {
         }
         callback({ responseHeaders: details.responseHeaders });
     });
-    // ----- FIX 2: END -----
     
-    mainWindow.loadFile('index.html');
+    // Load the determined file with email parameter if available
+    if (email && filename === 'main-screen.html') {
+        mainWindow.loadFile(filename, { query: { email: email } });
+    } else {
+        mainWindow.loadFile(filename);
+    }
     
-    // Show window when ready
     mainWindow.once('ready-to-show', () => {
-        // Close loading window
         closeLoadingWindow();
-        
-        // Show main window
+        mainWindow.maximize();
         mainWindow.show();
     });
-    
-    // mainWindow.webContents.openDevTools();
 }
 
 // ========== Backend Process ==========
 function startBackend() {
     const backendPath = isDev
-        ? path.join(__dirname, '..', 'resources', 'backend', 'GignaatiWorkbenchService.exe')
+        ? path.join(__dirname, 'resources', 'backend', 'GignaatiWorkbenchService.exe')
         : path.join(process.resourcesPath, 'backend', 'GignaatiWorkbenchService.exe');
-
-    console.log(`Starting backend from: ${backendPath}`);
-
-    backendProcess = spawn(backendPath, [], {
-        stdio: 'pipe',
-        detached: false
-    });
-
-    backendProcess.stdout.on('data', (data) => {
-        console.log(`Backend stdout: ${data.toString()}`);
-    });
-    backendProcess.stderr.on('data', (data) => {
-        console.error(`Backend stderr: ${data.toString()}`);
-    });
-    backendProcess.on('close', (code) => {
-        console.log(`Backend exited with code ${code}`);
-    });
-    backendProcess.on('error', (err) => {
-        console.error(`Failed to start backend: ${err.message}`);
-    });
-}
-
-// ========== Startup Sequence with Loading Screen ==========
-async function initializeApp() {
-    try {
-        updateLoadingProgress(5, 'Initializing application...');
-        
-        // Start backend if available
-        try {
-            startBackend();
-            updateLoadingProgress(10, 'Backend service started');
-        } catch (error) {
-            console.warn('Backend service not available:', error);
-            updateLoadingProgress(10, 'Continuing without backend service');
-        }
-        
-        // Auto-start Ollama and N8N
-        updateLoadingProgress(15, 'Checking Ollama installation...');
-        
-        const OllamaManager = require('./src/main/ollama-manager');
-        const ollamaManager = new OllamaManager();
-        
-        if (ollamaManager.isOllamaInstalled()) {
-            updateLoadingProgress(20, 'Ollama found, starting...');
-            
-            try {
-                await ollamaManager.startOllama({}, (progress, message) => {
-                    updateLoadingProgress(20 + (progress * 0.4), message);
-                });
-                updateLoadingProgress(60, 'Ollama started successfully!');
-            } catch (error) {
-                console.error('Failed to start Ollama:', error);
-                updateLoadingProgress(60, 'Continuing without Ollama');
-            }
-        } else {
-            updateLoadingProgress(60, 'Ollama not installed (will prompt user)');
-        }
-        
-        // Start N8N
-        updateLoadingProgress(65, 'Initializing N8N workspace...');
-        
-        const N8NManager = require('./src/main/n8n-manager');
-        const n8nManager = new N8NManager();
-        
-        try {
-            await n8nManager.initialize();
-            updateLoadingProgress(70, 'Starting N8N server...');
-            
-            await n8nManager.start((progress, message) => {
-                updateLoadingProgress(70 + (progress * 0.25), message);
-            });
-            
-            updateLoadingProgress(95, 'Waiting for N8N to be ready...');
-            
-            await n8nManager.waitForN8N(60, (progress, message) => {
-                updateLoadingProgress(95 + (progress * 0.05), message);
-            });
-            
-            updateLoadingProgress(100, '✨ AI Magic added! Ready to go!');
-        } catch (error) {
-            console.error('Failed to start N8N:', error);
-            updateLoadingProgress(100, 'Starting without N8N (will prompt user)');
-        }
-        
-        // Wait a moment for user to see completion message
-        setTimeout(() => {
-            createWindow();
-        }, 1500);
-        
-    } catch (error) {
-        console.error('Initialization error:', error);
-        updateLoadingProgress(100, 'Starting with limited features');
-        
-        setTimeout(() => {
-            createWindow();
-        }, 1500);
-    }
+    
+    console.log("Starting backend path:", backendPath);
+    backendProcess = spawn(backendPath, [], { stdio: 'pipe', detached: false });
+    backendProcess.stdout.on('data', (data) => console.log(`Backend: ${data}`));
+    backendProcess.stderr.on('data', (data) => console.error(`Backend Error: ${data}`));
 }
 
 // ========== App Lifecycle ==========
-app.whenReady().then(() => {
-    // Show loading screen first
+
+app.whenReady().then(async () => {
+    // 1. Show loading screen immediately
     createLoadingWindow();
     
-    // Then initialize everything
-    setTimeout(() => {
-        initializeApp();
-    }, 500);
+    // 2. Start the backend
+    startBackend();
+
+    // 3. Determine which page to load (waits for backend APIs)
+    // This might take a few seconds while the backend starts up.
+    // The loading screen will stay visible during this time.
+    const startPage = await determineStartPage();
+
+    // 4. Open the correct window
+    createWindow(startPage);
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
-            createLoadingWindow();
-            setTimeout(() => {
-                initializeApp();
-            }, 500);
+            createWindow('index.html'); // Default if re-activated
         }
     });
 });
 
+// Quit when all windows are closed
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();
@@ -453,100 +339,6 @@ app.on('window-all-closed', () => {
 
 app.on('before-quit', () => {
     if (backendProcess) {
-        console.log('Shutting down backend...');
         backendProcess.kill('SIGTERM');
-        backendProcess = null;
     }
 });
-
-// ========== Existing IPC Handlers ==========
-
-// // Docker check
-// ipcMain.handle('check-docker-installed', async () => {
-//     return new Promise((resolve) => {
-//         exec('docker info', (error) => {
-//             resolve(!error);
-//         });
-//     });
-// });
-
-// Open Docker Desktop
-// ipcMain.handle('open-docker-desktop', async () => {
-//     const dockerPath = '"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe"';
-//     exec(dockerPath, (error) => {
-//         if (error) {
-//             console.error('Failed to open Docker Desktop:', error);
-//         } else {
-//             console.log('Docker Desktop opened successfully.');
-//         }
-//     });
-// });
-
-// function getCpuUsageWindows() {
-//     return new Promise((resolve) => {
-//         exec('powershell -command "(Get-Counter \'\\Processor(_Total)\\% Processor Time\').CounterSamples[0].CookedValue"', (error, stdout) => {
-//             if (error) {
-//                 console.error(`Error getting CPU usage with PowerShell: ${error.message}`);
-//                 resolve(0);
-//             } else {
-//                 const value = parseFloat(stdout.trim());
-//                 resolve(isNaN(value) ? 0 : Math.round(value));
-//             }
-//         });
-//     });
-// }
-
-// GPU usage (Windows)
-// function getGpuUsageWindows() {
-//     return new Promise((resolve) => {
-//         exec('powershell -command "(Get-Counter \'\\GPU Engine(*)\\Utilization Percentage\').CounterSamples | Measure-Object -Property CookedValue -Sum | Select-Object -ExpandProperty Sum"', (error, stdout) => {
-//             if (error) {
-//                 console.error(`Error getting GPU usage with PowerShell: ${error.message}`);
-//                 resolve(0);
-//             } else {
-//                 const value = parseFloat(stdout.trim());
-//                 resolve(isNaN(value) ? 0 : Math.round(value));
-//             }
-//         });
-//     });
-// }
-
-// ipcMain.handle('get-system-stats', async () => {
-//     let cpuVal = 0;
-//     let ramVal = 0;
-//     let gpuVal = 0;
-//     const npuVal = 0;
-
-//     try {
-//         if (process.platform === 'win32') {
-//             cpuVal = await getCpuUsageWindows();
-//             gpuVal = await getGpuUsageWindows();
-//         } else {
-//             const cpuSi = await si.currentLoad();
-//             cpuVal = (typeof cpuSi.currentload === 'number' && !isNaN(cpuSi.currentload)) ? Math.round(cpuSi.currentload) : 0;
-//             const gpuSi = await si.graphics();
-//             if (gpuSi.controllers && gpuSi.controllers.length > 0) {
-//                 const gpuController = gpuSi.controllers[0];
-//                if (gpuController && typeof gpuController.utilizationGpu === 'number' && !isNaN(gpuController.utilizationGpu)) {
-//                     gpuVal = Math.round(gpuController.utilizationGpu);
-//                 }
-//             }
-//         }
-//     } catch (err) {
-//         console.error('Error fetching system stats (non-RAM):', err);
-//     }
-    
-//     try {
-//         const mem = await si.mem();
-//         ramVal = (mem.total > 0) ? Math.round((mem.active / mem.total) * 100) : 0;
-//     } catch (err) {
-//         console.error('Error fetching RAM stats:', err);
-//     }
-    
-//     return {
-//         cpu: cpuVal,
-//         ram: ramVal,
-//         gpu: gpuVal,
-//         npu: npuVal
-//     };
-// });

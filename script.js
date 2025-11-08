@@ -114,7 +114,6 @@ async function downloadLlmModel(modelName) {
     console.error("Model name is missing or invalid.");
     return;
   }
-
   const button = event?.target;
   if (button) {
     button.disabled = false;
@@ -165,7 +164,7 @@ async function downloadLlmModel(modelName) {
       // ========================================
       // PROGRESS TRACKING SETUP
       // ========================================
-      
+
       // === FIX: Add progress listener using the named handler ===
       if (window.electronAPI.onModelDownloadProgress) {
         window.electronAPI.onModelDownloadProgress(progressHandler);
@@ -173,7 +172,6 @@ async function downloadLlmModel(modelName) {
 
       // Start the actual download
       await window.electronAPI.downloadModel(modelName);
-
       // === FIX: Remove listener *before* updating UI ===
       if (window.electronAPI.removeProgressListener) {
         window.electronAPI.removeProgressListener(progressHandler);
@@ -186,7 +184,7 @@ async function downloadLlmModel(modelName) {
         if (button) {
           // Check if button hasn't been manually reset (e.g., by cancel)
           //if (button.disabled) {
-          if (button.disabled===false) {
+          if (button.disabled === false) {
             button.innerHTML = '✓ Configured';
             button.disabled = false;
             button.classList.add('btn-success');
@@ -568,7 +566,7 @@ function renderLLMCardHTML(models) {
         const tagsHTML = llm.tags && llm.tags.length > 0
           ? llm.tags.map(tag => `<li>${tag}</li>`).join("")
           : "<li></li>";
-        
+
         // --- NEW: Unique ID for the file input ---
         const fileInputId = `byom-file-${idx}`;
 
@@ -641,13 +639,13 @@ function renderLLMCardHTML(models) {
 async function handleSubmitModelPath() {
   const input = document.getElementById("byomFolderPathInput");
   const errorDiv = document.getElementById("byomModalError");
-  
+
   if (!input || !input.value) {
     errorDiv.textContent = "Please paste the folder path first.";
     errorDiv.style.display = "block";
     return;
   }
-  
+
   const folderPath = input.value.trim();
   errorDiv.style.display = "none"; // Hide error
 
@@ -713,15 +711,15 @@ function filterAndRenderLLMs() {
       (llm.name && llm.name.toLowerCase().includes(searchTerm)) ||
       (llm.description && llm.description.toLowerCase().includes(searchTerm))
     );
-    
+
     // 2. (Good UX) Reset category buttons to "All"
     const buttons = document.querySelectorAll("#llm-btn-grp .llm-btn");
     buttons.forEach(b => {
-        if (b.textContent === "All") {
-            b.classList.add("active");
-        } else {
-            b.classList.remove("active");
-        }
+      if (b.textContent === "All") {
+        b.classList.add("active");
+      } else {
+        b.classList.remove("active");
+      }
     });
 
   } else {
@@ -733,7 +731,7 @@ function filterAndRenderLLMs() {
       ? allLLMs
       : allLLMs.filter(llm => (llm.category || "Uncategorized") === activeCategory);
   }
-  
+
   // Check footer state
   var footerElement = document.getElementById("footer");
   if (footerElement) {
@@ -761,7 +759,7 @@ function renderLLMCategories(models) {
   const oldActiveCategory = oldActiveButton ? oldActiveButton.textContent : "All";
 
   container.innerHTML = ""; // Clear
-  
+
   // === MODIFIED: Custom sort logic ===
   const order = ['Entry Level', 'Mid Level', 'Advanced Level'];
   const categories = [...new Set(models.map(m => m.category || "Uncategorized"))];
@@ -795,11 +793,12 @@ function renderLLMCategories(models) {
   allBtn.addEventListener("click", () => {
     // Clear search bar when a category is clicked
     const searchBar = document.getElementById("llm-search-bar");
-    if (searchBar) searchBar.value = ""; 
-    
+    if (searchBar) searchBar.value = "";
+
     document.querySelectorAll("#llm-btn-grp .llm-btn").forEach(b => b.classList.remove("active"));
     allBtn.classList.add("active");
-    filterAndRenderLLMs();
+    //filterAndRenderLLMs();
+    refreshLLMTab(); // Call refresh instead of filter to get fresh data
   });
   container.appendChild(allBtn);
 
@@ -815,7 +814,7 @@ function renderLLMCategories(models) {
       // Clear search bar when a category is clicked
       const searchBar = document.getElementById("llm-search-bar");
       if (searchBar) searchBar.value = "";
-      
+
       document.querySelectorAll("#llm-btn-grp .llm-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       filterAndRenderLLMs();
@@ -826,7 +825,7 @@ function renderLLMCategories(models) {
   // Ensure 'All' is active if the old category no longer exists
   const anyActive = container.querySelector('.llm-btn.active');
   if (!anyActive) {
-      allBtn.classList.add('active');
+    allBtn.classList.add('active');
   }
 }
 
@@ -842,6 +841,32 @@ function refreshLLMTab() {
   llmListContainer.innerHTML = '<div class="col-12" style="text-align: center;">Loading latest models...</div>';
 
   fetch("https://api.gignaati.com/api/Template/llmList")
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.data && Array.isArray(data.data)) {
+        allLLMs = data.data; // Store latest data globally
+        renderLLMCategories(allLLMs); // Re-build categories
+        filterAndRenderLLMs(); // Render using new data
+      } else {
+        allLLMs = []; // Clear old data
+        renderLLMCategories(allLLMs); // Render empty categories
+        llmListContainer.innerHTML = '<div class="col-12">No models found.</div>';
+      }
+    })
+    .catch(err => {
+      console.error("Failed to load LLMs:", err);
+      llmListContainer.innerHTML = '<div class="col-12 text-danger">Failed to load models.</div>';
+    });
+}
+
+function searchedLLMModels(searchParameter) {
+  const llmListContainer = document.getElementById("llm-list-container");
+  if (!llmListContainer) return;
+
+  // Show a loading state
+  llmListContainer.innerHTML = '<div class="col-12" style="text-align: center;">Loading latest models...</div>';
+
+  fetch("https://api.gignaati.com/api/Template/llmList?searchParameter=" + searchParameter)
     .then(res => res.json())
     .then(data => {
       if (data && data.data && Array.isArray(data.data)) {
@@ -1016,7 +1041,6 @@ async function clickToLaunchInstall() {
           lastStatus = status;
         }
       } catch (err) {
-        //updateProgress(currentProgress, `Error fetching status: ${err.message}`);
         logMessage(`❌${err.message}`, "red");
         clearInterval(pollInterval);
       }
@@ -1068,7 +1092,7 @@ const handleTabbutton = (target) => {
   if (typeof loadUpcomingUpdate === "function") loadUpcomingUpdate();
   if (typeof loadTemplates === "function") loadTemplates();
   // Note: LLM logic is now handled INSIDE the "LLM" block below
-  
+
   if (target === "Template") {
     // conatiner
     document.getElementById("dashboard-container").style.display = "none";
@@ -1441,10 +1465,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (llmSearchBar) {
     llmSearchBar.addEventListener("input", filterAndRenderLLMs); // This filters the global 'allLLMs'
   }
-  
+
   // Load initial data for LLM tab only if it's the default view
   // (Assuming dashboard is the default view, so we don't need to load LLMs here)
-  
+
   if (buildBtn)
     buildBtn.addEventListener("click", () => {
       // No API call for build tab yet
@@ -1810,7 +1834,7 @@ async function startN8nOnLoad() {
     const response = await fetch(apiUrl, {
       method: "GET",
       headers: {
-        "Cache-Control": "no-store" 
+        "Cache-Control": "no-store"
       }
     });
 
@@ -1825,3 +1849,56 @@ async function startN8nOnLoad() {
 }
 
 window.addEventListener('load', startN8nOnLoad);
+
+
+async function logoutUser() {
+  const emailId = document.querySelector(".email-box input").value;
+  const apiUrl = `https://api.gignaati.com/api/User/logout?emailId=${encodeURIComponent(emailId)}`;
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      }
+    });
+    if (response.ok) {
+      const result = await response.json();
+      if (result.data === true) {
+        window.location.href = 'index.html';
+      } else {
+        window.location.href = 'index.html';
+      }
+
+    } else {
+      window.location.href = 'index.html';
+    }
+  } catch (error) {
+    console.error('An error occurred during logout:', error);
+  }
+}
+
+
+async function SuggestionModalSubmit() {
+  const input = document.getElementById("SuggestionModalInput");
+  const errorDiv = document.getElementById("SuggestionModalError");
+
+  if (!input || !input.value) {
+    errorDiv.textContent = "Please write something.";
+    errorDiv.style.display = "block";
+    return;
+  }
+
+  const searchParameter = input.value.trim();
+  errorDiv.style.display = "none";
+
+  // 1. Close the modal
+  try {
+    const modalElement = document.getElementById('SuggestionModal');
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    modalInstance.hide();
+  } catch (e) {
+    console.error("Could not close modal", e);
+  }
+  //showToast("Creating model from path... This may take time.", true);
+  searchedLLMModels(searchParameter);
+}

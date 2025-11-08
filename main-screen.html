@@ -1604,10 +1604,9 @@
     <div class="container-fluid">
       <div class="header-cover">
         <div class="logo">
-          <!-- <img src="Gignaati.jpg" alt="" /> -->
           <img src="gig.ico" alt="" />
         </div>
-        <div class="nav" id="nav" style="display: none">
+        <div class="nav" id="nav" style="display: block">
           <ul>
             <li>
               <button type="button" class="active" id="Dashboard-btn" onclick='handleTabbutton("Dashboard")'>
@@ -1626,9 +1625,6 @@
               </button>
             </li>
             <li>
-              <!-- <button type="button" class="" id="Build-btn" onclick='showN8NView()'>
-                Make AI Agent
-              </button> -->
 
 
               <!-- Subscription Expired Modal -->
@@ -1670,9 +1666,7 @@
                         style="background:#111; color:#fff; font-weight:600; border-radius:10px; padding:12px 32px; font-size:1.1rem; box-shadow:0 2px 8px #0002; border:none;">Get
                         Subscription</a>
                     </div>
-                    <!-- <div class="modal-footer" style="border-top:none; justify-content:center; background:#f5f5f5; border-radius:0 0 18px 18px;">
-          <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal" style="border-radius:8px; padding:8px 28px;">Close</button>
-        </div> -->
+
                   </div>
                 </div>
               </div>
@@ -1702,7 +1696,6 @@
            filter:none; width:1em; height:1em; border:0;">
                       </button>
 
-                      <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="position:absolute; right:18px; top:18px; color:#111; filter:invert(1);"></button> -->
                     </div>
                     <div class="modal-body" style="padding:32px 24px 16px 24px; text-align:center;">
                       <p style="font-size:1.1rem; color:#111; font-weight:600; margin-bottom:18px;">Get exclusive
@@ -1714,9 +1707,7 @@
                         style="background:#111; color:#fff; font-weight:600; border-radius:10px; padding:12px 32px; font-size:1.1rem; box-shadow:0 2px 8px #0002; border:none;">Get
                         Subscription</a>
                     </div>
-                    <!-- <div class="modal-footer" style="border-top:none; justify-content:center; background:#f5f5f5; border-radius:0 0 18px 18px;">
-          <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal" style="border-radius:8px; padding:8px 28px;">Close</button>
-        </div> -->
+
                   </div>
                 </div>
               </div>
@@ -1724,14 +1715,13 @@
             </li>
           </ul>
         </div>
-        <div class="profile" id="profile" style="display:none ;">
+        <div class="profile" id="profile" style="display:block ;">
           <div style="display: flex; column-gap: 10px; align-items: center">
             <div class="remaining-days" id="remaining-days">
               <span id="remaining-days-text">
                 Free trial remaining :
                 <strong id="remaining-days-count">07</strong> Days
               </span>
-              <!-- <img src="clock.png" onclick="toggleRemainingDays()" /> -->
             </div>
             <img src="rupee1.png" id="SubscribeIcon" title="Subscribe Now" style="cursor:pointer;width: 24px;"
               onclick="showSubscribeNowModal()" />
@@ -1743,7 +1733,7 @@
       </div>
   </header>
 
-  <div class=" gignaati-workBench-container mt-5 px-5" id="gignaati-workBench-container">
+  <div class=" gignaati-workBench-container mt-5 px-5" style="display: none;" id="gignaati-workBench-container">
     <div class="container-fluid">
       <div class="row">
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -1863,23 +1853,12 @@
                 different business needs across sectors.</p>
             </div>
           </div>
-          <!-- <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-12 mt-3">
-            <div class="box-2">
-              <div class="box-2-img">
-                <img src="AI-COACH.png" alt="">
-              </div>
-              <h2>AI Coach</h2>
-              <p>Embark on your path to success.
-                With AI guidance made just for you.
-                It's a journey of empowerment.</p>
-            </div>
-          </div> -->
+
         </div>
       </div>
 
     </div>
   </div>
-
 
   <div class="action-features-setup mt-5 px-5" style="display: none" id="action-features-setup">
     <div class="container-fluid">
@@ -1994,9 +1973,6 @@
             </div>
           </div>
         </div>
-
-
-
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
           <div class="setup-container">
             <h1 class="title">2-Easy Steps</h1>
@@ -2013,34 +1989,6 @@
                       onclick="clickToLaunchInstall()">
                       Click to Launch
                     </button>
-
-                    <!-- <div id="launch-progress-panel" style="display:none; margin-top:12px;">
-                      <div style="margin-bottom:8px;">
-                        <div class="progress" style="height:14px;">
-                          <div id="launch-progress-bar" class="progress-bar" role="progressbar" style="width:0%"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                        </div>
-                      </div>
-                      <div id="launch-progress-text" style="font-size:0.9rem; color:#333; margin-bottom:6px;">Waiting...
-                      </div>
-                      <div id="launch-console"
-                        style="background:#111; color:#0f0; padding:8px; border-radius:6px; max-height:160px; overflow:auto; font-family: monospace; font-size:12px;">
-                      </div>
-                    </div>
-
-                    <div id="launch-progress-panel" style="display:none; margin-top:12px;">
-                      <div style="margin-bottom:8px;">
-                        <div class="progress" style="height:14px;">
-                          <div id="launch-progress-bar" class="progress-bar" role="progressbar" style="width:0%">0%
-                          </div>
-                        </div>
-                      </div>
-                      <div id="launch-progress-text" style="font-size:0.9rem; color:#333; margin-bottom:6px;">Waiting...
-                      </div>
-                      <div id="launch-console"
-                        style="background:#111; color:#0f0; padding:8px; border-radius:6px; max-height:160px; overflow:auto; font-family: monospace; font-size:12px;">
-                      </div>
-                    </div> -->
 
                     <div id="n8n-loader" style="display: none; margin-top: 10px">
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -2064,70 +2012,15 @@
                   </div>
                 </div>
               </div>
-
             </div>
-
-
           </div>
         </div>
-
-        <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-4" id="system-info" style="display: none;">
-          <div class="features-container">
-            <h1 class="title">System Information</h1>
-            <div id="system-monitoring">
-              <div class="system-monitoring system-info">
-                <div class="row">
-                  <div class="col-3">
-                    <div class="monitor-item">
-                      <div class="monitor-circle cpu" id="cpu-usage">0%</div>
-                      <span>CPU</span>
-                    </div>
-                  </div>
-                  <div class="col-3">
-                    <div class="monitor-item">
-                      <div class="monitor-circle ram" id="ram-usage">0%</div>
-                      <span>RAM</span>
-                    </div>
-                  </div>
-                  <div class="col-3">
-                    <div class="monitor-item">
-                      <div class="monitor-circle gpu" id="gpu-usage">0%</div>
-                      <span>GPU</span>
-                    </div>
-                  </div>
-                  <div class="col-3">
-                    <div class="monitor-item">
-                      <div class="monitor-circle npu" id="npu-usage">0%</div>
-                      <span>NPU</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> -->
-
-
       </div>
-
     </div>
   </div>
 
-  <div class="dash-board-build-llm-container" style="display: none;" id="dash-board-build-llm-container">
+  <div class="dash-board-build-llm-container" style="display: block;" id="dash-board-build-llm-container">
     <div id="coupon-modal-overlay" onclick="closeCouponPopup()"></div>
-    <!-- <div id="coupon-modal">
-      <span id="coupon-modal-close" onclick="closeCouponPopup()">&times;</span>
-     
-      <div>
-        <label for="couponCodeInput"
-          style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.95rem; color: #333;">Coupon
-          Code:</label>
-
-      </div>
-      <button type="button" class="btn btn-primary custom-btn" onclick="openAcademy()">
-        Redeem Now
-      </button>
-    </div> -->
 
     <div id="coupon-modal">
       <span id="coupon-modal-close" onclick="closeCouponPopup()">&times;</span>
@@ -2165,7 +2058,6 @@
           <div class="filter-area-container">
             <div class="dashboard-container cover pt-4" id="dashboard-container">
 
-              <!-- <div class="share-idea-container px-5" id="idea-container"> -->
               <div class="share-idea-container" id="idea-container" style="padding-right: 2rem;">
                 <div class="top-heading-sec mb-3 " style="justify-content: end;">
                   <!-- <h1 class="title" id="templateCount" style="display: none;">Templates : 9</h1> -->
@@ -2190,122 +2082,13 @@
                 </div>
               </div>
 
-              <!-- <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-12 mb-3">
-                  <div class="share-box">
-                    <div class="share-box-video">
-                      <iframe id="idea-video" class="w-100 mb-3"
-                        src="https://player.vimeo.com/video/1124556952?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
-                        frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                        referrerpolicy="strict-origin-when-cross-origin" title="GMT20251004-092314_Recording_1920x1080"></iframe>
-                    </div>
-                    <h3>Phi-3 Mini (3.8B)</h3>
-                  </div>
-                </div>
-                
-              </div> -->
 
               <div id="video-container-row" class="row"></div>
-
-
-              <!-- <div class="share-idea">
-                  <h2 class="title">Transform your idea into reality</h2>
-                  <form action="">
-                    <textarea id="idea-input" class="form-control mb-1" placeholder="What do you want to build today"
-                      rows="5" name="" maxlength="250"></textarea>
-<p style="font-size: .8rem; padding-left: 10px;">Max 250 Characters</p>
-                    <div id="idea-error" style="color:red; font-size:0.9em; margin-bottom:10px;"></div>
-
-                    <div class="text-end"><button type="button" class="btn btn-primary custom-btn"
-                        onclick="DashboardEconomics()">
-                        Build Agent
-                      </button></div>
-                  </form>
-                </div> -->
-            </div>
-
-            <div class="Economics-container px-5" id="economics-container" style="display: none;">
-              <div class="Economics box-cover-2">
-                <!-- <h1 class="title text-center" id="agentEconomic">Your Agent Economics</h1> -->
-                <h1 class="title text-center" id="agentEconomic">AI Agent</h1>
-                <p class="sec-des">Cost analysis and return on investment</p>
-                <div class="row">
-                  <div class="col-lg-4 col-md-6 col-12 mb-3">
-                    <div class="economic-box">
-                      <h3 class="economic-img"><img src="" alt=""></h3>
-                      <p class="economic-value" id="token-cost">124</p>
-                      <p class="economic-des">
-                        Token Cost Per Request
-                      </p>
-                    </div>
-                  </div>
-                  <div class="col-lg-4 col-md-6 col-12 mb-3">
-                    <div class="economic-box">
-                      <h3 class="economic-img"><img src="" alt=""></h3>
-                      <p class="economic-value" id="roi-value">255%</p>
-                      <p class="economic-des">
-                        Expected ROI
-                      </p>
-                    </div>
-                  </div>
-                  <div class="col-lg-4 col-md-6 col-12 mb-3">
-                    <div class="economic-box">
-                      <h3 class="economic-img"><img src="" alt=""></h3>
-                      <p class="economic-value" id="hours-saved">15h</p>
-                      <p class="economic-des">
-                        Time Saved per week
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <!-- <div class="row">
-                    <div class="small-heading title text-center mb-3">
-                      Financial Impact
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-12 mb-3">
-                      <div class="Financial-Impact text-center">
-                        Monthly Savings
-                      </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-12 mb-3">
-                      <div class="Financial-Impact text-center">
-                        <span>₹81340</span>
-                        Yearly Revenue Impact
-                      </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-12 mb-3">
-                      <div class="Financial-Impact text-center">
-                        <span>₹81340</span>
-
-                      </div>
-                    </div>
-                  </div> -->
-              </div>
-              <div class="Benefits-container box-cover-2 mt-4">
-                <h1 class="title">Key Benefits</h1>
-                <ul class="benefits-list" id="benefits-list">
-                  <li><span></span>Save 10-15 hours per week on repetitive tasks</li>
-                  <li><span></span>Reduce operational costs by 40-60%</li>
-                  <li><span></span>Improve response time by 80%</li>
-                  <li><span></span>24/7 availability without human intervention</li>
-
-                </ul>
-                <div class="box-cover-3">
-                  <p><Strong>Note:</Strong> This analysis is based on industry averages. Your actual results may vary
-                    based on implementation and usage patterns.</p>
-                </div>
-              </div>
-
-              <div class="text-end"><button type="button" class="btn btn-primary custom-btn mt-3"
-                  onclick='reloadTemplateData()'>
-                  View Templates
-                </button></div>
             </div>
 
 
           </div>
           <div class="build-container pt-4" id="build-container" style="display: none">
-            <!-- <h1 class="title">build-container</h1> -->
             <div style="
                     position: relative;
                     display: inline-block;
@@ -2389,15 +2172,6 @@
                 onclick="clickToLaunchInstall()">
                 Build AI Agents
               </button>
-              <!-- <button 
-              type="button" 
-              style="margin-left: -87px;"
-              class="btn btn-primary custom-btn custom-btn w-20" 
-              data-bs-toggle="modal" 
-              data-bs-target="#byomModal"
-            >
-              Bring your own model
-            </button> -->
 
             </div>
             <div id="launch-progress-panel" style="display:none; margin:12px 0px;">
@@ -2407,8 +2181,7 @@
                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                 </div>
               </div>
-              <!-- <div id="launch-progress-text" style="font-size:0.9rem; color:#333; margin-bottom:6px;">Waiting...
-              </div> -->
+
               <div id="launch-console"
                 style="background:#111; color:#0f0; padding:8px; border-radius:6px; max-height:160px; overflow:auto; font-family: monospace; font-size:12px;">
               </div>
@@ -2463,43 +2236,12 @@
           <div class="notifications-list" id="notifications-list-container"></div>
         </div>
       </div>
-      <!-- <div class="col-lg-3">
-            <div class="notifications-box">
-              <h3 class="title-notifications">Notifications</h3>
-              <div
-                class="notifications-list"
-                id="notifications-list-container"
-              ></div>
-            </div>
-          </div> -->
+
     </div>
   </div>
   </div>
 
   <p id="footer"></p>
-  <!-- <div class="footer" id="footer">
-    <div class="container-fluid">
-      <div class="footer-row">
-        <div class="footer-box" onclick="openAcademy()">
-          <div class="Offering-box">
-            <div class="offer-img">
-              <img src="ai-academy-icon-D2xONIWL.jpg" alt="" />
-            </div>
-            <h3 class="offer-title mb-0 mt-3">AI Academy</h3>
-          </div>
-        </div>
-        <div class="footer-box" onclick="openMarketPlace()">
-          <div class="Offering-box">
-            <div class="offer-img">
-              <img src="ai-marketplace-icon-Gip8ZonJ.jpg" alt="" />
-            </div>
-            <h3 class="offer-title mb-0 mt-3">AI MarketPlace</h3>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
-
 
   <!-- Modal -->
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -2546,14 +2288,7 @@
 
         </div>
         <div class="modal-body" style="padding:0px 24px 16px 24px; text-align:center;">
-          <!-- <p style="font-size:1.1rem; color:#111; font-weight:600; margin-bottom:18px;">Get exclusive
-            updates, offers, and more!</p>
-          <p style="color:#444; font-size:1rem; margin-bottom:24px;">Subscribe for just ₹34 per day to
-            continue building AI Agents. Get unlimited access, premium support, and more.
-          </p>
-          <a onclick="openSubscription('basic')" class="btn btn-lg"
-            style="background:#111; color:#fff; font-weight:600; border-radius:10px; padding:12px 32px; font-size:1.1rem; box-shadow:0 2px 8px #0002; border:none;">Get
-            Subscription</a> -->
+
           <ul id="system-requirements-list"
             style="list-style-type: disc; text-align: left; padding-left: 20px; color:#444; font-size:1rem;">
             <li><strong style="display: block;">Memory</strong><span id="sys-req-memory">Detecting...</span></li>
@@ -2591,7 +2326,7 @@
   </div>
 
 
-
+<!-- 
   <div class="chat-bot" id="chatBotDiv" style="display: none;">
     <div class="chat-bot-area">
       <div class="chat-icon">
@@ -2603,19 +2338,7 @@
           <div class="close-chat">X</div>
         </div>
         <div class="chat-messages">
-          <!-- <div class="message bot-message">
-              <div class="message-content">
-                <div class="message-ans">
-                  <ul>
-                    <li>Restart Your PC</li>
-                  </ul>
-                </div>
-                <div class="message-qus">
-                  Hello! How can we assist you today?
-                </div>
-              </div>
-            </div> -->
-          <!-- User messages will be appended here -->
+
         </div>
         <div class="chat-input">
           <input type="text" class="form-control" placeholder="Type a message..." />
@@ -2623,10 +2346,7 @@
         </div>
       </div>
     </div>
-
-
-
-  </div>
+  </div>-->
 
   <!-- // Bring Your Own Model Modal -->
   <div class="modal fade" id="byomModal" tabindex="-1" aria-labelledby="byomModalLabel" aria-hidden="true">
@@ -2652,7 +2372,7 @@
     </div>
   </div>
 
-<!-- //Model Suggestion based on user input Modal -->
+  <!-- //Model Suggestion based on user input Modal -->
   <div class="modal fade" id="SuggestionModal" tabindex="-1" aria-labelledby="SuggestionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -2674,107 +2394,6 @@
       </div>
     </div>
   </div>
-
-
-  <!-- Button trigger modal -->
-  <!-- <button
-      type="button"
-      class="btn btn-primary"
-      data-bs-toggle="modal"
-      data-bs-target="#previewModal"
-    >
-      Launch demo modal
-    </button> -->
-
-  <!-- Modal -->
-  <!-- <div class="modal fade preview" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-      <div class="modal-content">
-        <div class="modal-body">
-          <div class="text-end">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="row">
-            <div class="col-lg-6">
-              <div class="preview-top">
-                <h5 class="modal-title" id="exampleModalLabel">
-                  Proposal Generator Preview
-                </h5>
-                <p>
-                  <i>"Business Proposals can now be made at fingertips"</i>
-                </p>
-              </div>
-
-              <div style="padding:65.03% 0 0 0;position:relative;"><iframe
-                  src="https://player.vimeo.com/video/1124200950?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
-                  frameborder="0"
-                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                  style="position:absolute;top:0;left:0;width:100%;height:100%;" title="What is an API"></iframe></div>
-            </div>
-            <div class="col-lg-6">
-              <div class="modal-box mb-3">
-                <h3>Key Benefits</h3>
-                <ul>
-                  <li>
-                    <strong>.</strong>
-                    Automate repetitive tasks and save hours daily
-                  </li>
-                  <li>
-                    <strong>.</strong>
-                    Integrate seamlessly with your existing workflow
-                  </li>
-                  <li>
-                    <strong>.</strong>
-                    Scale operations without additional headcount
-                  </li>
-                  <li>
-                    <strong>.</strong>
-                    Reduce human error with AI-powered accuracy
-                  </li>
-                  <li>
-                    <strong>.</strong>
-                    24/7 availability for instant responses
-                  </li>
-                </ul>
-              </div>
-              <div class="modal-box mb-3">
-                <h3>Return on Investment</h3>
-                <div class="box-modal-list">
-                  <div class="box-modal">
-                    <div class="count">340%</div>
-                    <div class="des">ROI in Year 1</div>
-                  </div>
-                  <div class="box-modal">
-                    <div class="count">$125K</div>
-                    <div class="des">Annual Savings</div>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-box">
-                <h3>Time Saved</h3>
-                <div class="time-list">
-                  <div class="titles">Daily Tasks</div>
-                  <div class="time">8 hours/week</div>
-                </div>
-                <div class="time-list">
-                  <div class="titles">Monthly Reports</div>
-                  <div class="time">12 hours/month</div>
-                </div>
-                <div class="time-list">
-                  <div class="titles">Customer Support</div>
-                  <div class="time">20 hours/week</div>
-                </div>
-                <h2 class="big-heading">500+ hours saved annually</h2>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
-
 
   <!-- Modal -->
   <div class="modal fade preview" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel"
@@ -2917,13 +2536,8 @@
 
           //Bypass otp
           ByPassLicenseKey();
-          // showToast(
-          //   data && data.message ? data.message : "Verification failed.",
-          //   false
-          // );
-        }
 
-        //ValidateSubscription();
+        }
 
       } catch (e) {
         showToast("Error verifying email.", false);
@@ -2955,9 +2569,7 @@
 
             document.getElementById("profile").style.display = "none";
             document.getElementById("SubscribeIcon").style.display = "none";
-            //document.getElementById("remaining-days").style.display = "none";
             if (data.totalRecords !== undefined) {
-              // document.getElementById("remaining-days-count").innerText = data.totalRecords;
               document.getElementById("remaining-days-text").innerText = "Subscription remaining :" + " " + data.totalRecords + " " + "days";
             }
           }
@@ -2972,35 +2584,8 @@
             document.getElementById("SubscribeIcon").style.display = "block";
           }
 
-          try {
-            const deviceinfoRes = await fetch(`http://localhost:5000/api/DeviceInfo`);
-            const deviceinfo = await deviceinfoRes.json();
-            if (deviceinfo) {
-              await fetch(`https://api.gignaati.com/api/DeviceInfo/deviceInfo?email=${encodeURIComponent(email)}`,
-                {
-                  method: 'POST',
-                  headers: {
-                    'accept': 'text/plain',
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    macAddress: deviceinfo.macAddress || null,
-                    ipAddress: deviceinfo.ipAddress || null,
-                    serialNumber: deviceinfo.serialNumber || null,
-                    operatingSystem: deviceinfo.operatingSystem || null,
-                    processor: deviceinfo.processor || null,
-                    deviceId: deviceinfo.deviceId || null,
-                    ram: deviceinfo.ram || null,
-                    gpUs: deviceinfo.gpUs || null,
-                    npUs: deviceinfo.npUs || null,
-                  })
-                }
-              );
-            }
-          } catch (e) {
-
-          }
-          OTPVerify1();
+         
+          OTPVerifyNew();
         }
 
       }
@@ -3025,14 +2610,6 @@
       }
       try {
 
-
-        // const res = await fetch(
-        //   `https://api.gignaati.com/api/User/VerifyOtp?email=${encodeURIComponent(
-        //     email
-        //   )}&otp=${encodeURIComponent(otp)}`
-        // );
-
-        // const data = await res.json();
         const data = {
           data: true,
           totalRecords: 21
@@ -3040,7 +2617,7 @@
 
         if (data && data.data === true) {
           //alert("Please update this code");
-         // document.getElementById("chatBotDiv").style.display = "block";
+        //  document.getElementById("chatBotDiv").style.display = "block";
 
           const checkSubscription = await fetch(`https://api.gignaati.com/api/User/checkSubscription?email=${encodeURIComponent(email)}`);
           const IsSubscribed = await checkSubscription.json();
@@ -3132,62 +2709,9 @@
 
         if (data && data.data === true) {
 
-         // document.getElementById("chatBotDiv").style.display = "block";
+          //document.getElementById("chatBotDiv").style.display = "block";
 
           ValidateSubscription();
-          // data.totalRecords = 21; // For testing purpose only, remove this line in production
-
-          // const checkSubscription = await fetch(`https://api.gignaati.com/api/User/checkSubscription?email=${encodeURIComponent(email)}`);
-          // const IsSubscribed = await checkSubscription.json();
-          // if (IsSubscribed && IsSubscribed.data === true) {
-
-          //   document.getElementById("profile").style.display = "none";
-          //   document.getElementById("SubscribeIcon").style.display = "none";
-          //   if (data.totalRecords !== undefined) {
-          //     document.getElementById("remaining-days-text").innerText = "Subscription remaining :" + " " + data.totalRecords + " " + "days";
-          //   }
-          // }
-          // else {
-
-          //   if (data.totalRecords !== undefined) {
-          //     document.getElementById("remaining-days-count").innerText =
-          //       data.totalRecords;
-          //   }
-          // }
-          // if (data.totalRecords !== undefined && data.totalRecords <= 7) {
-          //   document.getElementById("SubscribeIcon").style.display = "block";
-          // }
-
-          // try {
-          //   const deviceinfoRes = await fetch(`http://localhost:5000/api/DeviceInfo`);
-          //   const deviceinfo = await deviceinfoRes.json();
-          //   if (deviceinfo) {
-          //     await fetch(`https://api.gignaati.com/api/DeviceInfo/deviceInfo?email=${encodeURIComponent(email)}`,
-          //       {
-          //         method: 'POST',
-          //         headers: {
-          //           'accept': 'text/plain',
-          //           'Content-Type': 'application/json'
-          //         },
-          //         body: JSON.stringify({
-          //           macAddress: deviceinfo.macAddress || null,
-          //           ipAddress: deviceinfo.ipAddress || null,
-          //           serialNumber: deviceinfo.serialNumber || null,
-          //           operatingSystem: deviceinfo.operatingSystem || null,
-          //           processor: deviceinfo.processor || null,
-          //           deviceId: deviceinfo.deviceId || null,
-          //           ram: deviceinfo.ram || null,
-          //           gpUs: deviceinfo.gpUs || null,
-          //           npUs: deviceinfo.npUs || null,
-          //         })
-          //       }
-          //     );
-          //   }
-          // } catch (e) {
-
-          // }
-          // OTPVerify1();
-
 
 
         } else {
@@ -3208,71 +2732,7 @@
           ? document.querySelector("#otp-box span").textContent.trim()
           : "";
         ValidateSubscription();
-        // const data = {
-        //   data: true,
-        //   totalRecords: 21
-        // };
 
-        // if (data && data.data === true) {
-
-        //   document.getElementById("chatBotDiv").style.display = "block";
-
-        //   const checkSubscription = await fetch(`https://api.gignaati.com/api/User/checkSubscription?email=${encodeURIComponent(email)}`);
-        //   const IsSubscribed = await checkSubscription.json();
-        //   if (IsSubscribed && IsSubscribed.data === true) {
-
-        //     document.getElementById("profile").style.display = "none";
-        //     document.getElementById("SubscribeIcon").style.display = "none";
-        //     if (data.totalRecords !== undefined) {
-        //       document.getElementById("remaining-days-text").innerText = "Subscription remaining :" + " " + data.totalRecords + " " + "days";
-        //     }
-        //   }
-        //   else {
-
-        //     if (data.totalRecords !== undefined) {
-        //       document.getElementById("remaining-days-count").innerText =
-        //         data.totalRecords;
-        //     }
-        //   }
-        //   if (data.totalRecords !== undefined && data.totalRecords <= 7) {
-        //     document.getElementById("SubscribeIcon").style.display = "block";
-        //   }
-
-        //   try {
-        //     const deviceinfoRes = await fetch(`http://localhost:5000/api/DeviceInfo`);
-        //     const deviceinfo = await deviceinfoRes.json();
-        //     if (deviceinfo) {
-        //       await fetch(`https://api.gignaati.com/api/DeviceInfo/deviceInfo?email=${encodeURIComponent(email)}`,
-        //         {
-        //           method: 'POST',
-        //           headers: {
-        //             'accept': 'text/plain',
-        //             'Content-Type': 'application/json'
-        //           },
-        //           body: JSON.stringify({
-        //             macAddress: deviceinfo.macAddress || null,
-        //             ipAddress: deviceinfo.ipAddress || null,
-        //             serialNumber: deviceinfo.serialNumber || null,
-        //             operatingSystem: deviceinfo.operatingSystem || null,
-        //             processor: deviceinfo.processor || null,
-        //             deviceId: deviceinfo.deviceId || null,
-        //             ram: deviceinfo.ram || null,
-        //             gpUs: deviceinfo.gpUs || null,
-        //             npUs: deviceinfo.npUs || null,
-        //           })
-        //         }
-        //       );
-        //     }
-        //   } catch (e) {
-
-        //   }
-        //   OTPVerify1();
-        // } else {
-        //   showToast(
-        //     data && data.message ? data.message : "Invalid License Key.",
-        //     false
-        //   );
-        // }
       } catch (e) {
         showToast("Invalid License Key6.", false);
       }
@@ -3397,13 +2857,7 @@
 
 
     function openDockerManually() {
-      // if (window.electronAPI && window.electronAPI.openExternalLink) {
-      //   alert(1)
-      //   window.electronAPI.openExternalLink("https://docker-wingman.lovable.app/");
-      // } else {
-      //   alert(2)
-      //   window.open("https://docker-wingman.lovable.app/", "_blank");
-      // }
+
       window.open("https://preview--docker-wingman-04271.lovable.app/");
 
       var dockerManualButton = document.getElementById("dockerManualButton");
@@ -3694,6 +3148,32 @@
   </script>
 
 
+  <!-- Set email from URL parameters -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Get email from URL query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get('email');
+     // document.getElementById("chatBotDiv").style.display = "none";
+
+      const emailInput = document.querySelector(".email-box input");
+
+      if (email && emailInput) {
+        emailInput.value = email;
+        emailInput.readOnly = true;  // Make it read-only since it's verified
+        ValidateSubscription();
+      }
+    });
+
+    function OTPVerifyNew() {
+      // const gignaatiWorkBenchContainer = document.getElementById(
+      //   "gignaati-workBench-container"
+      // );
+      // gignaatiWorkBenchContainer.style.display = "none";
+      StartJourney();
+    }
+  </script>
+
   <!-- LLM Download Progress Modal -->
   <script>
     // Include the LLM download progress modal HTML
@@ -3712,7 +3192,12 @@
   <script src="https://player.vimeo.com/api/player.js"></script>
   <script src="chatbot.js"></script>
   <script>
-    OllamaChatbot.init();
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize chatbot when page loads
+      if (typeof OllamaChatbot !== 'undefined') {
+        OllamaChatbot.init();
+      }
+    });
   </script>
 </body>
 
