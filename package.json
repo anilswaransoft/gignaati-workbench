@@ -11,15 +11,10 @@
   "license": "ISC",
   "devDependencies": {
     "electron": "^37.3.1",
-    "electron-builder": "^26.0.12",
-    "live-server": "^1.2.2",
-    "n8n": "^1.116.2"
+    "electron-builder": "^26.0.12"
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
-    "node-fetch": "^2.7.0",
-    "react-bootstrap": "^2.10.10",
-    "react-razorpay": "^3.0.1",
     "sqlite3": "^5.1.7",
     "systeminformation": "^5.27.7"
   },

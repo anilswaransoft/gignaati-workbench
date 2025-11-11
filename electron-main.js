@@ -156,6 +156,30 @@ ipcMain.handle('open-external-link', async (event, url) => {
 });
 
 // Open n8n in a new window
+// ipcMain.handle('open-n8n-window', async () => {
+//     const n8nWin = new BrowserWindow({
+//         width: 1200,
+//         height: 800,
+//         minWidth: 800,
+//         minHeight: 600,
+//         icon: path.join(__dirname, 'gig.ico'),
+//         webPreferences: {
+//             contextIsolation: true,
+//             nodeIntegration: false
+//         }
+//     });
+    
+//     // Show loading message while N8N loads
+//     n8nWin.loadURL('data:text/html,<html><body style="margin:0;padding:0;display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial;background:#f5f5f5;"><div style="text-align:center;"><div style="font-size:24px;margin-bottom:20px;">🔄 Loading N8N...</div><div style="font-size:14px;color:#666;">Please wait while we prepare your workspace</div></div></body></html>');
+    
+//     // Wait a moment then load actual N8N
+//     setTimeout(() => {
+//         n8nWin.loadURL('http://localhost:5678');
+//     }, 2000);
+    
+//     // n8nWin.webContents.openDevTools();
+// });
+
 ipcMain.handle('open-n8n-window', async () => {
     const n8nWin = new BrowserWindow({
         width: 1200,
@@ -163,12 +187,19 @@ ipcMain.handle('open-n8n-window', async () => {
         minWidth: 800,
         minHeight: 600,
         icon: path.join(__dirname, 'gig.ico'),
+        title: 'Agentic Platform', // <-- ADDITION 1: Set your static title
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: false
         }
     });
     
+    // --- ADDITION 2: Prevent the webpage from changing the title ---
+    n8nWin.on('page-title-updated', (event) => {
+        event.preventDefault();
+    });
+    // --- End of addition ---
+
     // Show loading message while N8N loads
     n8nWin.loadURL('data:text/html,<html><body style="margin:0;padding:0;display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial;background:#f5f5f5;"><div style="text-align:center;"><div style="font-size:24px;margin-bottom:20px;">🔄 Loading N8N...</div><div style="font-size:14px;color:#666;">Please wait while we prepare your workspace</div></div></body></html>');
     
@@ -265,21 +296,7 @@ function createWindow(pageInfo) {
         }
     });
 
-    // Session fix for iframes (n8n)
-    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-        if (details.responseHeaders && details.responseHeaders['Set-Cookie']) {
-            const modifiedCookies = details.responseHeaders['Set-Cookie'].map(cookie => {
-                if (details.url.startsWith('http://localhost')) {
-                    return cookie.replace(/; SameSite=Lax/ig, '; SameSite=None; Secure')
-                                 .replace(/; SameSite=Strict/ig, '; SameSite=None; Secure');
-                }
-                return cookie;
-            });
-            details.responseHeaders['Set-Cookie'] = modifiedCookies;
-        }
-        callback({ responseHeaders: details.responseHeaders });
-    });
-    
+
     // Load the determined file with email parameter if available
     if (email && filename === 'main-screen.html') {
         mainWindow.loadFile(filename, { query: { email: email } });

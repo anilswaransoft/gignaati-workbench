@@ -273,6 +273,29 @@ async function downloadLlmModel(modelName) {
     }, 5000);
   }
 }
+
+
+async function downloadDefaultLlmModel(modelName = "smollm:135m") {
+  if (!modelName) {
+    console.error("Model name is missing or invalid.");
+    return;
+  }
+  try {
+    if (window.electronAPI && window.electronAPI.downloadModel) {
+      console.log(`Starting download of model: ${modelName}`);
+      await window.electronAPI.downloadModel(modelName);
+      console.log(`downloaded  model: ${modelName}`);
+
+    } else {
+      console.log(`Not able to download model: ${modelName}`);
+    }
+
+  } catch (err) {
+    console.error("Model download failed:", err);
+  }
+}
+
+
 // ===================================================================
 // === END OF MODIFIED FUNCTION ===
 // ===================================================================
@@ -876,7 +899,7 @@ function searchedLLMModels(searchParameter) {
       } else {
         allLLMs = []; // Clear old data
         renderLLMCategories(allLLMs); // Render empty categories
-        llmListContainer.innerHTML = '<div class="col-12">No models found.</div>';
+        llmListContainer.innerHTML = '<div class="col-12">Try adding a bit more detail for a better recommendation.</div>';
       }
     })
     .catch(err => {
@@ -977,6 +1000,7 @@ async function clickToLaunchInstall() {
 
       if (result?.data) {
         updateProgress(70, `✅ ${result.message}`);
+        //downloadDefaultLlmModel(); // download default model after ollama is confirmed
         return true;
       } else {
         const button = createDownloadButton("Download Ollama", "https://ollama.com/download");
@@ -993,6 +1017,8 @@ async function clickToLaunchInstall() {
 
 
   async function checkN8NInstallation() {
+
+    downloadDefaultLlmModel(); // download default model before n8n is confirmed
     updateProgress(75, "Checking N8N installation...");
     let currentProgress = 75;
     let lastStatus = null;
@@ -1901,4 +1927,12 @@ async function SuggestionModalSubmit() {
   }
   //showToast("Creating model from path... This may take time.", true);
   searchedLLMModels(searchParameter);
+  clearSuggestionInput();
+}
+
+function clearSuggestionInput() {
+  const inputField = document.getElementById('SuggestionModalInput');
+  if (inputField) {
+    inputField.value = '';
+  }
 }

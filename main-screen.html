@@ -2159,13 +2159,16 @@
                 <div class="btn-grp" id="llm-btn-grp">
                 </div>
                 </button>
-                <button type="button" title="Bring Your Own Model" style="border-radius: 73px;height: 36px;font-size: 2rem;width: 36px;display: flex;align-items: center; justify-content: center;"
-                 class="btn btn-primary custom-btn custom-btn w-20" data-bs-toggle="modal" data-bs-target="#byomModal">
+                <button type="button" title="Bring Your Own Model"
+                  style="border-radius: 73px;height: 36px;font-size: 2rem;width: 36px;display: flex;align-items: center; justify-content: center;"
+                  class="btn btn-primary custom-btn custom-btn w-20" data-bs-toggle="modal" data-bs-target="#byomModal">
                   +
                 </button>
-                <button type="button" title="Model Suggestion Based On User Input" style="border-radius: 73px;height: 36px;font-size: 2rem;width: 36px;display: flex;align-items: center; justify-content: center;"
-                 class="btn btn-primary custom-btn custom-btn w-20" data-bs-toggle="modal" data-bs-target="#SuggestionModal">
-                  ?
+                <button type="button" title="Let Us Recommend the Right Model"
+                  style="border-radius: 73px;height: 36px;font-size: 2rem;width: 36px;display: flex;align-items: center; justify-content: center;"
+                  class="w-20" data-bs-toggle="modal"
+                  data-bs-target="#SuggestionModal">
+                  <img src="modelSugg.svg" style="width: 22px" />
                 </button>
               </div>
               <button type="button" class="btn btn-primary custom-btn w-20 install-btn"
@@ -2326,7 +2329,7 @@
   </div>
 
 
-<!-- 
+  <!-- 
   <div class="chat-bot" id="chatBotDiv" style="display: none;">
     <div class="chat-bot-area">
       <div class="chat-icon">
@@ -2377,19 +2380,21 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="SuggestionModalLabel">What do you want to build today?</h5>
+          <h5 class="modal-title" id="SuggestionModalLabel">Let Us Recommend the Right Model</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <!-- <input type="text" class="form-control" id="SuggestionModalInput"
             placeholder="" /> -->
-            <textarea id="SuggestionModalInput" class="form-control" placeholder="Max 250 Characters"
-                      rows="5" name="" maxlength="250"></textarea>
+          <textarea id="SuggestionModalInput" class="form-control"
+            placeholder="Tell us what you want to do — we’ll match the right LLM." rows="5" name=""
+            maxlength="250"></textarea>
+          <div style="color: #726d6d; font-size: 0.9em; margin-top: 5px;">Max 250 characters</div>
           <div id="SuggestionModalError" style="color: red; font-size: 0.9em; margin-top: 5px; display: none;"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="SuggestionModalSubmit()">Submit</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearSuggestionInput()">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="SuggestionModalSubmit()">Find My Model</button>
         </div>
       </div>
     </div>
@@ -2561,7 +2566,7 @@
         );
         const data = await res.json();
         if (data && data.data === true) {
-         // document.getElementById("chatBotDiv").style.display = "block";
+          // document.getElementById("chatBotDiv").style.display = "block";
 
           const checkSubscription = await fetch(`https://api.gignaati.com/api/User/checkSubscription?email=${encodeURIComponent(email)}`);
           const IsSubscribed = await checkSubscription.json();
@@ -2584,7 +2589,7 @@
             document.getElementById("SubscribeIcon").style.display = "block";
           }
 
-         
+
           OTPVerifyNew();
         }
 
@@ -2617,7 +2622,7 @@
 
         if (data && data.data === true) {
           //alert("Please update this code");
-        //  document.getElementById("chatBotDiv").style.display = "block";
+          //  document.getElementById("chatBotDiv").style.display = "block";
 
           const checkSubscription = await fetch(`https://api.gignaati.com/api/User/checkSubscription?email=${encodeURIComponent(email)}`);
           const IsSubscribed = await checkSubscription.json();
@@ -3154,7 +3159,7 @@
       // Get email from URL query parameters
       const urlParams = new URLSearchParams(window.location.search);
       const email = urlParams.get('email');
-     // document.getElementById("chatBotDiv").style.display = "none";
+      // document.getElementById("chatBotDiv").style.display = "none";
 
       const emailInput = document.querySelector(".email-box input");
 
@@ -3192,7 +3197,7 @@
   <script src="https://player.vimeo.com/api/player.js"></script>
   <script src="chatbot.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       // Initialize chatbot when page loads
       if (typeof OllamaChatbot !== 'undefined') {
         OllamaChatbot.init();
