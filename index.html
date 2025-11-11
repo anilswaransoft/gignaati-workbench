@@ -2637,7 +2637,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="byomModalLabel">Bring Your Own Model</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="clearBuildOwnAgentInput()"></button>
         </div>
         <div class="modal-body">
           <p class="mb-2" style="font-size: 0.9rem;">
@@ -2648,8 +2648,8 @@
           <div id="byomModalError" style="color: red; font-size: 0.9em; margin-top: 5px; display: none;"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="handleSubmitModelPath()">Submit</button>
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border: solid 1px;" onclick="clearBuildOwnAgentInput()">Cancel</button>
+          <button type="button" class="btn btn-dark" onclick="handleSubmitModelPath()">Submit</button>
         </div>
       </div>
     </div>
@@ -2661,7 +2661,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="SuggestionModalLabel">Let Us Recommend the Right Model</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="clearSuggestionInput()"></button>
         </div>
         <div class="modal-body">
           <!-- <input type="text" class="form-control" id="SuggestionModalInput"
@@ -2673,8 +2673,8 @@
           <div id="SuggestionModalError" style="color: red; font-size: 0.9em; margin-top: 5px; display: none;"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearSuggestionInput()">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="SuggestionModalSubmit()">Find My Model</button>
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border: solid 1px;" onclick="clearSuggestionInput()">Cancel</button>
+          <button type="button" class="btn btn-dark" onclick="SuggestionModalSubmit()">Find My Model</button>
         </div>
       </div>
     </div>

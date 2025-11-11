@@ -671,7 +671,7 @@ async function handleSubmitModelPath() {
 
   const folderPath = input.value.trim();
   errorDiv.style.display = "none"; // Hide error
-
+  clearBuildOwnAgentInput();
   // 1. Close the modal
   try {
     const modalElement = document.getElementById('byomModal');
@@ -682,7 +682,7 @@ async function handleSubmitModelPath() {
   }
 
   // 2. Show "in-progress" toast
-  //showToast("Creating model from path... This may take time.", true);
+  showToast("Installing model from path... This may take time.", true);
 
   try {
     // 3. Send the folder path to the .NET API
@@ -702,9 +702,13 @@ async function handleSubmitModelPath() {
     }
 
     if (result.success) {
-      showToast(result.message, true); // Show success toast
+      setTimeout(() => {
+        showToast(result.message, true); // Show success toast
+      }, 3000);
+      //showToast(result.message, true); // Show success toast
       refreshLLMTab(); // Refresh the list to show the new model
       input.value = ""; // Clear the input for next time
+
     } else {
       throw new Error(result.message || "Failed to create model.");
     }
@@ -1932,6 +1936,12 @@ async function SuggestionModalSubmit() {
 
 function clearSuggestionInput() {
   const inputField = document.getElementById('SuggestionModalInput');
+  if (inputField) {
+    inputField.value = '';
+  }
+}
+function clearBuildOwnAgentInput() {
+  const inputField = document.getElementById('byomFolderPathInput');
   if (inputField) {
     inputField.value = '';
   }
