@@ -11,6 +11,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
     rel="stylesheet" />
+  <link rel="stylesheet" href="index.css" />
   <style>
     * {
       box-sizing: border-box;
@@ -1597,6 +1598,398 @@
     }
   </style>
 
+
+<!-- AI Assistant Style -->
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #fff;
+    font-family: 'Google Sans', 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .gn-chatbot-fullscreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    width: 100%;
+    padding-top: 60px;
+    background: #fff;
+    overflow: hidden;
+    transition: padding-top 0.3s ease;
+  }
+
+  /* State classes like .chat-active and .hidden are also prefixed */
+  .gn-chatbot-fullscreen.gn-chat-active {
+    padding-top: 20px;
+  }
+
+  .gn-header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+
+  .gn-header-content.gn-hidden {
+    opacity: 0;
+    transform: translateY(-30px);
+    height: 0;
+    overflow: hidden;
+    margin: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  .gn-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 32px;
+    background: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .gn-logo::after {
+    content: 'gn';
+    font-size: 36px;
+    font-weight: 700;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    letter-spacing: -2px;
+  }
+
+  .gn-ollama-chat-title {
+    font-size: 56px;
+    font-weight: 400;
+    color: #202124;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+    user-select: none;
+  }
+
+  .gn-subtitle {
+    font-size: 20px;
+    color: #5f6368;
+    margin-bottom: 48px;
+    text-align: center;
+    max-width: 700px;
+  }
+
+  .gn-cta-buttons {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .gn-btn-primary {
+    background: #1967d2;
+    color: #fff;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 24px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  }
+
+  .gn-btn-primary:hover {
+    background: #1557b0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .gn-btn-secondary {
+    background: transparent;
+    color: #1967d2;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 24px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .gn-btn-secondary:hover {
+    background: rgba(25, 103, 210, 0.08);
+  }
+
+  .gn-ollama-messages {
+    flex: 1;
+    width: 100%;
+    max-width: 1100px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -25px;
+    padding: 20px 16px 280px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+  }
+
+  .gn-chatbot-fullscreen.gn-chat-active .gn-ollama-messages {
+    margin-top: 0;
+    padding-top: 80px;
+  }
+
+  /* Note: Assumes .ollama-message is a class you add via JS */
+  .gn-ollama-message {
+    max-width: 70%;
+    padding: 16px 20px;
+    border-radius: 24px;
+    margin-bottom: 12px;
+    line-height: 1.6;
+    font-size: 15px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    animation: gn-fadeIn 0.3s ease;
+  }
+
+  /* Renamed animation as well to be safe */
+  @keyframes gn-fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .gn-ollama-message.gn-user {
+    align-self: flex-end;
+    background: #e8f0fe;
+    color: #202124;
+    border: 1px solid #d2e3fc;
+  }
+
+  .gn-ollama-message.gn-bot {
+    align-self: flex-start;
+    background: #f8f9fa;
+    color: #202124;
+    border: 1px solid #e8eaed;
+  }
+
+  .gn-ollama-message.gn-system {
+    background: #fff;
+    color: #5f6368;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 16px;
+    align-self: center;
+    border: 1px solid #e8eaed;
+  }
+
+  .gn-ollama-input-area {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(to top, #fff 85%, transparent);
+    padding: 24px 0 20px;
+    z-index: 100;
+  }
+
+  .gn-ollama-input-wrapper {
+    display: flex;
+    align-items: center;
+    width: 1000px;
+    max-width: 90%;
+    background: #fff;
+    border: 1px solid #dadce0;
+    border-radius: 32px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 10px 14px;
+    transition: all 0.2s ease;
+    margin-bottom: 16px;
+  }
+
+  .gn-ollama-input-wrapper:focus-within {
+    border-color: #1967d2;
+    box-shadow: 0 2px 16px rgba(25, 103, 210, 0.2);
+  }
+
+  .gn-ollama-model-selector {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border-radius: 20px;
+    padding: 8px 12px;
+    margin-right: 8px;
+    border: 1px solid #dadce0;
+    gap: 8px;
+  }
+
+  .gn-ollama-model-selector select {
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 500;
+    color: #5f6368;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .gn-tts-btn, .gn-mic-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #5f6368;
+    transition: 0.2s;
+    padding: 4px;
+  }
+
+  .gn-tts-btn:hover, .gn-mic-btn:hover {
+    color: #1967d2;
+    transform: scale(1.1);
+  }
+
+  .gn-mic-btn.gn-listening {
+    color: #ea4335;
+    animation: gn-pulse 1s infinite;
+  }
+
+  @keyframes gn-pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .gn-ollama-input-area input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    color: #202124;
+    padding: 12px;
+  }
+
+  .gn-ollama-input-area input::placeholder {
+    color: #80868b;
+  }
+
+  .gn-ollama-send-btn {
+    background: #1967d2;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  }
+
+  .gn-ollama-send-btn:hover {
+    background: #1557b0;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Note: Assumes .ollama-typing is a class you add via JS */
+  .gn-ollama-typing {
+    display: flex;
+    gap: 4px;
+    padding: 10px;
+  }
+
+  .gn-ollama-typing span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #5f6368;
+    animation: gn-typing 1.4s infinite;
+  } 
+
+  .gn-ollama-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .gn-ollama-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes gn-typing {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-6px); }
+  }
+
+  .gn-quick-actions {
+    display: flex;
+    gap: 12px;
+    width: 1000px;
+    max-width: 90%;
+    margin-bottom: 12px;
+    order: 2;
+    transition: all 0.3s ease;
+  }
+
+  .gn-quick-actions.gn-hidden {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  .gn-quick-action-btn {
+    background: #fff;
+    border: 1px solid #dadce0;
+    border-radius: 16px;
+    padding: 16px 20px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    color: #202124;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .gn-quick-action-btn:hover {
+    border-color: #1967d2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .gn-built-with {
+    font-size: 12px;
+    color: #80868b;
+    margin-top: 0;
+    margin-bottom: 12px;
+    order: 3;
+  }
+
+  .gn-input-wrapper-container {
+    order: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .gn-built-with a {
+    color: #1967d2;
+    text-decoration: none;
+  }
+
+  .gn-ollama-messages::-webkit-scrollbar {
+    width: 8px;
+  }
+  .gn-ollama-messages::-webkit-scrollbar-thumb {
+    background: #dadce0;
+    border-radius: 4px;
+  }
+  .gn-ollama-messages::-webkit-scrollbar-thumb:hover {
+    background: #bdc1c6;
+  }
+</style>
 </head>
 
 <body>
@@ -1609,7 +2002,12 @@
         <div class="nav" id="nav" style="display: block">
           <ul>
             <li>
-              <button type="button" class="active" id="Dashboard-btn" onclick='handleTabbutton("Dashboard")'>
+              <button type="button" id="AI-AssistantBtn" class="active"  onclick='handleTabbutton("AI-Assistant")'>
+                AI Assistant
+              </button>
+            </li>
+            <li>
+              <button type="button" class="" id="Dashboard-btn" onclick='handleTabbutton("Dashboard")'>
                 Learn
               </button>
             </li>
@@ -1733,7 +2131,59 @@
       </div>
   </header>
 
-  <div class=" gignaati-workBench-container mt-5 px-5" style="display: none;" id="gignaati-workBench-container">
+  <div class="gn-chatbot-fullscreen" id="chatbot-container" style="display: block; padding-top: 2px;">
+  <div class="gn-header-content" id="header-content">
+    <!-- <div class="gn-logo">
+      <img src="1.jpeg" alt="">
+    </div> -->
+    <div class="gn-ollama-chat-title">Build what's next</div>
+    <div class="gn-subtitle">Create the next generation of AI Agents with Gignaati.</div>
+    
+    <div class="gn-cta-buttons">
+      <button class="gn-btn-primary" onclick="scrollToChat()">Try Workbench</button>
+      <button class="gn-btn-secondary"><a style="text-decoration: none;" href="https://gignaati.com/">Subscribe</a></button>
+    </div>
+  </div>
+
+  <div class="gn-ollama-messages" id="ollama-messages"></div>
+
+  <div class="gn-ollama-input-area">
+    <div class="gn-input-wrapper-container">
+      <div class="gn-ollama-input-wrapper">
+        <div class="gn-ollama-model-selector">
+          <select id="ollama-model-select">
+            <option>Loading models...</option>
+          </select>
+          <button class="gn-tts-btn" id="tts-btn" title="Read aloud 🔊">🔊</button>
+          <button class="gn-mic-btn" id="mic-btn" title="Voice input 🎤">🎤</button>
+        </div>
+        <input id="ollama-input" type="text" placeholder="Ask anything about Gignaati Workbench" autocomplete="off" />
+        <button class="gn-ollama-send-btn" id="ollama-send-btn">▶</button>
+      </div>
+    </div>
+
+    <div class="gn-quick-actions" id="quick-actions">
+      <button class="gn-quick-action-btn" onclick="quickPrompt('How to build and use AI agents?')">
+        How to build and use AI agents?
+      </button>
+      <button class="gn-quick-action-btn" onclick="quickPrompt('Find a product for my use case')">
+        Find a product for my use case
+      </button>
+      <button class="gn-quick-action-btn" onclick="quickPrompt('Discover solutions for my industry')">
+        Discover solutions for my industry
+      </button>
+      <button class="gn-quick-action-btn" onclick="quickPrompt('Summarize what\'s new with AI Agents')">
+        Summarize what's new with AI Agents
+      </button>
+    </div>
+    
+    <div class="gn-built-with">
+      Built with love <a href="https://gignaati.com" target="_blank">Gignaati.com</a>
+    </div>
+  </div>
+</div>
+
+<div class=" gignaati-workBench-container mt-5 px-5" style="display: none" id="gignaati-workBench-container">
     <div class="container-fluid">
       <div class="row">
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -1853,7 +2303,7 @@
                 different business needs across sectors.</p>
             </div>
           </div>
-
+          
         </div>
       </div>
 
@@ -2056,7 +2506,7 @@
       <div class="row">
         <div class="col-lg-12">
           <div class="filter-area-container">
-            <div class="dashboard-container cover pt-4" id="dashboard-container">
+            <div class="dashboard-container cover pt-4" id="dashboard-container" style="display: none;">
 
               <div class="share-idea-container" id="idea-container" style="padding-right: 2rem;">
                 <div class="top-heading-sec mb-3 " style="justify-content: end;">
@@ -2166,8 +2616,7 @@
                 </button>
                 <button type="button" title="Let Us Recommend the Right Model"
                   style="border-radius: 73px;height: 36px;font-size: 2rem;width: 36px;display: flex;align-items: center; justify-content: center;"
-                  class="w-20" data-bs-toggle="modal"
-                  data-bs-target="#SuggestionModal">
+                  class="w-20" data-bs-toggle="modal" data-bs-target="#SuggestionModal">
                   <img src="modelSugg.svg" style="width: 22px" />
                 </button>
               </div>
@@ -2357,7 +2806,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="byomModalLabel">Bring Your Own Model</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="clearBuildOwnAgentInput()"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            onclick="clearBuildOwnAgentInput()"></button>
         </div>
         <div class="modal-body">
           <p class="mb-2" style="font-size: 0.9rem;">
@@ -2368,7 +2818,8 @@
           <div id="byomModalError" style="color: red; font-size: 0.9em; margin-top: 5px; display: none;"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border: solid 1px;" onclick="clearBuildOwnAgentInput()">Cancel</button>
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border: solid 1px;"
+            onclick="clearBuildOwnAgentInput()">Cancel</button>
           <button type="button" class="btn btn-dark" onclick="handleSubmitModelPath()">Submit</button>
         </div>
       </div>
@@ -2381,7 +2832,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="SuggestionModalLabel">Let Us Recommend the Right Model</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="clearSuggestionInput()"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            onclick="clearSuggestionInput()"></button>
         </div>
         <div class="modal-body">
           <!-- <input type="text" class="form-control" id="SuggestionModalInput"
@@ -2393,7 +2845,8 @@
           <div id="SuggestionModalError" style="color: red; font-size: 0.9em; margin-top: 5px; display: none;"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border: solid 1px;" onclick="clearSuggestionInput()">Cancel</button>
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border: solid 1px;"
+            onclick="clearSuggestionInput()">Cancel</button>
           <button type="button" class="btn btn-dark" onclick="SuggestionModalSubmit()">Find My Model</button>
         </div>
       </div>
@@ -2479,7 +2932,7 @@
 
 
   <script src="node_modules/bootstrap/dist/js//bootstrap.bundle.min.js"></script>
-  <script src="electron-main.js"></script>
+  <!-- <script src="electron-main.js"></script> -->
   <script src="task.js"></script>
   <script src="download-manager-improved.js"></script>
   <script src="script.js"></script>
@@ -3000,155 +3453,151 @@
   </script>
 
 
-  <script>
+  <!-- <script>
     // Wait until the DOM is fully loaded
     document.addEventListener("DOMContentLoaded", function () {
       const chatIcon = document.querySelector(".chat-icon");
       const chatArea = document.querySelector(".chat-area");
       const closeChat = document.querySelector(".close-chat");
 
-      // Initially hide the chat area
-      chatArea.style.display = "none";
-
-      // When chat icon is clicked → show chat area & hide icon
+      
       chatIcon.addEventListener("click", function () {
         chatIcon.style.display = "none";
         chatArea.style.display = "block";
       });
 
-      // When close button is clicked → hide chat area & show icon
       closeChat.addEventListener("click", function () {
         chatArea.style.display = "none";
         chatIcon.style.display = "block";
       });
     });
-  </script>
+  </script> -->
 
   <script>
 
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const inputField = document.querySelector(".chat-input input");
-      const sendButton = document.querySelector(".chat-input button");
-      const chatMessages = document.querySelector(".chat-messages");
+    //   document.addEventListener("DOMContentLoaded", function () {
+    //     const inputField = document.querySelector(".chat-input input");
+    //     const sendButton = document.querySelector(".chat-input button");
+    //     const chatMessages = document.querySelector(".chat-messages");
 
-      // ✅ Show default welcome message with buttons
-      const welcomeMessageDiv = document.createElement("div");
-      welcomeMessageDiv.classList.add("message", "bot-message");
-      welcomeMessageDiv.innerHTML = `
-    <div class="message-content">
-      <div class="message-ans text-start">
-        <strong>Hi! Welcome to the Workbench Helper Chatbot.</strong><br>
-        Please select the type of issue you’re experiencing from the options below: <br><br>
-        <button class="option-btn w-100" data-option="Launch Docker">Launch Docker</button>
-        <button class="option-btn w-100" data-option="Agentic Platform">Agentic Platform</button>
-        <button class="option-btn w-100" data-option="Any Other Issue">Any Other Issue</button>
-      </div>
-    </div>
-  `;
-      chatMessages.appendChild(welcomeMessageDiv);
+    //     // ✅ Show default welcome message with buttons
+    //     const welcomeMessageDiv = document.createElement("div");
+    //     welcomeMessageDiv.classList.add("message", "bot-message");
+    //     welcomeMessageDiv.innerHTML = `
+    //   <div class="message-content">
+    //     <div class="message-ans text-start">
+    //       <strong>Hi! Welcome to the Workbench Helper Chatbot.</strong><br>
+    //       Please select the type of issue you’re experiencing from the options below: <br><br>
+    //       <button class="option-btn w-100" data-option="Launch Docker">Launch Docker</button>
+    //       <button class="option-btn w-100" data-option="Agentic Platform">Agentic Platform</button>
+    //       <button class="option-btn w-100" data-option="Any Other Issue">Any Other Issue</button>
+    //     </div>
+    //   </div>
+    // `;
+    //     chatMessages.appendChild(welcomeMessageDiv);
 
-      // ✅ Smooth scroll helper
-      function smoothScroll() {
-        chatMessages.scrollTo({
-          top: chatMessages.scrollHeight,
-          behavior: "smooth",
-        });
-      }
+    //     // ✅ Smooth scroll helper
+    //     function smoothScroll() {
+    //       chatMessages.scrollTo({
+    //         top: chatMessages.scrollHeight,
+    //         behavior: "smooth",
+    //       });
+    //     }
 
-      // ✅ Handle option button clicks
-      chatMessages.addEventListener("click", function (e) {
-        if (e.target.classList.contains("option-btn")) {
-          const selectedOption = e.target.getAttribute("data-option");
-          sendMessage(selectedOption);
-        }
-      });
+    //     // ✅ Handle option button clicks
+    //     chatMessages.addEventListener("click", function (e) {
+    //       if (e.target.classList.contains("option-btn")) {
+    //         const selectedOption = e.target.getAttribute("data-option");
+    //         sendMessage(selectedOption);
+    //       }
+    //     });
 
-      // ✅ Handle manual input
-      sendButton.addEventListener("click", async function () {
-        const userMessage = inputField.value.trim();
-        if (userMessage === "") return;
+    //     // ✅ Handle manual input
+    //     sendButton.addEventListener("click", async function () {
+    //       const userMessage = inputField.value.trim();
+    //       if (userMessage === "") return;
 
-        let optionText = userMessage;
-        // Convert number to corresponding option text
-        if (userMessage === "1") optionText = "Launch Docker";
-        if (userMessage === "2") optionText = "Agentic Platform";
+    //       let optionText = userMessage;
+    //       // Convert number to corresponding option text
+    //       if (userMessage === "1") optionText = "Launch Docker";
+    //       if (userMessage === "2") optionText = "Agentic Platform";
 
-        sendMessage(optionText);
-        inputField.value = "";
-      });
+    //       sendMessage(optionText);
+    //       inputField.value = "";
+    //     });
 
-      // ✅ Send message and get response
-      async function sendMessage(messageText) {
-        // Show user message
-        const userMessageDiv = document.createElement("div");
-        userMessageDiv.classList.add("message", "user-message");
-        userMessageDiv.innerHTML = `
-      <div class="message-content">
-        <div class="message-qus text-start">${messageText}</div>
-      </div>
-    `;
-        chatMessages.appendChild(userMessageDiv);
-        smoothScroll();
+    //     // ✅ Send message and get response
+    //     async function sendMessage(messageText) {
+    //       // Show user message
+    //       const userMessageDiv = document.createElement("div");
+    //       userMessageDiv.classList.add("message", "user-message");
+    //       userMessageDiv.innerHTML = `
+    //     <div class="message-content">
+    //       <div class="message-qus text-start">${messageText}</div>
+    //     </div>
+    //   `;
+    //       chatMessages.appendChild(userMessageDiv);
+    //       smoothScroll();
 
-        // Show typing indicator
-        const typingDiv = document.createElement("div");
-        typingDiv.classList.add("message", "bot-message");
-        typingDiv.innerHTML = `
-      <div class="message-content">
-        <div class="message-ans text-start"><em>🤖 Bot is typing...</em></div>
-      </div>
-    `;
-        chatMessages.appendChild(typingDiv);
-        smoothScroll();
+    //       // Show typing indicator
+    //       const typingDiv = document.createElement("div");
+    //       typingDiv.classList.add("message", "bot-message");
+    //       typingDiv.innerHTML = `
+    //     <div class="message-content">
+    //       <div class="message-ans text-start"><em>🤖 Bot is typing...</em></div>
+    //     </div>
+    //   `;
+    //       chatMessages.appendChild(typingDiv);
+    //       smoothScroll();
 
-        try {
-          const res = await fetch("https://api.gignaati.com/api/Chat/WorkbenchHelperChatAgent", {
-            method: "POST",
-            headers: {
-              "accept": "text/plain",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              userQuery: messageText,
-              outputFormat: "string"
-            }),
-          });
+    //       try {
+    //         const res = await fetch("https://api.gignaati.com/api/Chat/WorkbenchHelperChatAgent", {
+    //           method: "POST",
+    //           headers: {
+    //             "accept": "text/plain",
+    //             "Content-Type": "application/json",
+    //           },
+    //           body: JSON.stringify({
+    //             userQuery: messageText,
+    //             outputFormat: "string"
+    //           }),
+    //         });
 
-          const data = await res.json();
-          const botResponse = data.Response || "I'm sorry, I couldn't get a response.";
+    //         const data = await res.json();
+    //         const botResponse = data.Response || "I'm sorry, I couldn't get a response.";
 
-          // Remove typing indicator
-          typingDiv.remove();
+    //         // Remove typing indicator
+    //         typingDiv.remove();
 
-          const botMessageDiv = document.createElement("div");
-          botMessageDiv.classList.add("message", "bot-message");
-          botMessageDiv.innerHTML = `
-        <div class="message-content">
-          <div class="message-ans text-start">${botResponse}</div>
-        </div>
-      `;
-          chatMessages.appendChild(botMessageDiv);
-          smoothScroll();
+    //         const botMessageDiv = document.createElement("div");
+    //         botMessageDiv.classList.add("message", "bot-message");
+    //         botMessageDiv.innerHTML = `
+    //       <div class="message-content">
+    //         <div class="message-ans text-start">${botResponse}</div>
+    //       </div>
+    //     `;
+    //         chatMessages.appendChild(botMessageDiv);
+    //         smoothScroll();
 
-        } catch (error) {
-          console.error("API Error:", error);
-          typingDiv.remove();
+    //       } catch (error) {
+    //         console.error("API Error:", error);
+    //         typingDiv.remove();
 
-          const errorDiv = document.createElement("div");
-          errorDiv.classList.add("message", "bot-message");
-          errorDiv.innerHTML = `
-        <div class="message-content">
-          <div class="message-ans text-start text-danger">
-            ⚠️ Unable to connect. Please check your internet and try again.
-          </div>
-        </div>
-      `;
-          chatMessages.appendChild(errorDiv);
-          smoothScroll();
-        }
-      }
-    });
+    //         const errorDiv = document.createElement("div");
+    //         errorDiv.classList.add("message", "bot-message");
+    //         errorDiv.innerHTML = `
+    //       <div class="message-content">
+    //         <div class="message-ans text-start text-danger">
+    //           ⚠️ Unable to connect. Please check your internet and try again.
+    //         </div>
+    //       </div>
+    //     `;
+    //         chatMessages.appendChild(errorDiv);
+    //         smoothScroll();
+    //       }
+    //     }
+    //   });
 
   </script>
 
