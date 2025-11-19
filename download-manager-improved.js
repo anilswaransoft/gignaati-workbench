@@ -20,7 +20,7 @@ async function initializeDownloadManager() {
       });
     }
   } catch (error) {
-    console.error('Failed to check installed models:', error);
+   // console.error('Failed to check installed models:', error);
   }
 }
 

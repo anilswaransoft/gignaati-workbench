@@ -8,39 +8,39 @@ let backendProcess = null;
 let loadingWindow = null;
 let mainWindow = null;
 let isMainWindowCreated = false;
-
+let n8nWin = null;
 // ========== Loading Screen Functions ==========
 
 function createLoadingWindow() {
-  loadingWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    frame: false,
-    transparent: false,
-    resizable: false,
-    icon: path.join(__dirname, 'gig.ico'),
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      nodeIntegration: false
-    }
-  });
+    loadingWindow = new BrowserWindow({
+        width: 800,
+        height: 600,
+        frame: false,
+        transparent: false,
+        resizable: false,
+        icon: path.join(__dirname, 'gig.ico'),
+        webPreferences: {
+            preload: path.join(__dirname, 'preload.js'),
+            contextIsolation: true,
+            nodeIntegration: false
+        }
+    });
 
-  loadingWindow.loadFile('loading-screen.html');
-  loadingWindow.center();
+    loadingWindow.loadFile('loading-screen.html');
+    loadingWindow.center();
 }
 
 function updateLoadingProgress(progress, message) {
-  if (loadingWindow && !loadingWindow.isDestroyed()) {
-    loadingWindow.webContents.send('loading-progress', progress, message);
-  }
+    if (loadingWindow && !loadingWindow.isDestroyed()) {
+        loadingWindow.webContents.send('loading-progress', progress, message);
+    }
 }
 
 function closeLoadingWindow() {
-  if (loadingWindow && !loadingWindow.isDestroyed()) {
-    loadingWindow.close();
-    loadingWindow = null;
-  }
+    if (loadingWindow && !loadingWindow.isDestroyed()) {
+        loadingWindow.close();
+        loadingWindow = null;
+    }
 }
 
 // ========== NEW: API Check Logic ==========
@@ -71,7 +71,7 @@ function safeFetchJson(url) {
 
 async function determineStartPage() {
     console.log("Starting API checks to determine start page...");
-    
+
     // Try up to 5 times (approx 10 seconds total) to let the backend start
     for (let i = 1; i <= 5; i++) {
         try {
@@ -81,7 +81,7 @@ async function determineStartPage() {
 
             // 1. Call DeviceInfo API
             const deviceData = await safeFetchJson('http://localhost:5000/api/DeviceInfo');
-            
+
             if (!deviceData || !deviceData.deviceId) {
                 console.log("DeviceInfo returned no deviceId. Defaulting to index.html");
                 return 'index.html';
@@ -120,32 +120,32 @@ async function determineStartPage() {
 
 // System Detection Handler
 ipcMain.handle('detect-system-full', async () => {
-  try {
-    const SystemDetector = require('./src/main/system-detector');
-    const systemDetector = new SystemDetector();
-    
-    const systemInfo = await systemDetector.detectAll();
-    const performance = systemDetector.determinePerformanceTier(systemInfo);
-    
-    return {
-      ...systemInfo,
-      performance
-    };
-  } catch (error) {
-    console.error('System detection failed:', error);
-    // Return fallback data
-    return {
-      cpu: { model: 'Unknown CPU', cores: 4, speed: '2.0' },
-      gpu: { model: 'Unknown GPU', vram: 0, type: 'cpu', vendor: 'unknown' },
-      memory: { total: 8, free: 4, used: 4, usagePercent: 50 },
-      performance: {
-        tier: 'STANDARD',
-        recommendedModels: ['gemma2:2b', 'qwen2:1.5b'],
-        maxModelSize: '7B',
-        performance: { category: 'Moderate', tokensPerSec: '10-20', description: 'Standard performance' }
-      }
-    };
-  }
+    try {
+        const SystemDetector = require('./src/main/system-detector');
+        const systemDetector = new SystemDetector();
+
+        const systemInfo = await systemDetector.detectAll();
+        const performance = systemDetector.determinePerformanceTier(systemInfo);
+
+        return {
+            ...systemInfo,
+            performance
+        };
+    } catch (error) {
+        console.error('System detection failed:', error);
+        // Return fallback data
+        return {
+            cpu: { model: 'Unknown CPU', cores: 4, speed: '2.0' },
+            gpu: { model: 'Unknown GPU', vram: 0, type: 'cpu', vendor: 'unknown' },
+            memory: { total: 8, free: 4, used: 4, usagePercent: 50 },
+            performance: {
+                tier: 'STANDARD',
+                recommendedModels: ['gemma2:2b', 'qwen2:1.5b'],
+                maxModelSize: '7B',
+                performance: { category: 'Moderate', tokensPerSec: '10-20', description: 'Standard performance' }
+            }
+        };
+    }
 });
 
 // Open external link
@@ -168,54 +168,162 @@ ipcMain.handle('open-external-link', async (event, url) => {
 //             nodeIntegration: false
 //         }
 //     });
-    
+
 //     // Show loading message while N8N loads
 //     n8nWin.loadURL('data:text/html,<html><body style="margin:0;padding:0;display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial;background:#f5f5f5;"><div style="text-align:center;"><div style="font-size:24px;margin-bottom:20px;">🔄 Loading N8N...</div><div style="font-size:14px;color:#666;">Please wait while we prepare your workspace</div></div></body></html>');
-    
+
 //     // Wait a moment then load actual N8N
 //     setTimeout(() => {
 //         n8nWin.loadURL('http://localhost:5678');
 //     }, 2000);
-    
+
 //     // n8nWin.webContents.openDevTools();
 // });
 
+// ipcMain.handle('open-n8n-window', async () => {
+//     const n8nWin = new BrowserWindow({
+//         width: 1200,
+//         height: 800,
+//         minWidth: 800,
+//         minHeight: 600,
+//         icon: path.join(__dirname, 'gig.ico'),
+//         title: 'Agentic Platform', // <-- ADDITION 1: Set your static title
+//         webPreferences: {
+//             contextIsolation: true,
+//             nodeIntegration: false
+//         }
+//     });
+//     // --- ADDITION 2: Prevent the webpage from changing the title ---
+//     n8nWin.on('page-title-updated', (event) => {
+//         event.preventDefault();
+//     });
+//     // --- End of addition ---
+
+//     // =================================================================
+//     // --- 3. [NEW] HANDLE 'window.open' REQUESTS FROM N8N ITSELF ---
+//     // =================================================================
+//     n8nWin.webContents.setWindowOpenHandler(({ url }) => {
+
+//         // Check if the URL is external (http or https)
+//         if (url.startsWith('https:') || url.startsWith('http:')) {
+//             // If it's NOT an n8n local URL, open it in the user's default browser
+//             if (!url.startsWith('http://localhost:5678')) {
+//                 console.log(`Opening external URL in browser: ${url}`);
+//                 shell.openExternal(url);
+//                 return { action: 'deny' }; // Deny Electron from opening it
+//             }
+//         }
+
+//         // If it IS a local n8n URL (e.g., n8n trying to open a new tab)
+//         // deny opening a new window. Instead, load the URL in the *existing* window.
+//         console.log(`Denying new window; loading in existing n8n window: ${url}`);
+//         n8nWin.loadURL(url);
+//         return { action: 'deny' }; // Deny creating the new window
+//     });
+//     // --- END OF NEW BLOCK ---
+
+
+//     // --- 4. NULLIFY ON CLOSE ---
+//     n8nWin.on('closed', () => {
+//         console.log('n8n window was closed.');
+//         n8nWin = null;
+//     });
+
+//     // --- 5. LOAD CONTENT ---
+//     n8nWin.loadURL('data:text/html,<html><body style="margin:0;padding:0;display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial;background:#f5f5f5;"><div style="text-align:center;"><div style="font-size:24px;margin-bottom:20px;">🔄 Loading N8N...</div><div style="font-size:14px;color:#666;">Please wait while we prepare your workspace</div></div></body></html>');
+
+//     setTimeout(() => {
+//         if (n8nWin && !n8nWin.isDestroyed()) {
+//             n8nWin.loadURL('http://localhost:5678');
+//         }
+//     }, 2000);
+
+// });
+
+
+// REPLACE your old 'open-n8n-window' handler with this one
+
 ipcMain.handle('open-n8n-window', async () => {
-    const n8nWin = new BrowserWindow({
+
+    // --- 1. [FIX] ADDED SINGLETON CHECK ---
+    // If n8nWin is not null AND it hasn't been destroyed...
+    if (n8nWin && !n8nWin.isDestroyed()) {
+        console.log('Focusing existing n8n window.');
+        // Just focus the existing window and do nothing else.
+        n8nWin.focus();
+        return;
+    }
+
+    // --- 2. [FIX] Use global 'n8nWin' (removed 'const') ---
+    n8nWin = new BrowserWindow({
         width: 1200,
         height: 800,
         minWidth: 800,
         minHeight: 600,
         icon: path.join(__dirname, 'gig.ico'),
-        title: 'Agentic Platform', // <-- ADDITION 1: Set your static title
+        title: 'Agentic Platform', 
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: false
         }
     });
-    
+
     // --- ADDITION 2: Prevent the webpage from changing the title ---
     n8nWin.on('page-title-updated', (event) => {
         event.preventDefault();
     });
     // --- End of addition ---
 
-    // Show loading message while N8N loads
-    n8nWin.loadURL('data:text/html,<html><body style="margin:0;padding:0;display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial;background:#f5f5f5;"><div style="text-align:center;"><div style="font-size:24px;margin-bottom:20px;">🔄 Loading N8N...</div><div style="font-size:14px;color:#666;">Please wait while we prepare your workspace</div></div></body></html>');
-    
-    // Wait a moment then load actual N8N
-    setTimeout(() => {
-        n8nWin.loadURL('http://localhost:5678');
-    }, 2000);
-    
-    // n8nWin.webContents.openDevTools();
-});
+    // =================================================================
+    // --- 3. [NEW] HANDLE 'window.open' REQUESTS FROM N8N ITSELF ---
+    // =================================================================
+    n8nWin.webContents.setWindowOpenHandler(({ url }) => {
 
+        // Check if the URL is external (http or https)
+        if (url.startsWith('https:') || url.startsWith('http:')) {
+            // If it's NOT an n8n local URL, open it in the user's default browser
+            if (!url.startsWith('http://localhost:5678')) {
+                console.log(`Opening external URL in browser: ${url}`);
+                shell.openExternal(url);
+                return { action: 'deny' }; // Deny Electron from opening it
+            }
+        }
+
+        // If it IS a local n8n URL (e.g., n8n trying to open a new tab)
+        // deny opening a new window. Instead, load the URL in the *existing* window.
+        console.log(`Denying new window; loading in existing n8n window: ${url}`);
+        
+        // [FIX] Check if window exists before loading URL
+        if (n8nWin && !n8nWin.isDestroyed()) {
+            n8nWin.loadURL(url);
+        }
+        return { action: 'deny' }; // Deny creating the new window
+    });
+    // --- END OF NEW BLOCK ---
+
+
+    // --- 4. NULLIFY ON CLOSE ---
+    n8nWin.on('closed', () => {
+        console.log('n8n window was closed.');
+        n8nWin = null; // This now correctly sets the global variable
+    });
+
+    // --- 5. LOAD CONTENT ---
+    n8nWin.loadURL('data:text/html,<html><body style="margin:0;padding:0;display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial;background:#f5f5f5;"><div style="text-align:center;"><div style="font-size:24px;margin-bottom:20px;">🔄 Loading N8N...</div><div style="font-size:14px;color:#666;">Please wait while we prepare your workspace</div></div></body></html>');
+
+    setTimeout(() => {
+        // [FIX] Check if window exists before loading
+        if (n8nWin && !n8nWin.isDestroyed()) {
+            n8nWin.loadURL('http://localhost:5678');
+        }
+    }, 2000);
+
+});
 // Download LLM model
 ipcMain.handle('download-llm-model', async (event, modelName) => {
     const OllamaManager = require('./src/main/ollama-manager');
     const ollamaManager = new OllamaManager();
-    
+
     try {
         await ollamaManager.downloadModel(modelName, (progress, message, details) => {
             event.sender.send('model-download-progress', { modelName, progress, message, details });
@@ -231,7 +339,7 @@ ipcMain.handle('download-llm-model', async (event, modelName) => {
 ipcMain.handle('cancel-model-download', async (event, modelName) => {
     const OllamaManager = require('./src/main/ollama-manager');
     const ollamaManager = new OllamaManager();
-    
+
     try {
         const result = ollamaManager.cancelDownload(modelName);
         return result;
@@ -245,7 +353,7 @@ ipcMain.handle('cancel-model-download', async (event, modelName) => {
 ipcMain.handle('list-llm-models', async () => {
     const OllamaManager = require('./src/main/ollama-manager');
     const ollamaManager = new OllamaManager();
-    
+
     try {
         const models = await ollamaManager.listModels();
         return { success: true, models };
@@ -290,8 +398,8 @@ function createWindow(pageInfo) {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
             nodeIntegration: false,
-            webSecurity: false,
-            allowRunningInsecureContent: true,
+            webSecurity: true,
+             allowRunningInsecureContent: false,
             webviewTag: true
         }
     });
@@ -303,7 +411,7 @@ function createWindow(pageInfo) {
     } else {
         mainWindow.loadFile(filename);
     }
-    
+
     mainWindow.once('ready-to-show', () => {
         closeLoadingWindow();
         mainWindow.maximize();
@@ -316,7 +424,7 @@ function startBackend() {
     const backendPath = isDev
         ? path.join(__dirname, 'resources', 'backend', 'GignaatiWorkbenchService.exe')
         : path.join(process.resourcesPath, 'backend', 'GignaatiWorkbenchService.exe');
-    
+
     console.log("Starting backend path:", backendPath);
     backendProcess = spawn(backendPath, [], { stdio: 'pipe', detached: false });
     backendProcess.stdout.on('data', (data) => console.log(`Backend: ${data}`));
@@ -328,7 +436,7 @@ function startBackend() {
 app.whenReady().then(async () => {
     // 1. Show loading screen immediately
     createLoadingWindow();
-    
+
     // 2. Start the backend
     startBackend();
 

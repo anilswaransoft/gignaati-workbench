@@ -1123,12 +1123,15 @@ const handleTabbutton = (target) => {
   if (typeof loadTemplates === "function") loadTemplates();
   // Note: LLM logic is now handled INSIDE the "LLM" block below
 
+
+
   if (target === "Template") {
     // conatiner
     document.getElementById("dashboard-container").style.display = "none";
     document.getElementById("build-container").style.display = "none";
     document.getElementById("llm-container").style.display = "none";
     document.getElementById("tamplate-container").style.display = "block";
+    document.getElementById("chatbot-container").style.display = "none";
     // tab button
     document.getElementById("footer").classList.remove("active");
     document.getElementById("footer").classList.add("active");
@@ -1136,12 +1139,14 @@ const handleTabbutton = (target) => {
     document.getElementById("Build-btn")?.classList.remove("active");
     document.getElementById("LLM-btn").classList.remove("active");
     document.getElementById("Template-btn").classList.add("active");
+    document.getElementById("AI-AssistantBtn").classList.remove("active");
   } else if (target === "Build") {
     // conatiner
     document.getElementById("dashboard-container").style.display = "none";
     document.getElementById("build-container").style.display = "none";
     document.getElementById("llm-container").style.display = "none";
     document.getElementById("tamplate-container").style.display = "none";
+    document.getElementById("chatbot-container").style.display = "none";
     // tab button
     document.getElementById("footer").classList.remove("active");
     document.getElementById("footer").classList.add("active");
@@ -1150,6 +1155,7 @@ const handleTabbutton = (target) => {
     document.getElementById("Build-btn").classList.add("active");
     document.getElementById("LLM-btn").classList.remove("active");
     document.getElementById("Template-btn").classList.remove("active");
+    document.getElementById("AI-AssistantBtn").classList.remove("active");
     handleMakeAIAgentClick()
   } else if (target === "LLM") {
     // conatiner
@@ -1157,7 +1163,7 @@ const handleTabbutton = (target) => {
     document.getElementById("build-container").style.display = "none";
     document.getElementById("llm-container").style.display = "block";
     document.getElementById("tamplate-container").style.display = "none";
-
+    document.getElementById("chatbot-container").style.display = "none";
     // === MODIFIED: Call refresh function every time ===
     refreshLLMTab();
 
@@ -1165,18 +1171,33 @@ const handleTabbutton = (target) => {
     document.getElementById("Build-btn")?.classList.remove("active");
     document.getElementById("LLM-btn").classList.add("active");
     document.getElementById("Template-btn").classList.remove("active");
+    document.getElementById("AI-AssistantBtn").classList.remove("active");
     // tab button
     document.getElementById("footer").classList.remove("active");
     document.getElementById("footer").classList.add("active");
 
 
-  } else {
+  } else if (target === "AI-Assistant") {
+    document.getElementById("chatbot-container").style.display = "block";
+    document.getElementById("dashboard-container").style.display = "none";
+    document.getElementById("build-container").style.display = "none";
+    document.getElementById("llm-container").style.display = "none";
+    document.getElementById("tamplate-container").style.display = "none";
+
+    document.getElementById("Dashboard-btn").classList.remove("active");
+    //document.getElementById("Build-btn").classList.remove("active");
+    document.getElementById("LLM-btn").classList.remove("active");
+    document.getElementById("Template-btn").classList.remove("active");
+    document.getElementById("AI-AssistantBtn").classList.add("active");
+  }
+  else {
     loadVideos();
     // conatiner
     document.getElementById("dashboard-container").style.display = "block";
     document.getElementById("build-container").style.display = "none";
     document.getElementById("llm-container").style.display = "none";
     document.getElementById("tamplate-container").style.display = "none";
+    document.getElementById("chatbot-container").style.display = "none";
     // tab button
     // document.getElementById("footer").classList.remove("active");
     document.getElementById("footer").classList.add("active");
@@ -1187,11 +1208,11 @@ const handleTabbutton = (target) => {
     document.getElementById("Build-btn")?.classList.remove("active");
     document.getElementById("LLM-btn").classList.remove("active");
     document.getElementById("Template-btn").classList.remove("active");
+    document.getElementById("AI-AssistantBtn").classList.remove("active");
 
-
-    var economicsElement = document.getElementById("economics-container");
+    //var economicsElement = document.getElementById("economics-container");
     var ideaElement = document.getElementById("idea-container");
-    economicsElement.style.display = "none";
+    //economicsElement.style.display = "none";
     ideaElement.style.display = "block";
 
 
