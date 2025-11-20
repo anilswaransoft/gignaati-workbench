@@ -26,7 +26,7 @@
         <div class="nav" id="nav" style="display: none">
           <ul>
             <li>
-              <button type="button" class="active" id="AI-AssistantBtn"   onclick='handleTabbutton("AI-Assistant")'>
+              <button type="button" class="active" id="AI-AssistantBtn" onclick='handleTabbutton("AI-Assistant")'>
                 AI Assistant
               </button>
             </li>
@@ -37,12 +37,25 @@
             </li>
 
             <li>
-              <button type="button" class="" id="LLM-btn" onclick='handleTabbutton("LLM")'>
+              <!-- <button type="button" class="" id="LLM-btn" onclick='handleTabbutton("LLM")'>
                 Build
-              </button>
+              </button> -->
+              <div class="build-drop-down-btn">
+                <button class=" build-dropdown " id="LLM-btn">Build</button>
+                <div class="drop-down">
+                  <div>
+                    <div class="drop-down-item" onclick='handleTabbutton("LLM")'>Model</div>
+                    <div class="drop-down-item" onclick='reloadTemplateData()'>Template</div>
+                    <div class="drop-down-item" onclick="clickToLaunchInstall()">Build AI Agent</div>
+                  </div>
+                </div>
+              </div>
             </li>
             <li>
-              <button type="button" class="" id="Template-btn" onclick='reloadTemplateData()'>
+              <button type="button" style="display: none;" class="" id="Template-btn" onclick='reloadTemplateData()'>
+                Earn
+              </button>
+              <button type="button" class="" id="EarnBtn" onclick='handleTabbutton("Earn")'>
                 Earn
               </button>
             </li>
@@ -164,57 +177,57 @@
       </div>
   </header>
 
-<div class="gn-chatbot-fullscreen" id="chatbot-container" style="display: none; padding-top: 2px;">
-  <div class="gn-header-content" id="header-content">
-    <!-- <div class="gn-logo">
+  <div class="gn-chatbot-fullscreen" id="chatbot-container" style="display: none; padding-top: 2px;">
+    <div class="gn-header-content" id="header-content">
+      <!-- <div class="gn-logo">
       <img src="1.jpeg" alt="">
     </div> -->
-    <div class="gn-ollama-chat-title">Build what's next</div>
-    <div class="gn-subtitle">Create the next generation of AI Agents with Gignaati.</div>
-    
-    <div class="gn-cta-buttons">
+      <div class="gn-ollama-chat-title">Build what's next</div>
+      <div class="gn-subtitle">Create the next generation of AI Agents with Gignaati.</div>
+
+      <!-- <div class="gn-cta-buttons">
       <button class="gn-btn-primary" onclick="scrollToChat()">Try Workbench</button>
       <button class="gn-btn-secondary"><a style="text-decoration: none;"  onclick="openExternalLink('https://gignaati.com/')">Subscribe</a></button>
+    </div> -->
     </div>
-  </div>
 
-  <div class="gn-ollama-messages" id="ollama-messages"></div>
+    <div class="gn-ollama-messages" id="ollama-messages"></div>
 
-  <div class="gn-ollama-input-area">
-    <div class="gn-input-wrapper-container">
-      <div class="gn-ollama-input-wrapper">
-        <div class="gn-ollama-model-selector">
-          <select id="ollama-model-select">
-            <option>Loading models...</option>
-          </select>
-          <button class="gn-tts-btn" id="tts-btn" title="Read aloud 🔊">🔊</button>
-          <button class="gn-mic-btn" id="mic-btn" title="Voice input 🎤">🎤</button>
+    <div class="gn-ollama-input-area">
+      <div class="gn-input-wrapper-container">
+        <div class="gn-ollama-input-wrapper">
+          <div class="gn-ollama-model-selector">
+            <select id="ollama-model-select">
+              <option>Loading models...</option>
+            </select>
+            <button class="gn-tts-btn" id="tts-btn" title="Read aloud 🔊">🔊</button>
+            <button class="gn-mic-btn" id="mic-btn" title="Voice input 🎤">🎤</button>
+          </div>
+          <input id="ollama-input" type="text" placeholder="Ask anything about Gignaati Workbench" autocomplete="off" />
+          <button class="gn-ollama-send-btn" id="ollama-send-btn">▶</button>
         </div>
-        <input id="ollama-input" type="text" placeholder="Ask anything about Gignaati Workbench" autocomplete="off" />
-        <button class="gn-ollama-send-btn" id="ollama-send-btn">▶</button>
+      </div>
+
+      <div class="gn-quick-actions" id="quick-actions">
+        <button class="gn-quick-action-btn" onclick="quickPrompt('How to build and use AI agents?')">
+          How to build and use AI agents?
+        </button>
+        <button class="gn-quick-action-btn" onclick="quickPrompt('Find a product for my use case')">
+          Find a product for my use case
+        </button>
+        <button class="gn-quick-action-btn" onclick="quickPrompt('Discover solutions for my industry')">
+          Discover solutions for my industry
+        </button>
+        <button class="gn-quick-action-btn" onclick="quickPrompt('Summarize what\'s new with AI Agents')">
+          Summarize what's new with AI Agents
+        </button>
+      </div>
+
+      <div class="gn-built-with">
+        Built with love <a href="#" onclick="openExternalLink('https://gignaati.com/')">Gignaati.com</a>
       </div>
     </div>
-
-    <div class="gn-quick-actions" id="quick-actions">
-      <button class="gn-quick-action-btn" onclick="quickPrompt('How to build and use AI agents?')">
-        How to build and use AI agents?
-      </button>
-      <button class="gn-quick-action-btn" onclick="quickPrompt('Find a product for my use case')">
-        Find a product for my use case
-      </button>
-      <button class="gn-quick-action-btn" onclick="quickPrompt('Discover solutions for my industry')">
-        Discover solutions for my industry
-      </button>
-      <button class="gn-quick-action-btn" onclick="quickPrompt('Summarize what\'s new with AI Agents')">
-        Summarize what's new with AI Agents
-      </button>
-    </div>
-    
-    <div class="gn-built-with">
-      Built with love <a href="#"  onclick="openExternalLink('https://gignaati.com/')">Gignaati.com</a>
-    </div>
   </div>
-</div>
 
 
 
@@ -951,6 +964,357 @@
           </div> -->
     </div>
   </div>
+
+  <div class="container py-3 earn-container" id="earn-container" style="display: none;">
+    <div class="d-flex justify-content-end">
+      <button type="button" class="btn btn-primary custom-btn"
+        onclick="openExternalLink('https://start.gignaati.com/')">
+        Start Today
+      </button>
+    </div>
+    <div class="text-center mb-5">
+      <h1 class="fw-bold mb-3">Your AI Career Path Awaits</h1>
+      <p class="text-muted mx-auto" style="max-width: 700px;">
+        Real people, real opportunities. See yourself in these success stories and earning potential.
+      </p>
+    </div>
+
+    <div class="row g-4">
+
+      <div class="col-lg-6">
+        <div class="earn-career-card p-4 h-100">
+          <div class="d-flex align-items-start mb-4">
+            <div class="earn-icon-box flex-shrink-0 me-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="fw-bold mb-1">Data Annotator</h4>
+              <p class="earn-text-purple small fw-bold mb-1">Priya - The Detail-Oriented Homemaker</p>
+              <p class="text-muted small mb-0">Label and categorize data to train AI models. Perfect for detail-oriented
+                individuals.</p>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="earn-section-label">Required Skills</div>
+            <div>
+              <span class="earn-skill-badge">Attention to Detail</span>
+              <span class="earn-skill-badge">Pattern Recognition</span>
+              <span class="earn-skill-badge">Basic English</span>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="earn-section-label">Career Progression & Earning Potential</div>
+            <div class="earn-progression-list d-flex flex-column gap-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold small">Beginner</div>
+                  <div class="text-muted small" style="font-size: 0.7rem;">Simple image tagging, text categorization
+                  </div>
+                </div>
+                <span class="earn-salary-badge">₹15,000-25,000/month</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold small">Intermediate</div>
+                  <div class="text-muted small" style="font-size: 0.7rem;">Complex annotations, quality reviews</div>
+                </div>
+                <span class="earn-salary-badge">₹25,000-40,000/month</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold small">Expert</div>
+                  <div class="text-muted small" style="font-size: 0.7rem;">Lead annotator, training others</div>
+                </div>
+                <span class="earn-salary-badge">₹40,000-60,000/month</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="earn-section-label">Employability Benefits</div>
+            <div class="row g-2">
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> Flexible hours
+              </div>
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> Work from home
+              </div>
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> No technical degree
+              </div>
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> Steady income
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="earn-career-card p-4 h-100">
+          <div class="d-flex align-items-start mb-4">
+            <div class="earn-icon-box flex-shrink-0 me-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="fw-bold mb-1">Prompt Engineer</h4>
+              <p class="earn-text-purple small fw-bold mb-1">Aarav - The Creative Graduate</p>
+              <p class="text-muted small mb-0">Craft effective prompts to guide AI models. Ideal for creative thinkers.
+              </p>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="earn-section-label">Required Skills</div>
+            <div>
+              <span class="earn-skill-badge">Creative Writing</span>
+              <span class="earn-skill-badge">Logical Thinking</span>
+              <span class="earn-skill-badge">Language Fluency</span>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="earn-section-label">Career Progression & Earning Potential</div>
+            <div class="earn-progression-list d-flex flex-column gap-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold small">Beginner</div>
+                  <div class="text-muted small" style="font-size: 0.7rem;">Basic prompt writing, testing</div>
+                </div>
+                <span class="earn-salary-badge">₹25,000-40,000/month</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold small">Intermediate</div>
+                  <div class="text-muted small" style="font-size: 0.7rem;">Complex prompt chains</div>
+                </div>
+                <span class="earn-salary-badge">₹40,000-70,000/month</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold small">Expert</div>
+                  <div class="text-muted small" style="font-size: 0.7rem;">Prompt architecture, consulting</div>
+                </div>
+                <span class="earn-salary-badge">₹70,000-1.2L/month</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="earn-section-label">Employability Benefits</div>
+            <div class="row g-2">
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> High demand skill
+              </div>
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> Creative work
+              </div>
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> Remote opportunities
+              </div>
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> Global clients
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="earn-career-card p-4 h-100">
+          <div class="d-flex align-items-start mb-4">
+            <div class="earn-icon-box flex-shrink-0 me-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="fw-bold mb-1">AI Agent Builder</h4>
+              <p class="earn-text-purple small fw-bold mb-1">Rohan - The Problem-Solving Gig Worker</p>
+              <p class="text-muted small mb-0">Build AI workflows without coding. Great for problem solvers.</p>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="earn-section-label">Required Skills</div>
+            <div>
+              <span class="earn-skill-badge">Logical Reasoning</span>
+              <span class="earn-skill-badge">Process Design</span>
+              <span class="earn-skill-badge">No Coding Required</span>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="earn-section-label">Career Progression & Earning Potential</div>
+            <div class="earn-progression-list d-flex flex-column gap-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold small">Beginner</div>
+                  <div class="text-muted small" style="font-size: 0.7rem;">Simple workflow automation, basic agents
+                  </div>
+                </div>
+                <span class="earn-salary-badge">₹30,000-50,000/month</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold small">Intermediate</div>
+                  <div class="text-muted small" style="font-size: 0.7rem;">Multi-step agents, integration work</div>
+                </div>
+                <span class="earn-salary-badge">₹50,000-90,000/month</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold small">Expert</div>
+                  <div class="text-muted small" style="font-size: 0.7rem;">Enterprise solutions, custom AI</div>
+                </div>
+                <span class="earn-salary-badge">₹90,000-1.5L/month</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="earn-section-label">Employability Benefits</div>
+            <div class="row g-2">
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> No coding required
+              </div>
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> High earning potential
+              </div>
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> Business impact
+              </div>
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> Future-proof skill
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="earn-career-card p-4 h-100">
+          <div class="d-flex align-items-start mb-4">
+            <div class="earn-icon-box flex-shrink-0 me-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="fw-bold mb-1">AI Model Fine-Tuner</h4>
+              <p class="earn-text-purple small fw-bold mb-1">Sneha - The Analytical Student</p>
+              <p class="text-muted small mb-0">Improve AI model performance through quality assessment.</p>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="earn-section-label">Required Skills</div>
+            <div>
+              <span class="earn-skill-badge">Critical Thinking</span>
+              <span class="earn-skill-badge">Quality Assessment</span>
+              <span class="earn-skill-badge">Analytical Skills</span>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="earn-section-label">Career Progression & Earning Potential</div>
+            <div class="earn-progression-list d-flex flex-column gap-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold small">Beginner</div>
+                  <div class="text-muted small" style="font-size: 0.7rem;">Rating AI outputs, feedback</div>
+                </div>
+                <span class="earn-salary-badge">₹20,000-35,000/month</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold small">Intermediate</div>
+                  <div class="text-muted small" style="font-size: 0.7rem;">Model evaluation, data quality</div>
+                </div>
+                <span class="earn-salary-badge">₹35,000-60,000/month</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold small">Expert</div>
+                  <div class="text-muted small" style="font-size: 0.7rem;">Fine-tuning strategy, optimization</div>
+                </div>
+                <span class="earn-salary-badge">₹60,000-1L/month</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="earn-section-label">Employability Benefits</div>
+            <div class="row g-2">
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> Learn AI deeply
+              </div>
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> Technical growth
+              </div>
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> Cutting-edge models
+              </div>
+              <div class="col-6 d-flex align-items-center small text-muted">
+                <svg class="earn-benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg> Portfolio building
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
   </div>
 
   <p id="footer"></p>
@@ -1399,7 +1763,7 @@
         else {
           //Bypass otp
           ByPassLicenseKey();
-         document.getElementById("chatbot-container").style.display = "block";
+          document.getElementById("chatbot-container").style.display = "block";
         }
 
       } catch (e) {
@@ -1611,7 +1975,7 @@
 
           document.getElementById("chatbot-container").style.display = "block";
           ValidateSubscription();
-          
+
 
         } else {
           showToast(

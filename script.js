@@ -923,6 +923,14 @@ async function clickToLaunchInstall() {
   const text = document.getElementById('launch-progress-text');
   const consoleEl = document.getElementById('launch-console');
   const button = document.querySelector('.install-btn');
+  
+    document.getElementById("Dashboard-btn").classList.remove("active");
+    document.getElementById("Build-btn")?.classList.remove("active");
+    document.getElementById("LLM-btn").classList.add("active");
+    document.getElementById("Template-btn").classList.remove("active");
+    document.getElementById("AI-AssistantBtn").classList.remove("active");
+    document.getElementById("EarnBtn").classList.remove("active");
+
 
   restartServices();  // restart ollama & n8n services before installation
   // 🔹 Console Log Helper
@@ -1123,23 +1131,25 @@ const handleTabbutton = (target) => {
   if (typeof loadTemplates === "function") loadTemplates();
   // Note: LLM logic is now handled INSIDE the "LLM" block below
 
-
-
   if (target === "Template") {
+    
     // conatiner
     document.getElementById("dashboard-container").style.display = "none";
     document.getElementById("build-container").style.display = "none";
     document.getElementById("llm-container").style.display = "none";
     document.getElementById("tamplate-container").style.display = "block";
     document.getElementById("chatbot-container").style.display = "none";
-    // tab button
-    document.getElementById("footer").classList.remove("active");
-    document.getElementById("footer").classList.add("active");
+    document.getElementById("earn-container").style.display = "none";
+    // // tab button
+    // document.getElementById("footer").classList.remove("active");
+    // document.getElementById("footer").classList.add("active");
     document.getElementById("Dashboard-btn").classList.remove("active");
     document.getElementById("Build-btn")?.classList.remove("active");
-    document.getElementById("LLM-btn").classList.remove("active");
-    document.getElementById("Template-btn").classList.add("active");
+    document.getElementById("LLM-btn").classList.add("active");
+    document.getElementById("Template-btn").classList.remove("active");
     document.getElementById("AI-AssistantBtn").classList.remove("active");
+    document.getElementById("EarnBtn").classList.remove("active");
+
   } else if (target === "Build") {
     // conatiner
     document.getElementById("dashboard-container").style.display = "none";
@@ -1147,6 +1157,7 @@ const handleTabbutton = (target) => {
     document.getElementById("llm-container").style.display = "none";
     document.getElementById("tamplate-container").style.display = "none";
     document.getElementById("chatbot-container").style.display = "none";
+    document.getElementById("earn-container").style.display = "none";
     // tab button
     document.getElementById("footer").classList.remove("active");
     document.getElementById("footer").classList.add("active");
@@ -1156,6 +1167,7 @@ const handleTabbutton = (target) => {
     document.getElementById("LLM-btn").classList.remove("active");
     document.getElementById("Template-btn").classList.remove("active");
     document.getElementById("AI-AssistantBtn").classList.remove("active");
+    document.getElementById("EarnBtn").classList.remove("active");
     handleMakeAIAgentClick()
   } else if (target === "LLM") {
     // conatiner
@@ -1164,6 +1176,7 @@ const handleTabbutton = (target) => {
     document.getElementById("llm-container").style.display = "block";
     document.getElementById("tamplate-container").style.display = "none";
     document.getElementById("chatbot-container").style.display = "none";
+    document.getElementById("earn-container").style.display = "none";
     // === MODIFIED: Call refresh function every time ===
     refreshLLMTab();
 
@@ -1172,6 +1185,7 @@ const handleTabbutton = (target) => {
     document.getElementById("LLM-btn").classList.add("active");
     document.getElementById("Template-btn").classList.remove("active");
     document.getElementById("AI-AssistantBtn").classList.remove("active");
+    document.getElementById("EarnBtn").classList.remove("active");
     // tab button
     document.getElementById("footer").classList.remove("active");
     document.getElementById("footer").classList.add("active");
@@ -1183,12 +1197,28 @@ const handleTabbutton = (target) => {
     document.getElementById("build-container").style.display = "none";
     document.getElementById("llm-container").style.display = "none";
     document.getElementById("tamplate-container").style.display = "none";
+    document.getElementById("earn-container").style.display = "none";
 
     document.getElementById("Dashboard-btn").classList.remove("active");
     //document.getElementById("Build-btn").classList.remove("active");
     document.getElementById("LLM-btn").classList.remove("active");
     document.getElementById("Template-btn").classList.remove("active");
     document.getElementById("AI-AssistantBtn").classList.add("active");
+    document.getElementById("EarnBtn").classList.remove("active");
+  }
+  else if (target === "Earn") {
+    document.getElementById("chatbot-container").style.display = "none";
+    document.getElementById("dashboard-container").style.display = "none";
+    document.getElementById("build-container").style.display = "none";
+    document.getElementById("llm-container").style.display = "none";
+    document.getElementById("tamplate-container").style.display = "none";
+    document.getElementById("earn-container").style.display = "block";
+
+    document.getElementById("Dashboard-btn").classList.remove("active");
+    document.getElementById("LLM-btn").classList.remove("active");
+    document.getElementById("Template-btn").classList.remove("active");
+    document.getElementById("AI-AssistantBtn").classList.remove("active");
+    document.getElementById("EarnBtn").classList.add("active");
   }
   else {
     loadVideos();
@@ -1198,6 +1228,8 @@ const handleTabbutton = (target) => {
     document.getElementById("llm-container").style.display = "none";
     document.getElementById("tamplate-container").style.display = "none";
     document.getElementById("chatbot-container").style.display = "none";
+    document.getElementById("earn-container").style.display = "none";
+
     // tab button
     // document.getElementById("footer").classList.remove("active");
     document.getElementById("footer").classList.add("active");
@@ -1209,7 +1241,7 @@ const handleTabbutton = (target) => {
     document.getElementById("LLM-btn").classList.remove("active");
     document.getElementById("Template-btn").classList.remove("active");
     document.getElementById("AI-AssistantBtn").classList.remove("active");
-
+    document.getElementById("EarnBtn").classList.remove("active");
     //var economicsElement = document.getElementById("economics-container");
     var ideaElement = document.getElementById("idea-container");
     //economicsElement.style.display = "none";
@@ -1333,7 +1365,7 @@ function reloadDashboardData() {
 
 
 function reloadTemplateData() {
-
+  handleTabbutton("Template");
   var dropdownValue = document.getElementById("drop-down-btn-text").textContent;
 
   var categoryType = "";
@@ -1350,8 +1382,8 @@ function reloadTemplateData() {
   } else if (dropdownValue === "All" || dropdownValue === "Select Category") {
     categoryType = "";
   }
-  var footerForTemplate = document.getElementById("footer");
-  footerForTemplate.classList.remove("active");
+  // var footerForTemplate = document.getElementById("footer");
+  // footerForTemplate.classList.remove("active");
 
   // var dropdownElement = document.getElementById("drop-down-btn-text");
   // dropdownElement.textContent = "Select Category";
@@ -1359,17 +1391,17 @@ function reloadTemplateData() {
   var templateListContainer = document.getElementById("template-list-container");
   // Ensure the Template tab/view is visible when this function is called
   try {
-    var tamplateContainer = document.getElementById("tamplate-container");
-    if (tamplateContainer) tamplateContainer.style.display = "block";
-    // hide other containers
-    var dashboardContainer = document.getElementById("dashboard-container"); if (dashboardContainer) dashboardContainer.style.display = "none";
-    var buildContainer = document.getElementById("build-container"); if (buildContainer) buildContainer.style.display = "none";
-    var llmContainer = document.getElementById("llm-container"); if (llmContainer) llmContainer.style.display = "none";
-    // set nav button active states
-    document.getElementById("Dashboard-btn")?.classList.remove("active");
-    document.getElementById("Build-btn")?.classList.remove("active");
-    document.getElementById("LLM-btn")?.classList.remove("active");
-    document.getElementById("Template-btn")?.classList.add("active");
+    // var tamplateContainer = document.getElementById("tamplate-container");
+    // if (tamplateContainer) tamplateContainer.style.display = "block";
+    // // hide other containers
+    // var dashboardContainer = document.getElementById("dashboard-container"); if (dashboardContainer) dashboardContainer.style.display = "none";
+    // var buildContainer = document.getElementById("build-container"); if (buildContainer) buildContainer.style.display = "none";
+    // var llmContainer = document.getElementById("llm-container"); if (llmContainer) llmContainer.style.display = "none";
+    // // set nav button active states
+    // document.getElementById("Dashboard-btn")?.classList.remove("active");
+    // document.getElementById("Build-btn")?.classList.remove("active");
+    // document.getElementById("LLM-btn")?.classList.remove("active");
+    // document.getElementById("Template-btn")?.classList.add("active");
     // ensure footer is active for this view
     // document.getElementById("footer")?.classList.add("active");
 
