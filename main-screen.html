@@ -167,57 +167,85 @@
       </div>
   </header>
 
-  <div class="gn-chatbot-fullscreen" id="chatbot-container" style="display: block; padding-top: 2px;">
+<div class="gn-chatbot-fullscreen" id="chatbot-container">
+    
     <div class="gn-header-content" id="header-content">
-      <!-- <div class="gn-logo">
-      <img src="1.jpeg" alt="">
-    </div> -->
-      <div class="gn-ollama-chat-title">Build what's next</div>
-      <div class="gn-subtitle">Create the next generation of AI Agents with Gignaati.</div>
-
-      <!-- <div class="gn-cta-buttons">
-      <button class="gn-btn-primary" onclick="scrollToChat()">Try Workbench</button>
-      <button class="gn-btn-secondary"><a style="text-decoration: none;"  onclick="openExternalLink('https://gignaati.com/')">Subscribe</a></button>
-    </div> -->
+        <div class="gn-ollama-chat-title">Build what's next</div>
+        <div class="gn-subtitle">Create the next generation of AI Agents with Gignaati.</div>
     </div>
 
     <div class="gn-ollama-messages" id="ollama-messages"></div>
 
     <div class="gn-ollama-input-area">
-      <div class="gn-input-wrapper-container">
-        <div class="gn-ollama-input-wrapper">
-          <div class="gn-ollama-model-selector">
-            <select id="ollama-model-select">
-              <option>Loading models...</option>
-            </select>
-            <button class="gn-tts-btn" id="tts-btn" title="Read aloud 🔊">🔊</button>
-            <button class="gn-mic-btn" id="mic-btn" title="Voice input 🎤">🎤</button>
-          </div>
-          <input id="ollama-input" type="text" placeholder="Ask anything about Gignaati Workbench" autocomplete="off" />
-          <button class="gn-ollama-send-btn" id="ollama-send-btn">▶</button>
+        
+        <div id="gn-preview-area" class="gn-preview-area"></div>
+
+        <div class="gn-input-wrapper-container">
+            <div class="gn-ollama-input-wrapper">
+                
+                <div class="gn-ollama-model-selector">
+                    <select id="ollama-model-select">
+                        <option>Loading...</option>
+                    </select>
+                    <button class="gn-icon-btn" id="tts-btn" title="Read aloud">🔊</button>
+                </div>
+
+                <input type="file" id="gn-file-input" multiple style="display: none;">
+                
+                <button class="gn-icon-btn" id="gn-attach-btn" title="Attach file" onclick="document.getElementById('gn-file-input').click()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+
+                <input id="ollama-input" type="text" placeholder="Ask anything about Gignaati Workbench" autocomplete="off" />
+                
+                <button class="gn-icon-btn" id="mic-btn" title="Voice input">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                </button>
+
+                <button class="gn-ollama-send-btn" id="ollama-send-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                </button>
+            </div>
         </div>
-      </div>
 
-      <div class="gn-quick-actions" id="quick-actions">
-        <button class="gn-quick-action-btn" onclick="quickPrompt('How to build and use AI agents?')">
-          How to build and use AI agents?
-        </button>
-        <button class="gn-quick-action-btn" onclick="quickPrompt('Find a product for my use case')">
-          Find a product for my use case
-        </button>
-        <button class="gn-quick-action-btn" onclick="quickPrompt('Discover solutions for my industry')">
-          Discover solutions for my industry
-        </button>
-        <button class="gn-quick-action-btn" onclick="quickPrompt('Summarize what\'s new with AI Agents')">
-          Summarize what's new with AI Agents
-        </button>
-      </div>
+        <div class="gn-quick-actions row g-3" id="quick-actions">
+            <div class="col-md-3 col-6">
+                <div class="card h-100 gn-card-custom" style="font-size: 13px; color: gray;" onclick="quickPrompt('How to build and use AI agents?')">
+                    <div class="card-body d-flex align-items-center">
+                        <p class="m-0">How to build and use AI agents?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card h-100 gn-card-custom" style="font-size: 13px; color: gray;" onclick="quickPrompt('Find a product for my use case')">
+                    <div class="card-body d-flex align-items-center">
+                        <p class="m-0">Find a product for my use case</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card h-100 gn-card-custom " style="font-size: 13px;color: gray;" onclick="quickPrompt('Discover solutions for my industry')">
+                    <div class="card-body d-flex align-items-center">
+                        <p class="m-0">Discover solutions for my industry</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card h-100 gn-card-custom" style="font-size: 13px;color: gray;" onclick="quickPrompt('Summarize what\'s new with AI Agents')">
+                    <div class="card-body d-flex align-items-center">
+                        <p class="m-0">Summarize what's new with AI Agents</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-      <div class="gn-built-with">
-        Built with love <a href="#" onclick="openExternalLink('https://gignaati.com/')">Gignaati.com</a>
-      </div>
+        <div class="gn-built-with">
+            Built with love <a href="#" onclick="openExternalLink('https://gignaati.com/')">Gignaati.com</a>
+        </div>
     </div>
-  </div>
+</div>
+
+
 
   <div class=" gignaati-workBench-container mt-5 px-5" style="display: none" id="gignaati-workBench-container">
     <div class="container-fluid">

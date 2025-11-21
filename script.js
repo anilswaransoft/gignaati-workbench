@@ -1192,7 +1192,7 @@ const handleTabbutton = (target) => {
 
 
   } else if (target === "AI-Assistant") {
-    document.getElementById("chatbot-container").style.display = "block";
+    document.getElementById("chatbot-container").style.display = "flex";
     document.getElementById("dashboard-container").style.display = "none";
     document.getElementById("build-container").style.display = "none";
     document.getElementById("llm-container").style.display = "none";

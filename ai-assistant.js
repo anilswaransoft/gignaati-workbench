@@ -29,7 +29,8 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         audioChunks: [],
         mediaRecorder: null,
         transcriber: null, // Will hold the AI model
-        isModelLoading: false
+        isModelLoading: false,
+        lastBotResponse: ""
     };
 
     // ==========================================
@@ -67,78 +68,61 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         });
     }
 
-    // Get Elements
+    // ==========================================
+    // 4. UI ELEMENT SELECTION (Binding to New HTML)
+    // ==========================================
+    const chatContainer = document.getElementById("chatbot-container");
+    const headerContent = document.getElementById("header-content");
     const msgBox = document.getElementById("ollama-messages");
     const sendBtn = document.getElementById("ollama-send-btn");
     const input = document.getElementById("ollama-input");
     const modelSelect = document.getElementById("ollama-model-select");
     const ttsBtn = document.getElementById("tts-btn");
     const quickActions = document.getElementById("quick-actions");
+    
+    // New Elements from your HTML structure
+    const fileInput = document.getElementById("gn-file-input");
+    const attachBtn = document.getElementById("gn-attach-btn");
+    const micBtn = document.getElementById("mic-btn");
+    const previewArea = document.getElementById("gn-preview-area");
 
-    // Hide old buttons if they exist in HTML
-    const oldMic = document.getElementById("mic-btn");
-    if(oldMic) oldMic.style.display = "none";
-
-    const ICON_SEND = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>`;
-    const ICON_STOP = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>`;
+    const ICON_SEND = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>`;
+    const ICON_STOP = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>`;
 
     // ==========================================
-    // 5. UI SETUP
+    // 5. INPUT CONTROLS & EVENT BINDING
     // ==========================================
-    let fileInput, previewArea, micBtn; 
-
     function setupInputControls() {
-        if (!input) return;
-        if (input.parentNode.classList.contains("gn-input-wrapper")) return;
+        // 1. Bind File Input
+        if (fileInput) {
+            fileInput.addEventListener("change", handleFileSelect);
+        }
 
-        // Create Wrapper
-        const wrapper = document.createElement("div");
-        wrapper.className = "gn-input-wrapper";
-        input.parentNode.insertBefore(wrapper, input);
-        wrapper.appendChild(input);
+        // 2. Bind Mic Button
+        if (micBtn) {
+            micBtn.onclick = handleVoiceToggle;
+        }
 
-        // File Input
-        fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.multiple = true;
-        fileInput.accept = "image/*,.pdf,.docx,.txt,.md,.json,.js,.csv,.css,.html"; 
-        fileInput.style.display = "none";
-        document.body.appendChild(fileInput);
+        // 3. Drag and Drop Logic on the main container
+        if (chatContainer) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                chatContainer.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+            });
+            
+            chatContainer.addEventListener('dragenter', () => chatContainer.classList.add('gn-drag-active'));
+            chatContainer.addEventListener('dragleave', () => chatContainer.classList.remove('gn-drag-active'));
+            chatContainer.addEventListener('drop', (e) => {
+                chatContainer.classList.remove('gn-drag-active');
+                if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files);
+            });
+        }
+    }
 
-        // Attach Button
-        const attachBtn = document.createElement("button");
-        attachBtn.className = "gn-attach-btn";
-        attachBtn.innerHTML = `+`; 
-        attachBtn.title = "Attach file";
-        attachBtn.onclick = () => fileInput.click();
-        wrapper.insertBefore(attachBtn, input);
-
-        // Mic Button
-        micBtn = document.createElement("button");
-        micBtn.className = "gn-mic-btn";
-        micBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>`;
-        micBtn.title = "Voice Input (Click to Record, Click again to Send)";
-        micBtn.onclick = handleVoiceToggle;
-        wrapper.appendChild(micBtn);
-
-        // Preview Area
-        previewArea = document.createElement("div");
-        previewArea.className = "gn-preview-area";
-        wrapper.parentNode.insertBefore(previewArea, wrapper);
-
-        // Events
-        fileInput.addEventListener("change", handleFileSelect);
-        
-        const chatContainer = document.getElementById("chatbot-container") || document.body;
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            chatContainer.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
-        });
-        chatContainer.addEventListener('dragenter', () => chatContainer.classList.add('gn-drag-active'));
-        chatContainer.addEventListener('dragleave', () => chatContainer.classList.remove('gn-drag-active'));
-        chatContainer.addEventListener('drop', (e) => {
-            chatContainer.classList.remove('gn-drag-active');
-            if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files);
-        });
+    // Helper: Switch UI to "Active Chat Mode" (Hides title/cards, moves input down)
+    function activateChatUI() {
+        if (chatContainer) {
+            chatContainer.classList.add("gn-chat-active");
+        }
     }
 
     // ==========================================
@@ -150,7 +134,8 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         if (state.transcriber) return state.transcriber;
         
         state.isModelLoading = true;
-        input.placeholder = "Downloading AI voice model (one-time)...";
+        // input.placeholder = "Downloading AI voice model (one-time)...";
+        input.placeholder = "Loading...";
         
         try {
             const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.16.1');
@@ -192,7 +177,7 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
 
             state.mediaRecorder.start();
             state.isRecording = true;
-            micBtn.classList.add("gn-mic-active");
+            micBtn.classList.add("gn-mic-active"); // Ensure this CSS class exists for visual feedback
             input.placeholder = "Listening... (Click mic to stop)";
             
             if (!state.transcriber && !state.isModelLoading) loadWhisper();
@@ -259,12 +244,15 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
 
     async function handleFiles(files) {
         const fileList = Array.from(files);
+        
+        // Create a temp loading indicator in the preview area
         const loadingMsg = document.createElement("div");
         loadingMsg.className = "gn-file-card";
         loadingMsg.innerHTML = `<div class="gn-loading-spinner"></div> Parsing...`;
         previewArea.appendChild(loadingMsg);
 
         for (const file of fileList) { await processFile(file); }
+        
         loadingMsg.remove();
         if(fileInput) fileInput.value = ""; 
         renderPreviews();
@@ -304,8 +292,9 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         state.attachments.forEach((att, i) => {
             const card = document.createElement("div");
             card.className = "gn-file-card";
-            let icon = att.type === 'image' ? `<img src="${att.content}" class="gn-file-thumb" />` : "📄";
-            card.innerHTML = `${icon}<span>${att.name.substring(0,10)}...</span><span class="gn-remove-file" data-idx="${i}">×</span>`;
+            // Styling handled in CSS, simplified here
+            let icon = att.type === 'image' ? `<img src="${att.content}" class="gn-file-thumb" style="height:20px; border-radius:4px;" />` : "📄";
+            card.innerHTML = `${icon}<span style="margin-left:5px">${att.name.substring(0,10)}...</span><span class="gn-remove-file" data-idx="${i}">×</span>`;
             card.querySelector(".gn-remove-file").onclick = (e) => { state.attachments.splice(e.target.getAttribute("data-idx"),1); renderPreviews(); };
             previewArea.appendChild(card);
         });
@@ -318,7 +307,8 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         state.isGenerating = gen;
         if (sendBtn) {
             sendBtn.innerHTML = gen ? ICON_STOP : ICON_SEND;
-            sendBtn.style.color = gen ? "#ef4444" : "#3b82f6";
+            // Change button color: Red for stop, Black (default) for send
+            sendBtn.style.backgroundColor = gen ? "#dc3545" : "#000";
         }
     }
 
@@ -337,34 +327,30 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         if (type === "bot") {
             const copyBtn = document.createElement("button");
             copyBtn.className = "gn-copy-btn";
-            copyBtn.innerHTML = "📋"; copyBtn.onclick = async () => {
+            copyBtn.innerHTML = "📋"; 
+            copyBtn.style.marginLeft = "10px";
+            copyBtn.onclick = async () => {
                 await navigator.clipboard.writeText(contentDiv.textContent);
                 copyBtn.innerHTML = "✅"; setTimeout(() => copyBtn.innerHTML = "📋", 2000);
             };
-            msg.appendChild(copyBtn);
+            // msg.appendChild(copyBtn);
             msg.appendChild(createTranslateContainer(text, "en"));
             state.lastBotResponse = text;
         }
         msgBox.appendChild(msg);
         msgBox.scrollTop = msgBox.scrollHeight;
-
-        if (type === "user") {
-            const chatContainer = document.getElementById("chatbot-container");
-            const headerContent = document.getElementById("header-content");
-            if (chatContainer) chatContainer.classList.add("gn-chat-active");
-            if (headerContent) headerContent.classList.add("gn-hidden");
-            if (quickActions) quickActions.classList.add('gn-hidden');
-        }
     }
 
     function showTyping() {
         const div = document.createElement("div");
         div.className = "gn-ollama-message gn-bot";
         div.id = "ollama-typing-indicator";
-        div.innerHTML = '<div class="gn-ollama-typing"><span></span><span></span><span></span></div>';
+        // Simple typing dots
+        div.innerHTML = '<div class="gn-ollama-typing"><span>Loading.</span><span>.</span><span>.</span></div>';
         msgBox.appendChild(div);
         msgBox.scrollTop = msgBox.scrollHeight;
     }
+    
     function removeTyping() { const el = document.getElementById("ollama-typing-indicator"); if(el) el.remove(); }
     function buildContext(n) { return SYSTEM_PROMPT + "\n\n" + state.conversationHistory.slice(-MAX_MEMORY*2).map(m=>`${m.role==="user"?"User":"Assistant"}: ${m.content}`).join("\n") + `\nUser: ${n}\nAssistant:`; }
 
@@ -376,8 +362,12 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
                 state.availableModels = data.models.map(m=>m.name);
                 if(modelSelect) modelSelect.innerHTML = state.availableModels.map(m=>`<option value="${m}">${m}</option>`).join("");
                 state.selectedModel = state.availableModels[0];
+            } else {
+                if(modelSelect) modelSelect.innerHTML = "<option>No models found</option>";
             }
-        } catch {}
+        } catch (e) {
+            if(modelSelect) modelSelect.innerHTML = "<option>Offline</option>";
+        }
     }
 
     async function handleSendClick() { if (state.isGenerating) stopGeneration(); else sendMessage(); }
@@ -387,6 +377,9 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         if (!msg && state.attachments.length > 0) msg = "Summarize attached files.";
         if (!msg && state.attachments.length === 0) return;
         
+        // ** UI CHANGE: TRIGGER ACTIVE CHAT MODE **
+        activateChatUI();
+
         input.placeholder = "Ask anything about Gignaati Workbench";
 
         let displayMsg = state.attachments.length > 0 ? `${state.attachments.map(a=>`[${a.name}]`).join(" ")} ${msg}` : msg;
@@ -421,14 +414,14 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
             } else addMessage("No response.", "bot");
         } catch (e) {
             removeTyping();
-            if (e.name !== 'AbortError') addMessage("Error reaching Ollama.", "bot");
+            if (e.name !== 'AbortError') addMessage("Error reaching Ollama. Is it running?", "bot");
         } finally {
             updateButtonState(false); state.abortController = null;
         }
     }
 
     // ==========================================
-    // 9. TRANSLATION (SWITCHED TO GOOGLE TRANSLATE API)
+    // 9. TRANSLATION (Google Translate Logic)
     // ==========================================
     function speakText(t) { if(!t)return; const u=new SpeechSynthesisUtterance(t); u.lang="en-US"; speechSynthesis.cancel(); speechSynthesis.speak(u); }
     
@@ -461,7 +454,6 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         return chunks;
     }
 
-    // REPLACED: using Google Translate (GTX) for stability
     async function translateText(text, targetLang, msgElement) {
         const contentDiv = msgElement.querySelector('.gn-msg-content');
         if (!contentDiv) return; 
@@ -496,7 +488,7 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
                         const res = await fetch(url);
                         const data = await res.json();
                         
-                        // Google returns an array of arrays. e.g. [[["Translated", "Original", ...]]]
+                        // Google returns an array of arrays
                         if (data && data[0]) {
                             chunkTrans = data[0].map(item => item[0]).join("");
                         }
@@ -527,14 +519,19 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
     function createTranslateContainer(originalText, currentLang) {
         const container = document.createElement("div");
         container.className = "gn-translate-container";
+        container.style.marginTop = "10px";
+        container.style.fontSize = "0.85rem";
 
         const label = document.createElement("label");
         label.className = "gn-translate-label";
-        label.textContent = "Translate to:";
+        label.textContent = "Translate to: ";
 
         const dropdown = document.createElement("select");
         dropdown.className = "gn-translate-dropdown";
         dropdown.value = currentLang;
+        // Basic styling for dropdown
+        dropdown.style.marginLeft = "5px";
+        dropdown.style.padding = "2px 5px";
 
         const languages = [
             { code: "en", name: "English" }, { code: "es", name: "Spanish" },
@@ -575,13 +572,20 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
     // ==========================================
     loadScripts();
     setupInputControls();
+    
+    // Global function for quick actions
+    window.quickPrompt = (prompt) => { 
+        activateChatUI(); // Ensure UI switches even on quick prompt
+        input.value = prompt; 
+        sendMessage(); 
+    };
+    window.scrollToChat = () => { if(input) input.focus(); };
+    //window.openExternalLink = (url) => window.open(url, '_blank');
 
     if (ttsBtn) ttsBtn.addEventListener("click", () => speakText(state.lastBotResponse));
-    if (sendBtn) { sendBtn.innerHTML = ICON_SEND; sendBtn.addEventListener("click", handleSendClick); }
+    if (sendBtn) { sendBtn.addEventListener("click", handleSendClick); }
     if (input) input.addEventListener("keypress", (e) => { if (e.key === "Enter" && !state.isGenerating) sendMessage(); });
     if (modelSelect) modelSelect.addEventListener("change", (e) => state.selectedModel = e.target.value);
 
-    window.quickPrompt = (prompt) => { input.value = prompt; sendMessage(); };
-    window.scrollToChat = () => input.focus();
     fetchModels();
 })();
