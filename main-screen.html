@@ -167,83 +167,98 @@
       </div>
   </header>
 
-<div class="gn-chatbot-fullscreen" id="chatbot-container">
-    
+  <div class="gn-chatbot-fullscreen" id="chatbot-container">
+
     <div class="gn-header-content" id="header-content">
-        <div class="gn-ollama-chat-title">Build what's next</div>
-        <div class="gn-subtitle">Create the next generation of AI Agents with Gignaati.</div>
+      <div class="gn-ollama-chat-title">Build what's next</div>
+      <div class="gn-subtitle">Create the next generation of AI Agents with Gignaati.</div>
     </div>
 
     <div class="gn-ollama-messages" id="ollama-messages"></div>
 
     <div class="gn-ollama-input-area">
-        
-        <div id="gn-preview-area" class="gn-preview-area"></div>
 
-        <div class="gn-input-wrapper-container">
-            <div class="gn-ollama-input-wrapper">
-                
-                <div class="gn-ollama-model-selector">
-                    <select id="ollama-model-select">
-                        <option>Loading...</option>
-                    </select>
-                    <button class="gn-icon-btn" id="tts-btn" title="Read aloud">🔊</button>
-                </div>
+      <div id="gn-preview-area" class="gn-preview-area"></div>
 
-                <input type="file" id="gn-file-input" multiple style="display: none;">
-                
-                <button class="gn-icon-btn" id="gn-attach-btn" title="Attach file" onclick="document.getElementById('gn-file-input').click()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                </button>
+      <div class="gn-input-wrapper-container">
+        <div class="gn-ollama-input-wrapper">
 
-                <input id="ollama-input" type="text" placeholder="Ask anything about Gignaati Workbench" autocomplete="off" />
-                
-                <button class="gn-icon-btn" id="mic-btn" title="Voice input">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-                </button>
+          <div class="gn-ollama-model-selector">
+            <select id="ollama-model-select">
+              <option>Loading...</option>
+            </select>
+            <button class="gn-icon-btn" id="tts-btn" title="Read aloud">🔊</button>
+          </div>
 
-                <button class="gn-ollama-send-btn" id="ollama-send-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                </button>
-            </div>
+          <input type="file" id="gn-file-input" multiple style="display: none;">
+
+          <button class="gn-icon-btn" id="gn-attach-btn" title="Attach file"
+            onclick="document.getElementById('gn-file-input').click()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </button>
+
+          <input id="ollama-input" type="text" placeholder="Ask anything about Gignaati Workbench" autocomplete="off" />
+
+          <button class="gn-icon-btn" id="mic-btn" title="Voice input">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </button>
+
+          <button class="gn-ollama-send-btn" id="ollama-send-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 2L11 13" />
+              <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+            </svg>
+          </button>
         </div>
+      </div>
 
-        <div class="gn-quick-actions row g-3" id="quick-actions">
-            <div class="col-md-3 col-6">
-                <div class="card h-100 gn-card-custom" style="font-size: 13px; color: gray;" onclick="quickPrompt('How to build and use AI agents?')">
-                    <div class="card-body d-flex align-items-center">
-                        <p class="m-0">How to build and use AI agents?</p>
-                    </div>
-                </div>
+      <div class="gn-quick-actions row g-3" id="quick-actions">
+        <div class="col-md-3 col-6">
+          <div class="card h-100 gn-card-custom" style="font-size: 13px; color: gray;"
+            onclick="quickPrompt('How to build and use AI agents?')">
+            <div class="card-body d-flex align-items-center">
+              <p class="m-0">How to build and use AI agents?</p>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="card h-100 gn-card-custom" style="font-size: 13px; color: gray;" onclick="quickPrompt('Find a product for my use case')">
-                    <div class="card-body d-flex align-items-center">
-                        <p class="m-0">Find a product for my use case</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-6">
-                <div class="card h-100 gn-card-custom " style="font-size: 13px;color: gray;" onclick="quickPrompt('Discover solutions for my industry')">
-                    <div class="card-body d-flex align-items-center">
-                        <p class="m-0">Discover solutions for my industry</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-6">
-                <div class="card h-100 gn-card-custom" style="font-size: 13px;color: gray;" onclick="quickPrompt('Summarize what\'s new with AI Agents')">
-                    <div class="card-body d-flex align-items-center">
-                        <p class="m-0">Summarize what's new with AI Agents</p>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+        <div class="col-md-3 col-6">
+          <div class="card h-100 gn-card-custom" style="font-size: 13px; color: gray;"
+            onclick="quickPrompt('Find a product for my use case')">
+            <div class="card-body d-flex align-items-center">
+              <p class="m-0">Find a product for my use case</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="card h-100 gn-card-custom " style="font-size: 13px;color: gray;"
+            onclick="quickPrompt('Discover solutions for my industry')">
+            <div class="card-body d-flex align-items-center">
+              <p class="m-0">Discover solutions for my industry</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="card h-100 gn-card-custom" style="font-size: 13px;color: gray;"
+            onclick="quickPrompt('Summarize what\'s new with AI Agents')">
+            <div class="card-body d-flex align-items-center">
+              <p class="m-0">Summarize what's new with AI Agents</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <div class="gn-built-with">
-            Built with love <a href="#" onclick="openExternalLink('https://gignaati.com/')">Gignaati.com</a>
-        </div>
+      <div class="gn-built-with">
+        Built with love <a href="#" onclick="openExternalLink('https://gignaati.com/')">Gignaati.com</a>
+      </div>
     </div>
-</div>
+  </div>
 
 
 
@@ -757,12 +772,7 @@
   </div>
 
   <div class="container py-3 earn-container" id="earn-container" style="display: none;">
-    <div class="d-flex justify-content-end">
-      <button type="button" class="btn btn-primary custom-btn"
-        onclick="openExternalLink('https://start.gignaati.com/')">
-        Start Today
-      </button>
-    </div>
+
     <div class="text-center mb-5">
       <h1 class="fw-bold mb-3">Your AI Career Path Awaits</h1>
       <p class="text-muted mx-auto" style="max-width: 700px;">
@@ -851,8 +861,16 @@
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg> Steady income
               </div>
+              <div class="d-flex justify-content-end mt-4">
+                <button type="button" class="btn btn-primary custom-btn"
+                  onclick="openExternalLink('https://start.gignaati.com/')">
+                  Start Today
+                </button>
+              </div>
             </div>
+
           </div>
+
         </div>
       </div>
 
@@ -933,6 +951,12 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg> Global clients
+              </div>
+              <div class="d-flex justify-content-end mt-4">
+                <button type="button" class="btn btn-primary custom-btn"
+                  onclick="openExternalLink('https://start.gignaati.com/')">
+                  Start Today
+                </button>
               </div>
             </div>
           </div>
@@ -1016,6 +1040,12 @@
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg> Future-proof skill
               </div>
+              <div class="d-flex justify-content-end mt-4">
+                <button type="button" class="btn btn-primary custom-btn"
+                  onclick="openExternalLink('https://start.gignaati.com/')">
+                  Start Today
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1096,6 +1126,12 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg> Portfolio building
+              </div>
+              <div class="d-flex justify-content-end mt-4">
+                <button type="button" class="btn btn-primary custom-btn"
+                  onclick="openExternalLink('https://start.gignaati.com/')">
+                  Start Today
+                </button>
               </div>
             </div>
           </div>

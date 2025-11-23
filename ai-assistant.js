@@ -3,7 +3,7 @@
     // 1. CONFIGURATION
     // ==========================================
     const OLLAMA_API = "http://localhost:11434";
-    const DEFAULT_MODEL = "llama2"; 
+    const DEFAULT_MODEL = "llama3.2:1b"; 
     const MAX_MEMORY = 8;
     
     // We use a tiny version of Whisper for fast, local speech-to-text
@@ -352,7 +352,8 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
     }
     
     function removeTyping() { const el = document.getElementById("ollama-typing-indicator"); if(el) el.remove(); }
-    function buildContext(n) { return SYSTEM_PROMPT + "\n\n" + state.conversationHistory.slice(-MAX_MEMORY*2).map(m=>`${m.role==="user"?"User":"Assistant"}: ${m.content}`).join("\n") + `\nUser: ${n}\nAssistant:`; }
+   // function buildContext(n) { return SYSTEM_PROMPT + "\n\n" + state.conversationHistory.slice(-MAX_MEMORY*2).map(m=>`${m.role==="user"?"User":"Assistant"}: ${m.content}`).join("\n") + `\nUser: ${n}\nAssistant:`; }
+    function buildContext(n) { return  state.conversationHistory.slice(-MAX_MEMORY*2).map(m=>`${m.role==="user"?"User":"Assistant"}: ${m.content}`).join("\n") + `\nUser: ${n}\nAssistant:`; }
 
     async function fetchModels() {
         try {
@@ -423,8 +424,119 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
     // ==========================================
     // 9. TRANSLATION (Google Translate Logic)
     // ==========================================
-    function speakText(t) { if(!t)return; const u=new SpeechSynthesisUtterance(t); u.lang="en-US"; speechSynthesis.cancel(); speechSynthesis.speak(u); }
+    // function speakText(t) { if(!t)return; const u=new SpeechSynthesisUtterance(t); u.lang="en-US"; speechSynthesis.cancel(); speechSynthesis.speak(u); }
     
+    // function speakText() {
+    //     // 1. TOGGLE STOP: If currently speaking, stop and return.
+    //     if (window.speechSynthesis.speaking) {
+    //         window.speechSynthesis.cancel();
+    //         return;
+    //     }
+
+    //     // 2. GET CONTENT: Find the very last bot message in the UI
+    //     // We read from the DOM because that is where the TRANSLATED text lives.
+    //     const botMessages = document.querySelectorAll('.gn-ollama-message.gn-bot');
+    //     if (botMessages.length === 0) return;
+
+    //     const lastMessage = botMessages[botMessages.length - 1];
+    //     const contentDiv = lastMessage.querySelector('.gn-msg-content');
+        
+    //     if (!contentDiv || !contentDiv.textContent.trim()) return;
+    //     const textToRead = contentDiv.textContent;
+
+    //     // 3. DETECT LANGUAGE: Check the dropdown setting for that specific message
+    //     const dropdown = lastMessage.querySelector('.gn-translate-dropdown');
+    //     let lang = 'en-US'; // Default
+
+    //     if (dropdown && dropdown.value) {
+    //         // If the user selected 'hi', 'es', etc., use that.
+    //         lang = dropdown.value; 
+    //     }
+
+    //     // 4. SPEAK
+    //     const utterance = new SpeechSynthesisUtterance(textToRead);
+    //     utterance.lang = lang; // This ensures the voice matches the text language
+        
+    //     // Optional: Reset button icon when done (if you want to implement visual feedback later)
+    //     utterance.onend = () => { /* Audio finished */ };
+
+    //     window.speechSynthesis.speak(utterance);
+    // }
+
+    window.activeUtterance = null;
+
+    function speakText() {
+        // 1. STOP IF SPEAKING
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            return;
+        }
+
+        // 2. GET CONTENT
+        const botMessages = document.querySelectorAll('.gn-ollama-message.gn-bot');
+        if (botMessages.length === 0) return;
+
+        const lastMessage = botMessages[botMessages.length - 1];
+        const contentDiv = lastMessage.querySelector('.gn-msg-content');
+        if (!contentDiv || !contentDiv.textContent.trim()) return;
+        
+        const textToRead = contentDiv.textContent;
+
+        // 3. DETERMINE LANGUAGE
+        const dropdown = lastMessage.querySelector('.gn-translate-dropdown');
+        const shortLang = dropdown ? dropdown.value : 'en';
+        
+        // Map codes to full locales (Electron requires full locale often)
+        const localeMap = {
+            'en': 'en-US', 'hi': 'hi-IN', 'es': 'es-ES', 'fr': 'fr-FR',
+            'de': 'de-DE', 'it': 'it-IT', 'pt': 'pt-PT', 'ru': 'ru-RU',
+            'ja': 'ja-JP', 'zh': 'zh-CN', 'ko': 'ko-KR', 'ar': 'ar-SA'
+        };
+        const targetLang = localeMap[shortLang] || 'en-US';
+
+        // 4. FETCH VOICES (Handle Electron Async Loading)
+        let voices = window.speechSynthesis.getVoices();
+        
+        // If Electron hasn't loaded voices yet, wait for them
+        if (voices.length === 0) {
+            console.log("Voices not loaded yet. Waiting...");
+            window.speechSynthesis.onvoiceschanged = () => {
+                // Remove listener to prevent loops and try again
+                window.speechSynthesis.onvoiceschanged = null;
+                speakText(); 
+            };
+            return;
+        }
+
+        // 5. FIND MATCHING VOICE
+        // Log to console so you can see what voices Electron detects (Ctrl+Shift+I)
+        console.log(`Attempting to speak in: ${targetLang}`);
+        
+        const matchingVoice = voices.find(v => v.lang === targetLang) || 
+                              voices.find(v => v.lang.startsWith(shortLang));
+
+        if (!matchingVoice) {
+            console.warn(`No voice found for ${targetLang}. Available voices:`, voices.map(v => v.lang));
+            // Optional: Alert user if voice is missing
+            // alert("Voice pack for this language is not installed on your OS.");
+        }
+
+        // 6. PREPARE UTTERANCE
+        window.activeUtterance = new SpeechSynthesisUtterance(textToRead);
+        window.activeUtterance.lang = targetLang;
+        
+        if (matchingVoice) {
+            window.activeUtterance.voice = matchingVoice;
+            console.log("Using voice:", matchingVoice.name);
+        }
+
+        // 7. SPEAK
+        window.speechSynthesis.speak(window.activeUtterance);
+        
+        // Cleanup when done
+        window.activeUtterance.onend = () => { window.activeUtterance = null; };
+    }
+
     function splitTextSafe(text, maxSize = 400) {
         const chunks = [];
         if (text.length <= maxSize) return [text];
@@ -582,10 +694,188 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
     window.scrollToChat = () => { if(input) input.focus(); };
     //window.openExternalLink = (url) => window.open(url, '_blank');
 
-    if (ttsBtn) ttsBtn.addEventListener("click", () => speakText(state.lastBotResponse));
+    // if (ttsBtn) ttsBtn.addEventListener("click", () => speakText(state.lastBotResponse));
+    if (ttsBtn) ttsBtn.addEventListener("click", speakText);
     if (sendBtn) { sendBtn.addEventListener("click", handleSendClick); }
     if (input) input.addEventListener("keypress", (e) => { if (e.key === "Enter" && !state.isGenerating) sendMessage(); });
     if (modelSelect) modelSelect.addEventListener("change", (e) => state.selectedModel = e.target.value);
 
     fetchModels();
+})();
+
+
+
+///////////////////////////////////////////
+
+////////////////////////////////////////////
+
+
+// (function () {
+//     // 1. Check dependencies
+//     const container = document.getElementById("chatbot-container");
+//     if (!container) return;
+
+//     // 2. Inject Styles (Gemini-like Look & Visibility Logic)
+//     const styleId = 'gn-addon-new-chat-style';
+//     if (!document.getElementById(styleId)) {
+//         const style = document.createElement('style');
+//         style.id = styleId;
+//         style.innerHTML = `
+//             /* Floating New Chat Button */
+//             #gn-addon-new-chat-btn {
+//                 position: absolute;
+//                 top: 16px;
+//                 right: 16px;
+//                 z-index: 999;
+//                 display: none; /* Hidden by default */
+//                 align-items: center;
+//                 gap: 8px;
+//                 padding: 8px 16px;
+//                 background-color: #f0f4f9; /* Gemini light gray */
+//                 color: #444746;
+//                 border: 1px solid #e5e7eb;
+//                 border-radius: 20px; /* Pill shape */
+//                 font-family: sans-serif;
+//                 font-size: 13px;
+//                 font-weight: 500;
+//                 cursor: pointer;
+//                 transition: all 0.2s ease;
+//                 box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+//             }
+
+//             /* Hover Effect */
+//             #gn-addon-new-chat-btn:hover {
+//                 background-color: #e2e6ea;
+//                 color: #1f1f1f;
+//                 box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+//             }
+
+//             /* VISIBILITY LOGIC: Only show when container has 'gn-chat-active' class */
+//             #chatbot-container.gn-chat-active #gn-addon-new-chat-btn {
+//                 display: inline-flex;
+//                 animation: gn-fade-in 0.3s forwards;
+//             }
+
+//             /* Simple Fade In Animation */
+//             @keyframes gn-fade-in {
+//                 from { opacity: 0; transform: translateY(-5px); }
+//                 to { opacity: 1; transform: translateY(0); }
+//             }
+//         `;
+//         document.head.appendChild(style);
+//     }
+
+//     // 3. Create and Append the Button
+//     // Ensure we don't create duplicates
+//     if (document.getElementById('gn-addon-new-chat-btn')) return;
+
+//     const btn = document.createElement("button");
+//     btn.id = "gn-addon-new-chat-btn";
+    
+//     // Icon + Text
+//     btn.innerHTML = `
+//         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+//             <line x1="12" y1="5" x2="12" y2="19"></line>
+//             <line x1="5" y1="12" x2="19" y2="12"></line>
+//         </svg>
+//         <span>New Chat</span>
+//     `;
+
+//     // 4. Bind Action
+//     btn.onclick = function() {
+//         // Call the global function exposed in your main file
+//         if (typeof window.startNewChat === 'function') {
+//             window.startNewChat();
+//         } else {
+//             console.warn("Gignaati Workbench: startNewChat function not found.");
+//             // Fallback: Reload page if function is missing
+//             window.location.reload();
+//         }
+//     };
+
+//     // Append to container
+//     container.appendChild(btn);
+
+// })();
+
+(function () {
+    // 1. Check dependencies
+    const container = document.getElementById("chatbot-container");
+    if (!container) return;
+
+    // 2. Inject Styles (Moved to Left Side)
+    const styleId = 'gn-addon-new-chat-style';
+    if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.innerHTML = `
+            /* Floating New Chat Button - LEFT SIDE */
+            #gn-addon-new-chat-btn {
+                position: absolute;
+                top: 80px;  /* Adjust vertical alignment */
+                left: 20px; /* Moved to the Left */
+                z-index: 999;
+                display: none; /* Hidden by default */
+                align-items: center;
+                gap: 8px;
+                padding: 8px 16px;
+                background-color: #f0f4f9; 
+                color: #444746;
+                border: 1px solid #e5e7eb;
+                border-radius: 20px;
+                font-family: sans-serif;
+                font-size: 13px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            }
+
+            /* Hover Effect */
+            #gn-addon-new-chat-btn:hover {
+                background-color: #e2e6ea;
+                color: #1f1f1f;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            /* VISIBILITY LOGIC: Show only when chat is active */
+            #chatbot-container.gn-chat-active #gn-addon-new-chat-btn {
+                display: inline-flex;
+                animation: gn-fade-in 0.3s forwards;
+            }
+
+            @keyframes gn-fade-in {
+                from { opacity: 0; transform: translateX(-10px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // 3. Create and Append the Button (if not exists)
+    if (document.getElementById('gn-addon-new-chat-btn')) return;
+
+    const btn = document.createElement("button");
+    btn.id = "gn-addon-new-chat-btn";
+    
+    // Icon + Text
+    btn.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>New Chat</span>
+    `;
+
+    // 4. Bind Action to existing global function
+    btn.onclick = function() {
+        if (typeof window.startNewChat === 'function') {
+            window.startNewChat();
+        } else {
+            window.location.reload();
+        }
+    };
+
+    container.appendChild(btn);
+
 })();
