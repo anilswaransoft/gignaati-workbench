@@ -20,9 +20,11 @@
     <div class="container-fluid">
       <div class="header-cover">
         <div class="logo">
-          <!-- <img src="Gignaati.jpg" alt="" /> -->
-          <img src="gig.ico" alt="" />
+          <img src="GignaatiNewLogo.jpg" alt="" />
+          <!-- <img src="gig.ico" alt="" /> -->
         </div>
+        <img src="make-in-india-dream.png" class="make-in-india-dream" id="logo2" style="width: 6%; display: block;"
+          alt="">
         <div class="nav" id="nav" style="display: none">
           <ul>
             <li>
@@ -178,98 +180,151 @@
   </header>
 
   <div class="gn-chatbot-fullscreen" id="chatbot-container" style="display: none;">
-    
+
     <div class="gn-header-content" id="header-content">
-        <div class="gn-ollama-chat-title">Build what's next</div>
-        <div class="gn-subtitle">Create the next generation of AI Agents with Gignaati.</div>
+      <div class="gn-ollama-chat-title">Build what's next</div>
+      <div class="gn-subtitle">Create the next generation of AI Agents with Gignaati.</div>
     </div>
 
     <div class="gn-ollama-messages" id="ollama-messages"></div>
 
     <div class="gn-ollama-input-area">
-        
-        <div id="gn-preview-area" class="gn-preview-area"></div>
 
-        <div class="gn-input-wrapper-container">
-            <div class="gn-ollama-input-wrapper">
-                
-                <div class="gn-ollama-model-selector">
-                    <select id="ollama-model-select">
-                        <option>Loading...</option>
-                    </select>
-                    <button class="gn-icon-btn" id="tts-btn" title="Read aloud">🔊</button>
-                </div>
+      <div id="gn-preview-area" class="gn-preview-area"></div>
 
-                <input type="file" id="gn-file-input" multiple style="display: none;">
-                
-                <button class="gn-icon-btn" id="gn-attach-btn" title="Attach file" onclick="document.getElementById('gn-file-input').click()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                </button>
+      <div class="gn-input-wrapper-container">
+        <div class="gn-ollama-input-wrapper">
 
-                <input id="ollama-input" type="text" placeholder="Ask anything about Gignaati Workbench" autocomplete="off" />
-                
-                <button class="gn-icon-btn" id="mic-btn" title="Voice input">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-                </button>
+          <div class="gn-ollama-model-selector">
+            <select id="ollama-model-select">
+              <option>Loading...</option>
+            </select>
+            <button class="gn-icon-btn" id="tts-btn" title="Read aloud">🔊</button>
+          </div>
 
-                <button class="gn-ollama-send-btn" id="ollama-send-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                </button>
-            </div>
+          <input type="file" id="gn-file-input" multiple style="display: none;">
+
+          <button class="gn-icon-btn" id="gn-attach-btn" title="Attach file"
+            onclick="document.getElementById('gn-file-input').click()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </button>
+
+          <input id="ollama-input" type="text" placeholder="Ask anything about Gignaati Workbench" autocomplete="off" />
+
+          <button class="gn-icon-btn" id="mic-btn" title="Voice input">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </button>
+
+          <button class="gn-ollama-send-btn" id="ollama-send-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 2L11 13" />
+              <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+            </svg>
+          </button>
         </div>
+      </div>
 
-        <div class="gn-quick-actions row g-3" id="quick-actions">
-            <div class="col-md-3 col-6">
-                <div class="card h-100 gn-card-custom" style="font-size: 13px; color: gray;" onclick="quickPrompt('How to build and use AI agents?')">
-                    <div class="card-body d-flex align-items-center">
-                        <p class="m-0">How to build and use AI agents?</p>
-                    </div>
-                </div>
+      <div class="gn-quick-actions row g-3" id="quick-actions">
+        <div class="col-md-3 col-6">
+          <div class="card h-100 gn-card-custom" style="font-size: 13px; color: gray;"
+            onclick="quickPrompt('How to build and use AI agents?')">
+            <div class="card-body d-flex align-items-center">
+              <p class="m-0">How to build and use AI agents?</p>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="card h-100 gn-card-custom" style="font-size: 13px; color: gray;" onclick="quickPrompt('Find a product for my use case')">
-                    <div class="card-body d-flex align-items-center">
-                        <p class="m-0">Find a product for my use case</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-6">
-                <div class="card h-100 gn-card-custom " style="font-size: 13px;color: gray;" onclick="quickPrompt('Discover solutions for my industry')">
-                    <div class="card-body d-flex align-items-center">
-                        <p class="m-0">Discover solutions for my industry</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-6">
-                <div class="card h-100 gn-card-custom" style="font-size: 13px;color: gray;" onclick="quickPrompt('Summarize what\'s new with AI Agents')">
-                    <div class="card-body d-flex align-items-center">
-                        <p class="m-0">Summarize what's new with AI Agents</p>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+        <div class="col-md-3 col-6">
+          <div class="card h-100 gn-card-custom" style="font-size: 13px; color: gray;"
+            onclick="quickPrompt('Find a product for my use case')">
+            <div class="card-body d-flex align-items-center">
+              <p class="m-0">Find a product for my use case</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="card h-100 gn-card-custom " style="font-size: 13px;color: gray;"
+            onclick="quickPrompt('Discover solutions for my industry')">
+            <div class="card-body d-flex align-items-center">
+              <p class="m-0">Discover solutions for my industry</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="card h-100 gn-card-custom" style="font-size: 13px;color: gray;"
+            onclick="quickPrompt('Summarize what\'s new with AI Agents')">
+            <div class="card-body d-flex align-items-center">
+              <p class="m-0">Summarize what's new with AI Agents</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <div class="gn-built-with">
-            Built with love <a href="#" onclick="openExternalLink('https://gignaati.com/')">Gignaati.com</a>
-        </div>
+      <div class="gn-built-with">
+        Built with love <a href="#" onclick="openExternalLink('https://gignaati.com/')">Gignaati.com</a>
+      </div>
     </div>
-</div>
+  </div>
 
 
 
   <div class=" gignaati-workBench-container mt-5 px-5" id="gignaati-workBench-container">
     <div class="container-fluid">
       <div class="row">
+        <div class="col-12 text-start">
+          <div class="col-6">
+            <h1 class="title text-center">Core Features of the AI Lab</h1>
+          </div>
+        </div>
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
           <div class="brands-area">
-            <h1 class="title">Trusted by Leading Brands</h1>
+
             <div class="row">
-              <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 mb-4">
+              <div class="col-lg-4 col-md-6 col-12">
+                <div class="core-features-card">
+                  <div class="features-title">AI Lab in a Box</div>
+                  <ul>
+                    <li>Data Privacy 100%.</li>
+                    <li>Local: Run AI Locally</li>
+                    <li>Build Unlimited Agents</li>
+                    <li>Run Unlimited Executions</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4 col-md-6 col-12">
+                <div class="core-features-card">
+                  <div class="features-title">Selling Statement</div>
+                  <ul>
+                    <li>Zero Code - No-code Builder.</li>
+                    <li>Zero Cost LLM.</li>
+                    <li>Run AI without Internet</li>
+
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4 col-md-6 col-12">
+                <div class="core-features-card">
+                  <div class="features-title">Companion Mode</div>
+                  <ul>
+                    <li>Dedicated, Personalized AI Assistant</li>
+                    <li>Always Available (Local Operation)</li>
+                    <li>Seamless, Intuitive Integration</li>
+
+                  </ul>
+                </div>
+              </div>
+              <!-- <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 mb-4">
                 <div class="brand-box">
                   <div class="brand-img">
                     <img src="intelNew.png" alt="Intel" />
                   </div>
-                  <!-- <h2 class="brand-name">Intel</h2> -->
+                 <h2 class="brand-name">Intel</h2>
                 </div>
               </div>
               <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 mb-4">
@@ -277,7 +332,7 @@
                   <div class="brand-img">
                     <img src="logo-with-tagline.webp" alt="" />
                   </div>
-                  <!-- <h2 class="brand-name">Dell</h2> -->
+                   <h2 class="brand-name">Dell</h2> 
                 </div>
               </div>
               <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 mb-4">
@@ -285,7 +340,7 @@
                   <div class="brand-img">
                     <img src="NATS-Logo.png" alt="" />
                   </div>
-                  <!-- <h2 class="brand-name">AWS</h2> -->
+                  <h2 class="brand-name">AWS</h2>
                 </div>
               </div>
               <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 mb-4">
@@ -293,9 +348,9 @@
                   <div class="brand-img">
                     <img src="nsdj.jpg" alt="" />
                   </div>
-                  <!-- <h2 class="brand-name">Google</h2> -->
+                 <h2 class="brand-name">Google</h2>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -344,7 +399,111 @@
             </div>
           </div>
         </div>
+        <div class="mt-3">
+          <div class="slider-overflow-hidden">
+            <div class="logo-track space-x-12 items-center">
 
+
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/b0254ad9-0e75-47bd-a089-55085f817dcd.png"
+                  alt="Google AI Studio"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/0e811d6a-a109-48f7-ad75-110f0998b9e8.png"
+                  alt="Rising Rajasthan"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/a516019e-5790-4f7e-b50b-4533356720ab.png"
+                  alt="Dubai Centre for Artificial Intelligence"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/a5873a79-b089-4399-8e7e-0cc1cc76b276.png"
+                  alt="National Apprenticeship Training Scheme"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/d3a85139-2949-44e1-8b33-a73558e91a4f.png"
+                  alt="Startup Haryana"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/b287b8ed-34c0-4fae-9da4-10d0167aea1f.png"
+                  alt="Chhatrapahi Shahu Ji Maharaj University Kanpur"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/5f8d8e51-c582-4eb6-945f-685a1e11b3bc.png"
+                  alt="Intel Corporation"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/e1a994e1-9ce6-4ddc-89c1-9086b0314b50.png" alt="AMD"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/b0254ad9-0e75-47bd-a089-55085f817dcd.png"
+                  alt="Google AI Studio"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/0e811d6a-a109-48f7-ad75-110f0998b9e8.png"
+                  alt="Rising Rajasthan"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/a516019e-5790-4f7e-b50b-4533356720ab.png"
+                  alt="Dubai Centre for Artificial Intelligence"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/a5873a79-b089-4399-8e7e-0cc1cc76b276.png"
+                  alt="National Apprenticeship Training Scheme"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/d3a85139-2949-44e1-8b33-a73558e91a4f.png"
+                  alt="Startup Haryana"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/b287b8ed-34c0-4fae-9da4-10d0167aea1f.png"
+                  alt="Chhatrapahi Shahu Ji Maharaj University Kanpur"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/5f8d8e51-c582-4eb6-945f-685a1e11b3bc.png"
+                  alt="Intel Corporation"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+              <div
+                class="flex-shrink-0 w-40 h-20 flex items-center justify-center hover:scale-110 transition-transform duration-300">
+                <img src="https://gignaati.com/lovable-uploads/e1a994e1-9ce6-4ddc-89c1-9086b0314b50.png" alt="AMD"
+                  class="max-w-full max-h-full object-contain hover:opacity-80 transition-opacity">
+              </div>
+            </div>
+            <!-- (Duplicate all the rest too...) -->
+
+
+          </div>
+        </div>
         <div class="row">
           <h1 class="title mt-5 ">Platform Components</h1>
           <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 mt-3">
@@ -352,9 +511,9 @@
               <div class="box-2-img">
                 <img src="Two-click-setup.png" alt="">
               </div>
-              <h2>Two click setup</h2>
+              <h2>One click setup</h2>
               <p>Set up your workspace faster than ever. With our streamlined installation, you’ll go from download to
-                running environment in just a few clicks.</p>
+                running environment in just a clicks.</p>
             </div>
           </div>
           <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 mt-3">
@@ -362,7 +521,7 @@
               <div class="box-2-img">
                 <img src="Earn.png" alt="">
               </div>
-              <h2>Learn & grow</h2>
+              <h2>Learn & Grow</h2>
               <p>Turn every new skill into opportunity. Deploy AI agents for real-world tasks and start monetizing as
                 you grow.</p>
             </div>
@@ -372,7 +531,7 @@
               <div class="box-2-img">
                 <img src="Templatess.png" alt="">
               </div>
-              <h2>Rich Template Library</h2>
+              <h2>Rich Model & Template Library</h2>
               <p>Accelerate your workflow through our extensive collection of pre-built agents tailored and crafted for
                 different business needs across sectors.</p>
             </div>
@@ -991,7 +1150,7 @@
     </div>
   </div>
 
-   <div class="container py-3 earn-container" id="earn-container" style="display: none;">
+  <div class="container py-3 earn-container" id="earn-container" style="display: none;">
 
     <div class="text-center mb-5">
       <h1 class="fw-bold mb-3">Your AI Career Path Awaits</h1>
@@ -1757,7 +1916,7 @@
   <script>
     // Start Your Journey button handler
     async function verify() {
-
+      document.getElementById("logo2").style.display = "none";
       const Checked = document.getElementById("termsCheckbox").checked;
       if (!Checked) {
         showToast("Please acknowledge the system requirement disclaimer before proceeding.", false);

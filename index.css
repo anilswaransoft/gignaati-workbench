@@ -114,7 +114,7 @@ header {
 
 .header-cover .logo img {
   /* width: 100%; */
-  width: 40%;
+  width: 80%;
 }
 
 .header-cover .nav ul {
@@ -1680,7 +1680,8 @@ header {
 
 /* Messages Area */
 .gn-ollama-messages {
-  display: none; /* Hidden by default */
+  display: none;
+  /* Hidden by default */
   width: 100%;
   max-width: 900px;
   margin: 0 auto 20px auto;
@@ -1730,12 +1731,12 @@ header {
   border: 1px solid #dee2e6;
   border-radius: 50px;
   padding: 8px 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.2s;
 }
 
 .gn-ollama-input-wrapper:focus-within {
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   border-color: #adb5bd;
 }
 
@@ -1779,7 +1780,10 @@ header {
   align-items: center;
   justify-content: center;
 }
-.gn-icon-btn:hover { color: #212529; }
+
+.gn-icon-btn:hover {
+  color: #212529;
+}
 
 /* Send Button */
 .gn-ollama-send-btn {
@@ -1796,7 +1800,10 @@ header {
   margin-left: 10px;
   transition: transform 0.2s;
 }
-.gn-ollama-send-btn:hover { transform: scale(1.05); }
+
+.gn-ollama-send-btn:hover {
+  transform: scale(1.05);
+}
 
 /* Quick Action Cards (Black Theme) */
 .gn-quick-actions {
@@ -1809,8 +1816,10 @@ header {
   cursor: pointer;
   transition: transform 0.2s, border-color 0.2s;
   height: 100%;
-  background-color: #f2f4f6; /* BG Dark */
-  color: #fff; /* Text White */
+  background-color: #f2f4f6;
+  /* BG Dark */
+  color: #fff;
+  /* Text White */
   border: 1px solid #f8f9fa;
   border-radius: 10px;
 }
@@ -1822,12 +1831,12 @@ header {
 }
 
 .gn-card-custom .card-body {
-    padding: 1rem;
-    min-height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+  padding: 1rem;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 /* Preview Area for Attachments */
@@ -1837,6 +1846,7 @@ header {
   margin-bottom: 10px;
   padding: 0 15px;
 }
+
 .gn-file-card {
   background: #e9ecef;
   padding: 5px 10px;
@@ -1846,7 +1856,13 @@ header {
   align-items: center;
   gap: 5px;
 }
-.gn-remove-file { cursor: pointer; color: red; font-weight: bold; margin-left: 5px; }
+
+.gn-remove-file {
+  cursor: pointer;
+  color: red;
+  font-weight: bold;
+  margin-left: 5px;
+}
 
 /* Footer */
 .gn-built-with {
@@ -1857,97 +1873,206 @@ header {
 }
 
 /* Mic Active State */
-.gn-mic-active { color: #dc3545 !important; animation: pulse 1.5s infinite; }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+.gn-mic-active {
+  color: #dc3545 !important;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
 
 /* Message Bubbles */
-.gn-ollama-message { margin-bottom: 15px; padding: 15px; border-radius: 12px; max-width: 80%; line-height: 1.5; }
-.gn-user { background-color: #f1f3f5; color: #000; align-self: flex-end; margin-left: auto; }
-.gn-bot { background-color: #fff; border: 1px solid #e9ecef; align-self: flex-start; width: 100%; max-width: 100%; }
+.gn-ollama-message {
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 12px;
+  max-width: 80%;
+  line-height: 1.5;
+}
 
-.gn-msg-content { white-space: pre-wrap; word-wrap: break-word; }
+.gn-user {
+  background-color: #f1f3f5;
+  color: #000;
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.gn-bot {
+  background-color: #fff;
+  border: 1px solid #e9ecef;
+  align-self: flex-start;
+  width: 100%;
+  max-width: 100%;
+}
+
+.gn-msg-content {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
 
 /* --- Earn Section Styles (Preserved) --- */
 
 /* Wrapper to ensure font consistency without affecting global body */
 .earn-container {
-    font-family: 'Poppins', sans-serif;
-    color: #1f2937;
+  font-family: 'Poppins', sans-serif;
+  color: #1f2937;
 }
 
 /* Card Styling */
 .earn-career-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 0.75rem; /* 12px */
-    background: #fff;
-    transition: box-shadow 0.3s ease;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  /* 12px */
+  background: #fff;
+  transition: box-shadow 0.3s ease;
 }
 
 .earn-career-card:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 /* Icon Containers */
 .earn-icon-box {
-    width: 48px;
-    height: 48px;
-    background-color: #f3e8ff; /* Light Purple */
-    color: #7c3aed; /* Deep Purple */
-    border-radius: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 48px;
+  height: 48px;
+  background-color: #f3e8ff;
+  /* Light Purple */
+  color: #7c3aed;
+  /* Deep Purple */
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Brand Colors */
-.earn-text-purple { color: #7c3aed; }
-.earn-text-green { color: #15803d; }
+.earn-text-purple {
+  color: #7c3aed;
+}
+
+.earn-text-green {
+  color: #15803d;
+}
 
 /* Section Headers */
 .earn-section-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #6b7280;
-    margin-bottom: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  margin-bottom: 1rem;
 }
 
 /* Skill Badges */
 .earn-skill-badge {
-    background-color: #f3f4f6;
-    color: #374151;
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px; /* Pill shape */
-    display: inline-block;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
+  background-color: #f3f4f6;
+  color: #374151;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  /* Pill shape */
+  display: inline-block;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Salary Badges */
 .earn-salary-badge {
-    background-color: #dcfce7; /* Light Green */
-    color: #15803d; /* Dark Green */
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem;
-    white-space: nowrap;
+  background-color: #dcfce7;
+  /* Light Green */
+  color: #15803d;
+  /* Dark Green */
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  white-space: nowrap;
 }
 
 /* Career Progression Timeline */
 .earn-progression-list {
-    border-left: 2px solid #f3f4f6;
-    padding-left: 1rem;
-    margin-left: 0.25rem;
+  border-left: 2px solid #f3f4f6;
+  padding-left: 1rem;
+  margin-left: 0.25rem;
 }
 
 /* Benefits Icons */
 .earn-benefit-icon {
-    width: 16px;
-    height: 16px;
-    color: #7c3aed;
-    margin-right: 0.5rem;
+  width: 16px;
+  height: 16px;
+  color: #7c3aed;
+  margin-right: 0.5rem;
 }
+
+.core-features-card{
+  border: 1px solid var(--border-color);
+  background: var(--gradient-card);
+  padding: 20px;
+  border-radius: 10px;
+  height: 100%;
+}
+.core-features-card .features-title{
+  font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 11px;
+}
+.core-features-card ul{
+      padding-left: 8px;
+    margin-bottom: 0px;
+    
+}
+
+.core-features-card ul li{
+font-size: .86rem;
+padding: 4px 0px;
+}
+
+
+  /* Wrapper hides overflow */
+    .slider-overflow-hidden {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Scroller Track */
+    .logo-track {
+      display: flex;
+      column-gap: 60px;
+      align-items: center;
+      width: max-content;
+      animation: scroll-left 20s linear infinite;
+    }
+
+    .logo-track img {
+      width: 100px;
+    }
+
+    /* Pause animation on hover */
+    .logo-track:hover {
+      animation-play-state: paused;
+    }
+
+    /* Scroll Animation */
+    @keyframes scroll-left {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
+    }
