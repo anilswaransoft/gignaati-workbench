@@ -966,28 +966,79 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         });
     }
 
-    // 7. Logic: Load Session into View
-    function loadHistorySession(chats) {
-        // Clear current view
+   // 4. Load Session (Robust Fix)
+    function loadHistorySession(chats, chatId) {
+        console.log("Loading session:", chatId);
+
+        // 1. Select Elements Directly (Fixes scope issues)
+        const container = document.getElementById("chatbot-container");
         const msgBox = document.getElementById("ollama-messages");
+        const input = document.getElementById("ollama-input");
+        const header = document.getElementById("header-content");
+        const quickActions = document.getElementById("quick-actions");
+
+        // 2. Force UI into "Chat Mode"
+        if (container) container.classList.add("gn-chat-active");
+        
+        // Extra safeguard: Manually hide welcome elements if class fails
+        if (header) header.style.display = 'none';
+        if (quickActions) quickActions.style.display = 'none';
+        if (msgBox) msgBox.style.display = 'block';
+
+        // 3. Reset State & UI
         if (msgBox) msgBox.innerHTML = '';
+        if (input) input.value = '';
+        
+        // Update State (if 'state' variable is accessible, otherwise ignore)
+        if (typeof state !== 'undefined') {
+            state.conversationHistory = [];
+            state.chatSessionId = chatId;
+        } else {
+            // Fallback: Store ID on window if state is missing
+            window.currentChatSessionId = chatId;
+        }
 
-        // We cannot resume old chats on the backend because the GET API 
-        // does not return the chatId to link new messages to. 
-        // So we treat this as "Viewing Mode". 
-        // However, we will generate a NEW ID so if they type, it starts a fresh linked session.
-        window.currentChatSessionId = generateUUID();
+        // 4. Render Messages
+        if (chats && Array.isArray(chats)) {
+            chats.forEach(chat => {
+                // Render User Message
+                safeAddMessage(chat.request, 'user');
+                
+                // Render Bot Message
+                safeAddMessage(chat.response, 'bot');
 
-        // Render messages
-        chats.forEach(chat => {
-            // User Message
-            addMessageUI(chat.request, 'user');
-            // Bot Message
-            addMessageUI(chat.response, 'bot');
-        });
+                // Restore Context
+                if (typeof state !== 'undefined') {
+                    state.conversationHistory.push({ role: "user", content: chat.request });
+                    state.conversationHistory.push({ role: "assistant", content: chat.response });
+                }
+            });
+        }
+        
+        // 5. Scroll to bottom
+        if (msgBox) msgBox.scrollTop = msgBox.scrollHeight;
 
-        // Close sidebar
-        toggleHistorySidebar();
+        // 6. Close Sidebar (on mobile)
+        if (window.innerWidth < 768) {
+            const sidebar = document.getElementById('gn-hist-sidebar');
+            if (sidebar) sidebar.classList.remove('active');
+        }
+    }
+
+    // Helper: Safely add message to UI (Self-contained)
+    function safeAddMessage(text, type) {
+        const msgBox = document.getElementById("ollama-messages");
+        if (!msgBox) return;
+
+        const msg = document.createElement("div");
+        msg.className = `gn-ollama-message gn-${type}`; // e.g., gn-user or gn-bot
+        
+        const contentDiv = document.createElement("div");
+        contentDiv.className = "gn-msg-content";
+        contentDiv.textContent = text;
+        
+        msg.appendChild(contentDiv);
+        msgBox.appendChild(msg);
     }
 
     // Helper to reuse existing UI logic without breaking encapsulation
