@@ -818,9 +818,10 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         });
     }
 
-    // Initialize Session ID
-    window.currentChatSessionId = generateUUID();
-
+   // Initialize Global Session ID
+    if (!window.currentChatSessionId) {
+        window.currentChatSessionId = generateUUID();
+    }
     // Helper to get Email
     function getUserEmail() {
         const emailInput = document.querySelector(".email-box input");
@@ -829,13 +830,13 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
     }
 
     // 2. API: Save Chat History
-    window.saveChatHistory = async function (userRequest, botResponse) {
-        const email = getUserEmail();
+    window.saveChatHistory = async function (userRequest, response) {
+        if (!window.currentChatSessionId) window.currentChatSessionId = generateUUID();
         const payload = {
             chatId: window.currentChatSessionId,
-            emailId: email,
+            emailId: getUserEmail(),
             request: userRequest,
-            response: botResponse
+            response: response
         };
 
         console.log("Saving history:", payload);
@@ -937,31 +938,68 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         }
     }
     // 6. Logic: Render List Items
+    // function renderHistoryList(data) {
+    //     const listContainer = document.getElementById('gn-hist-list-container');
+    //     listContainer.innerHTML = '';
+
+    //     if (!data || data.length === 0) {
+    //         listContainer.innerHTML = '<div style="padding:10px; color:#666;">No history found.</div>';
+    //         return;
+    //     }
+
+    //     data.forEach((session, index) => {
+    //         if (!session.chats || session.chats.length === 0) return;
+
+    //         // Use the first interaction to represent the session
+    //         const firstChat = session.chats[0];
+    //         const dateStr = new Date(firstChat.createdOn).toLocaleString();
+
+    //         const item = document.createElement('div');
+    //         item.className = 'gn-hist-item';
+    //         item.innerHTML = `
+    //             <span class="gn-hist-date">${dateStr}</span>
+    //             <div class="gn-hist-query">${firstChat.request}</div>
+    //         `;
+
+    //         // Click to load this session
+    //         item.onclick = () => loadHistorySession(session.chats);
+    //         listContainer.appendChild(item);
+    //     });
+    // }
     function renderHistoryList(data) {
         const listContainer = document.getElementById('gn-hist-list-container');
+        if(!listContainer) return;
         listContainer.innerHTML = '';
 
         if (!data || data.length === 0) {
-            listContainer.innerHTML = '<div style="padding:10px; color:#666;">No history found.</div>';
+            listContainer.innerHTML = '<div style="padding:20px; text-align:center; font-size:0.85rem; color:#666;">No recent chats</div>';
             return;
         }
 
-        data.forEach((session, index) => {
-            if (!session.chats || session.chats.length === 0) return;
+        const label = document.createElement('div');
+        label.className = 'gn-hist-section-label';
+        label.innerText = 'Recent';
+        listContainer.appendChild(label);
 
-            // Use the first interaction to represent the session
+        data.forEach(session => {
+            // Validation: Ensure session has chats
+            if (!session.chats || session.chats.length === 0) return;
+            
+            // LOGIC: Pick the first chat object to get the ID
             const firstChat = session.chats[0];
-            const dateStr = new Date(firstChat.createdOn).toLocaleString();
+            const sessionId = firstChat.chatId; // Extract ID from API
 
             const item = document.createElement('div');
             item.className = 'gn-hist-item';
             item.innerHTML = `
-                <span class="gn-hist-date">${dateStr}</span>
-                <div class="gn-hist-query">${firstChat.request}</div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2-2z"></path>
+                </svg>
+                <span style="overflow:hidden;text-overflow:ellipsis;">${firstChat.request}</span>
             `;
-
-            // Click to load this session
-            item.onclick = () => loadHistorySession(session.chats);
+            
+            // On Click: Load this specific Session ID
+            item.onclick = () => loadHistorySession(session.chats, sessionId);
             listContainer.appendChild(item);
         });
     }
