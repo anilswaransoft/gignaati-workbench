@@ -842,7 +842,7 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         console.log("Saving history:", payload);
 
         try {
-            await fetch('https://localhost:7029/api/Chat/InsertChatHistory', {
+            await fetch('https://api.gignaati.com/api/Chat/InsertChatHistory', {
                 method: 'POST',
                 headers: {
                     'accept': 'text/plain',
@@ -858,7 +858,7 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
     // 3. API: Fetch History
     window.fetchChatHistory = async function () {
         const email = getUserEmail();
-        const url = `https://localhost:7029/api/Chat/getChatHistory?emailId=${encodeURIComponent(email)}`;
+        const url = `https://api.gignaati.com/api/Chat/getChatHistory?emailId=${encodeURIComponent(email)}`;
 
         try {
             const res = await fetch(url, {
@@ -868,6 +868,8 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
             const json = await res.json();
             if (json && json.data) {
                 renderHistoryList(json.data);
+            }else{
+                renderHistoryList([]);
             }
         } catch (e) {
             console.error("Failed to fetch history", e);
@@ -913,6 +915,8 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
 
         // Append to container
         if (container) container.appendChild(toggleBtn);
+
+        setupSidebarCloseOnClickOutside();
     }
 
     // 5. Logic: Toggle Sidebar
@@ -972,7 +976,7 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
         listContainer.innerHTML = '';
 
         if (!data || data.length === 0) {
-            listContainer.innerHTML = '<div style="padding:20px; text-align:center; font-size:0.85rem; color:#666;">No recent chats</div>';
+            listContainer.innerHTML = '<div style="padding:20px; font-size:0.85rem; color:#666;">No recent chats</div>';
             return;
         }
 
@@ -1115,3 +1119,29 @@ Your primary job is to analyze attached files and help users navigate the UI.`;
     createHistorySidebar();
 
 })();
+
+
+
+function setupSidebarCloseOnClickOutside() {
+    document.addEventListener('click', function (event) {
+        const sidebar = document.getElementById('gn-history-sidebar');
+        // Select the toggle button dynamically since it's created in JS
+        const toggleBtn = document.querySelector('.gn-hist-toggle-btn'); 
+
+        // 1. Only proceed if sidebar exists and is currently showing ('active')
+        if (sidebar && sidebar.classList.contains('active')) {
+            
+            // 2. Check if the click target is inside the Sidebar
+            const isClickInsideSidebar = sidebar.contains(event.target);
+            
+            // 3. Check if the click target is inside the Toggle Button
+            // (We check this to prevent the sidebar from closing immediately if you click the menu button)
+            const isClickOnToggle = toggleBtn && toggleBtn.contains(event.target);
+
+            // 4. If click is OUTSIDE both, close the sidebar
+            if (!isClickInsideSidebar && !isClickOnToggle) {
+                sidebar.classList.remove('active');
+            }
+        }
+    });
+}
