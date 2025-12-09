@@ -1,7 +1,7 @@
 {
-  "name": "renderer",
-  "version": "1.0.0",
-  "description": "A simple renderer project",
+  "name": "gignaati-workbench",
+  "version": "1.0.1",
+  "description": "A simple agentic platform for managing AI agents and automating tasks.",
   "main": "electron-main.js",
   "scripts": {
     "start": "electron .",
@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
+    "electron-log": "^5.4.3",
+    "electron-updater": "^6.6.2",
     "sqlite3": "^5.1.7",
     "systeminformation": "^5.27.7"
   },
@@ -22,6 +24,12 @@
     "appId": "com.gignaati.workbench",
     "productName": "Gignaati Workbench",
     "icon": "Icon-Gignaati.ico",
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://api.gignaati.com/download/"
+      }
+    ],
     "directories": {
       "output": "dist"
     },
@@ -50,6 +58,23 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility",
+      "maintainer": "Gignaati",
+      "icon": "build/icon.png",
+      "synopsis": "A simple agentic platform"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.developer-tools",
+      "icon": "build/icon.icns",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
     }
   }
 }

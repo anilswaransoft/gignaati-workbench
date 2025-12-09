@@ -3,6 +3,16 @@ const { app, BrowserWindow, ipcMain, shell, session, net } = require('electron')
 const { spawn, exec } = require('child_process');
 const path = require('path');
 
+// --- [CHANGE 1] IMPORT UPDATER & LOGGER ---
+const { autoUpdater } = require('electron-updater');
+const log = require('electron-log');
+
+// --- [CHANGE 2] CONFIGURE LOGGING ---
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+log.info('App starting...');
+// ----------------------------------
+
 const isDev = !app.isPackaged;
 let backendProcess = null;
 let loadingWindow = null;
@@ -403,9 +413,6 @@ function createWindow(pageInfo) {
             webviewTag: true
         }
     });
-
-
-    // Load the determined file with email parameter if available
     if (email && filename === 'main-screen.html') {
         mainWindow.loadFile(filename, { query: { email: email } });
     } else {
@@ -416,21 +423,95 @@ function createWindow(pageInfo) {
         closeLoadingWindow();
         mainWindow.maximize();
         mainWindow.show();
+
+        // --- [CHANGE 3] TRIGGER UPDATE CHECK ---
+        // Only check for updates if we are NOT in development mode
+        if (!isDev) {
+            console.log("Checking for updates...");
+            autoUpdater.checkForUpdatesAndNotify();
+        }
+        // ---------------------------------------
     });
 }
 
+// --- [CHANGE 4] OPTIONAL: HANDLE UPDATE EVENTS ---
+autoUpdater.on('update-available', () => {
+    log.info('Update available.');
+    // You could send a message to your frontend here to show a banner
+});
+
+autoUpdater.on('update-downloaded', () => {
+    log.info('Update downloaded');
+    // The standard behavior of checkForUpdatesAndNotify() is to notify the user 
+    // and install on close. If you want to force restart immediately, uncomment below:
+    // autoUpdater.quitAndInstall();
+});
+// --------------------------------------------------
+
 // ========== Backend Process ==========
+// function startBackend() {
+//     const backendPath = isDev
+//         ? path.join(__dirname, 'resources', 'backend', 'GignaatiWorkbenchService.exe')
+//         : path.join(process.resourcesPath, 'backend', 'GignaatiWorkbenchService.exe');
+
+//     console.log("Starting backend path:", backendPath);
+//     backendProcess = spawn(backendPath, [], { stdio: 'pipe', detached: false });
+//     backendProcess.stdout.on('data', (data) => console.log(`Backend: ${data}`));
+//     backendProcess.stderr.on('data', (data) => console.error(`Backend Error: ${data}`));
+// }
+
+// ========== Backend Process (Cross-Platform) ==========
 function startBackend() {
-    const backendPath = isDev
-        ? path.join(__dirname, 'resources', 'backend', 'GignaatiWorkbenchService.exe')
-        : path.join(process.resourcesPath, 'backend', 'GignaatiWorkbenchService.exe');
+    let platformFolder;
+    let backendBinary;
 
-    console.log("Starting backend path:", backendPath);
-    backendProcess = spawn(backendPath, [], { stdio: 'pipe', detached: false });
-    backendProcess.stdout.on('data', (data) => console.log(`Backend: ${data}`));
-    backendProcess.stderr.on('data', (data) => console.error(`Backend Error: ${data}`));
+    if (process.platform === 'win32') {
+        platformFolder = 'win';
+        backendBinary = 'GignaatiWorkbench.exe'; 
+    } else if (process.platform === 'darwin') {
+        platformFolder = 'mac';
+        backendBinary = 'GignaatiWorkbench'; 
+    } else { // linux
+        platformFolder = 'linux';
+        backendBinary = 'GignaatiWorkbench'; 
+    }
+
+    // 2. Define Base Path (Dev vs Prod)
+    // Dev: project_folder/resources/backend/win/...
+    // Prod: resources/backend/win/...
+    const basePath = isDev
+        ? path.join(__dirname, 'resources', 'backend')
+        : path.join(process.resourcesPath, 'backend');
+
+    const backendPath = path.join(basePath, platformFolder, backendBinary);
+
+    console.log(`[Backend] Starting for ${process.platform} from:`, backendPath);
+
+    try {
+        // 3. Spawn Process
+        // IMPORTANT: 'cwd' is set to the binary's folder so it can find appsettings.json
+        backendProcess = spawn(backendPath, [], { 
+            cwd: path.dirname(backendPath),
+            stdio: 'pipe', 
+            detached: false,
+            windowsHide: true
+        });
+
+        backendProcess.stdout.on('data', (data) => console.log(`[Backend]: ${data}`));
+        backendProcess.stderr.on('data', (data) => console.error(`[Backend Error]: ${data}`));
+        
+        backendProcess.on('close', (code) => {
+            console.log(`[Backend] Process exited with code ${code}`);
+        });
+
+        backendProcess.on('error', (err) => {
+            console.error('[Backend] Failed to start:', err);
+        });
+
+    } catch (err) {
+        console.error("[Backend] Critical error spawning process:", err);
+    }
 }
-
 // ========== App Lifecycle ==========
 
 app.whenReady().then(async () => {

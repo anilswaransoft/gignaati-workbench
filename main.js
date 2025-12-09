@@ -4,12 +4,14 @@ const HardwareDetector = require('./hardware-detector');
 const OllamaManager = require('./ollama-manager');
 const N8NManager = require('./n8n-manager');
 const SystemOptimizer = require('./system-optimizer');
+const { spawn } = require('child_process');
 
 let mainWindow = null;
 let hardwareInfo = null;
 let ollamaManager = null;
 let n8nManager = null;
 let systemOptimizer = null;
+let backendProcess = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -25,7 +27,7 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, '../renderer/wizard/index.html'));
-  
+
   // Open DevTools in development
   if (process.env.NODE_ENV === 'development') {
     mainWindow.webContents.openDevTools();
@@ -35,7 +37,7 @@ function createWindow() {
 app.whenReady().then(() => {
   createWindow();
   setupIPC();
-  
+
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
@@ -67,7 +69,7 @@ function setupIPC() {
   ipcMain.handle('install-ollama', async () => {
     try {
       ollamaManager = new OllamaManager();
-      
+
       await ollamaManager.installOllama((progress, message) => {
         mainWindow.webContents.send('progress-update', {
           step: 'ollama-install',
@@ -75,7 +77,7 @@ function setupIPC() {
           message
         });
       });
-      
+
       return { success: true };
     } catch (error) {
       console.error('Ollama installation failed:', error);
@@ -89,7 +91,7 @@ function setupIPC() {
       if (!ollamaManager) {
         ollamaManager = new OllamaManager();
       }
-      
+
       const env = systemOptimizer ? systemOptimizer.generateOllamaEnv() : {};
 
       try {
@@ -139,7 +141,7 @@ function setupIPC() {
           message
         });
       });
-      
+
       return { success: true };
     } catch (error) {
       console.error(`Failed to download model ${modelName}:`, error);
@@ -177,13 +179,13 @@ function setupIPC() {
         n8nManager = new N8NManager();
         await n8nManager.initialize();
       }
-      
+
       mainWindow.webContents.send('progress-update', {
         step: 'n8n-start',
         progress: 50,
         message: 'Starting N8N server...'
       });
-      
+
       const startResult = await n8nManager.start();
 
       // If start() indicated reuse of an existing healthy instance, we can skip waiting
@@ -205,13 +207,13 @@ function setupIPC() {
       } else {
         await n8nManager.waitForN8N();
       }
-      
+
       mainWindow.webContents.send('progress-update', {
         step: 'n8n-start',
         progress: 100,
         message: 'N8N is ready!'
       });
-      
+
       return { success: true };
     } catch (error) {
       console.error('Failed to start N8N:', error);
@@ -219,18 +221,83 @@ function setupIPC() {
     }
   });
 
+  // --- NEW ADDITION: .NET Backend Handler ---
+  ipcMain.handle('start-backend', async () => {
+    try {
+      if (backendProcess) {
+        console.log('Backend is already running.');
+        return { success: true, message: 'Backend already running' };
+      }
+
+      let platformFolder;
+      let backendBinary;
+
+      // Detect OS to choose correct folder and binary name
+      if (process.platform === 'win32') {
+        platformFolder = 'win';
+        backendBinary = 'GignaatiWorkbench.exe';
+      } else if (process.platform === 'darwin') {
+        platformFolder = 'mac';
+        backendBinary = 'GignaatiWorkbench';
+      } else { // linux
+        platformFolder = 'linux';
+        backendBinary = 'GignaatiWorkbench';
+      }
+
+      // Handle Path Logic (Dev vs Production)
+      // Note: Based on your icon path, resources is 2 levels up in Dev
+      const isDev = process.env.NODE_ENV === 'development';
+      const basePath = isDev
+        ? path.join(__dirname, '../../resources/backend')
+        : path.join(process.resourcesPath, 'backend');
+
+      const backendPath = path.join(basePath, platformFolder, backendBinary);
+
+      console.log('Attempting to start backend from:', backendPath);
+
+      // Spawn the backend process
+      backendProcess = spawn(backendPath, [], {
+        cwd: path.dirname(backendPath), // Set working directory to the binary's folder
+        stdio: 'pipe',
+        windowsHide: true // Hide terminal window on Windows
+      });
+
+      // Log backend output for debugging
+      backendProcess.stdout.on('data', (data) => {
+        console.log(`[Backend]: ${data}`);
+      });
+
+      backendProcess.stderr.on('data', (data) => {
+        console.error(`[Backend Error]: ${data}`);
+      });
+
+      backendProcess.on('close', (code) => {
+        console.log(`Backend process exited with code ${code}`);
+        backendProcess = null;
+      });
+
+      return { success: true };
+
+    } catch (error) {
+      console.error('Failed to start .NET backend:', error);
+      throw error;
+    }
+  });
+  // --- END NEW ADDITION ---
+
+
   // Launch app (open N8N in browser)
   ipcMain.handle('launch-app', async () => {
     try {
       // Open N8N in default browser
       const { shell } = require('electron');
       await shell.openExternal('http://localhost:5678');
-      
+
       // Minimize main window
       if (mainWindow) {
         mainWindow.minimize();
       }
-      
+
       return { success: true };
     } catch (error) {
       console.error('Failed to launch app:', error);
@@ -247,4 +314,12 @@ app.on('before-quit', async () => {
   if (ollamaManager) {
     await ollamaManager.stopOllama();
   }
+  // --- NEW ADDITION ---
+  if (backendProcess) {
+    console.log('Killing backend process...');
+    backendProcess.kill();
+    backendProcess = null;
+  }
+  // --------------------
+
 });
